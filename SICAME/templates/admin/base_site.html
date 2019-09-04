@@ -1,0 +1,89 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        <img class="intecap-img" src={% static "core/img/logo-intecap.png" %} height="55" alt="">
+        <!--img class="intecap-img" src={% static "core/img/no-img.jpg" %} height="55" alt=""-->
+</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+{% block extrastyle %}
+    <style>
+        .intecap-img{
+            padding-left: 20px;
+        }
+        a:link:hover, a:visited:hover {
+            color: #265787;
+        }
+        #changelist table thead th{
+            background: #265787;
+            color: #fff;
+        }
+        thead th a:link, thead th a:visited {
+            color: #fff;
+        }
+        thead{
+            color: #fff;
+        }
+        a.section:link, a.section:visited {
+            padding-left: 10px;
+        }
+        div.inline-group div.add-row, .inline-group .tabular tr.add-row td {
+            color: #666;
+            background: white;
+            padding: 8px 10px;
+            border-bottom: 0px solid #eee;
+        }
+        .form-row {
+            border-bottom: 1px solid #265787;;
+            border-bottom-left-radius: 14px;
+            border-bottom-right-radius: 15px;
+        }
+        #header a:link, #header a:visited {
+            color: #265787; font-family: 'Russo One', sans-serif;
+        }
+        #header{
+            background: #fff;
+            border-bottom: 5px solid #616669;
+            padding: 15px;
+        }
+        div.breadcrumbs {
+            padding-left: 15px;
+            background: #616669;
+            border-bottom: 4px solid #265787;
+        }
+        .module h2, .module caption, .inline-group h2 {
+            background-color: #265787;
+            border-bottom: 2px solid #616669;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            padding-left: 15px;
+        }
+        a:link, a:visited {color: black;}
+         .button, input[type=submit], input[type=button], .submit-row input, a.button {background-color: #265787;}
+         ul.messagelist li {background: #EFB8FF}
+        table thead th .text a:focus, table thead th .text a:hover {
+            background: black;
+        }
+        .module h2, .module caption:hover, .inline-group h2 {
+            background-color: black;
+        }
+    /** -- Trabajando en los estilos de Perfil -- 
+    .field-full_name, .field-equipo_cargado, .field-material_cargado, .field-total_cargado{
+        padding-top: 20px;
+    }
+    
+    #changelist table thead th.column-image_thub{
+        border-top-left-radius: 15px;
+    }
+    #changelist table thead th.column-total_cargado{
+        border-top-right-radius: 15px;
+    }*/
+    </style>
+{% endblock extrastyle %}

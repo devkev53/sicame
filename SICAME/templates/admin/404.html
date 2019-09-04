@@ -1,0 +1,14 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %}{% trans 'Page not found' %}{% endblock %}
+{% block extrastyle %}
+{% endblock extrastyle %}
+
+{% block content %}
+<main class="404">
+    <h2>{% trans 'Page not found' %}</h2>
+
+    <p>{% trans "We're sorry, but the requested page could not be found." %}</p>
+</main>
+{% endblock %}
