@@ -3,4 +3,15 @@ from .models import *
 
 # Register your models here.
 
-admin.site.register(Perfil)
+
+class AdminPerfil(admin.ModelAdmin):
+    list_display = [
+        'image_thub', 'full_name',
+        'material_asignado', 'equipo_asignado', 'Total_asignado']
+    list_filter = []
+    search_fields = [
+        'nombre', 'user',
+        'user__first_name', 'user__last_name']
+    list_display_links = ('image_thub',)
+
+admin.site.register(Perfil, AdminPerfil)

@@ -1,7 +1,12 @@
 from django.db import models
-''' * Importamos los Regex y ValidatorError para poder
-validar el numero de telefono y que solo permita los
-datos validos * '''
+
+# Importacion que nos permite maquetar o formatear
+# con HTML una variable o texto para poder mostrar en el admin*'''
+from django.utils.html import format_html
+
+# Importamos los Regex y ValidatorError para poder
+# validar el numero de telefono y que solo permita los
+# datos validos * '''
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 
@@ -44,13 +49,13 @@ class Perfil(models.Model):
     user = models.OneToOneField(
         User, verbose_name='Usuario', on_delete=models.CASCADE)
     foto = models.ImageField(upload_to=custom_upload_to, null=True, blank=True)
-    direccion = models.CharField('Direccion', max_length=50)
+    direccion = models.CharField('Direccion', max_length=50, blank=True)
     telefono = models.CharField(
             'Telefono', validators=[RegexValidator(  # Clases para hacer validaciones
                 regex=r'^[0-9]*$',  # cadenas permitidas
                 message=('Ingrese solamente numeros'),  # Mensaje de error
-            ), val_tel], max_length=8)  # Caracteres maximos)
-    puesto = models.CharField('Puesto', max_length=25)
+            ), val_tel], max_length=8, blank=True)  # Caracteres maximos)
+    puesto = models.CharField('Puesto', max_length=25, blank=True)
 
     # Campo para crear una Thubmnail de la fotografia de perfil
     img_thubmnail = ImageSpecField(
@@ -72,15 +77,41 @@ class Perfil(models.Model):
                 width=50,
                 height=50,
                 ))
+    # Sirve para mostrar la descripcion del metodo en el ADMIN
+    image_thub.short_description = 'Avatar'
 
     # Metodo Para regresar el Nombre Completo
     def full_name(self):
         if self.user.first_name:
             return '%s %s' % (self.user.first_name, self.user.last_name)
         else:
-            return self.user
+            return '%s' % (self.user)
     # Retorna una descripcion en el ADMIN del Metodo
     full_name.short_description = 'Nombre'
+
+    def material_asignado(self):
+        total = '0.00'
+        return format_html(
+                '<span style="color: #265787; font-weight: bold; text-shadow: 0px 0px 2px #A1E8FD;">' +
+                str(total) + '</span>')
+    # Sirve para mostrar la descripcion del metodo en el ADMIN
+    material_asignado.short_description = 'Q. Material'
+
+    def equipo_asignado(self):
+        total = '0.00'
+        return format_html(
+                '<span style="color: #000; font-weight: bold; text-shadow: 0px 0px 2px #616669;">' +
+                str(total) + '</span>')
+    # Sirve para mostrar la descripcion del metodo en el ADMIN
+    equipo_asignado.short_description = 'Q. Equipo'
+
+    def Total_asignado(self):
+        total = '0.00'
+        return format_html(
+                '<span style="color: #02AD02; font-weight: bold; text-shadow: 0px 0px 2px yellow;">' +
+                str(total) + '</span>')
+    # Sirve para mostrar la descripcion del metodo en el ADMIN
+    Total_asignado.short_description = 'Monto Q. Total'
 
     class Meta:
         verbose_name = "Perfile"

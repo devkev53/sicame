@@ -15,6 +15,19 @@
 
 {% block extrastyle %}
     <style>
+        #content-related{
+            border-top-left-radius: 17px;
+            border-top-right-radius: 17px;
+            border-left: 1px solid #265787;
+            border-right: 1px solid #265787;
+            border-bottom: 1px solid #265787;
+        }
+        #content-related .module h2 {
+            border: 3px solid #265787;
+        }
+        #content-related {
+            background: #fff;
+        }
         a.section:hover {
             text-decoration: none;
             font-size: 14px;
@@ -47,7 +60,7 @@
         }
         .form-row {
             border-bottom: 1px solid #265787;;
-            border-bottom-left-radius: 14px;
+            border-bottom-left-radius: 15px;
             border-bottom-right-radius: 15px;
         }
         #header a:link, #header a:visited {
@@ -63,13 +76,17 @@
             padding-left: 15px;
             background: #616669;
             border-bottom: 4px solid #265787;
+            transition: width 2s;
         }
         .module h2, .module caption, .inline-group h2 {
             background-color: #265787;
-            border-bottom: 2px solid #616669;
+            border-bottom: 4px solid #000;
             border-top-left-radius: 15px;
             border-top-right-radius: 15px;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
             padding-left: 15px;
+            box-shadow: 3px 2px 2px #616669;
         }
         a:link, a:visited {
             color: black;

@@ -32,4 +32,4 @@ class Ingreso(models.Model):
         verbose_name_plural = "Ingresos"
 
     def __str__(self):
-        pass
+        return self.referencia
