@@ -9,7 +9,7 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 ''' * Importamos el MODELS para trabajar con el PERFIL * '''
-# from django.contrib.auth.models import User
+from registration.models import Perfil
 
 # Create your models here.
 
@@ -84,9 +84,9 @@ class Ingreso(models.Model):
         'referencia en la compra o donacion del material que ingresara a Bodega..!')
     disponible = models.BooleanField('Dispobible', default=False)
 
-    # create_by = models.ForeignKey(
-    #     User, default=User, on_delete=models.CASCADE,
-    #     verbose_name='Creado Por')
+    create_by = models.ForeignKey(
+        Perfil, on_delete=models.CASCADE,
+        verbose_name='Creado Por')
 
     class Meta:
         verbose_name = "Ingreso"

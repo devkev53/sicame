@@ -15,22 +15,32 @@ from django.utils.safestring import mark_safe
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
+# Importamos las librerias para usar senales
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+
 # Create your models here.
 
 
+# Metodo que valida el Numero de Telefono
 def val_tel(value):  # Funcion no permite menos de 7 #
     if not len(value) > 7:  # Si el largo es menor de 7
         raise ValidationError(  # Muesra un mensaje de error
             'Ingrese un numero de telefono valido')
 
 
+''' Metodo para eliminar una fotografia si ya existe
+    en la base de datos y evitar llenar el especio '''
+
+
 def custom_upload_to(instance, filename):
-    old_instance = Profile.objects.get(pk=instance.pk)
+    old_instance = Perfil.objects.get(pk=instance.pk)
     old_instance.foto.delete()
     return 'profile/' + filename
 
 
-class Profile(models.Model):
+# Cracion de la Clase Perfil para manejo del Usuario
+class Perfil(models.Model):
     user = models.OneToOneField(
         User, verbose_name='Usuario', on_delete=models.CASCADE)
     foto = models.ImageField(upload_to=custom_upload_to, null=True, blank=True)
@@ -42,6 +52,7 @@ class Profile(models.Model):
             ), val_tel], max_length=8)  # Caracteres maximos)
     puesto = models.CharField('Puesto', max_length=25)
 
+    # Campo para crear una Thubmnail de la fotografia de perfil
     img_thubmnail = ImageSpecField(
         source='foto',
         processors=[ResizeToFill(100, 100)],
@@ -62,11 +73,13 @@ class Profile(models.Model):
                 height=50,
                 ))
 
+    # Metodo Para regresar el Nombre Completo
     def full_name(self):
         if self.user.first_name:
             return '%s %s' % (self.user.first_name, self.user.last_name)
         else:
             return self.user
+    # Retorna una descripcion en el ADMIN del Metodo
     full_name.short_description = 'Nombre'
 
     class Meta:
@@ -75,3 +88,10 @@ class Profile(models.Model):
 
     def __str__(self):
         return '%s' % (self.full_name())
+
+
+@receiver(post_save, sender=User)
+def ensure_profile_exits(sender, instance, **kwargs):
+    if kwargs.get('created', False):
+        Perfil.objects.get_or_create(user=instance)
+        print('se acaba de crear un usuario y su perfil enlazado')
