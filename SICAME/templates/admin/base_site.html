@@ -15,11 +15,16 @@
 
 {% block extrastyle %}
     <style>
+        a.section:hover {
+            text-decoration: none;
+            font-size: 14px;
+        }
         .intecap-img{
             padding-left: 20px;
         }
-        a:link:hover, a:visited:hover {
+        th > a:link:hover, th>a:visited:hover {
             color: #265787;
+            font-size: 16px;
         }
         #changelist table thead th{
             background: #265787;
@@ -47,6 +52,7 @@
         }
         #header a:link, #header a:visited {
             color: #265787; font-family: 'Russo One', sans-serif;
+            font-weight: bold;
         }
         #header{
             background: #fff;
@@ -65,11 +71,18 @@
             border-top-right-radius: 15px;
             padding-left: 15px;
         }
-        a:link, a:visited {color: black;}
-         .button, input[type=submit], input[type=button], .submit-row input, a.button {background-color: #265787;}
-         ul.messagelist li {background: #EFB8FF}
+        a:link, a:visited {
+            color: black;
+        }
+         .button, input[type=submit], input[type=button], .submit-row input, a.button {
+            background-color: #265787;
+         }
+         ul.messagelist li {
+            background: #EFB8FF
+        }
         table thead th .text a:focus, table thead th .text a:hover {
             background: black;
+            color:#fff;
         }
         .module h2, .module caption:hover, .inline-group h2 {
             background-color: black;

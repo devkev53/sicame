@@ -33,32 +33,6 @@ class Marca(models.Model):
         return self.nombre
 
 
-class BaseObjeto(models.Model):
-    nombre = models.CharField('Nombre', max_length=100)
-    descripcion = RichTextField('Descripcion', default='S/D')
-    id_Marca = models.ForeignKey(
-        Marca, verbose_name='Marca', on_delete=models.CASCADE)
-    id_Categoria = models.ForeignKey(
-        Categoria, verbose_name='Categoria', on_delete=models.CASCADE)
-
-    img = models.ImageField(
-        upload_to='Catalogo/', null=True, blank=True, verbose_name='Imagen')
-
-    img_thubmnail = ImageSpecField(
-        source='img',
-        processors=[ResizeToFill(100, 100)],
-        format='JPEG',
-        options={'quality': 60})
-
-    class Meta:
-        abstract = True
-        verbose_name = "BaseObjeto"
-        verbose_name_plural = "BaseObjetos"
-
-    def __str__(self):
-        return '%s' % (self.nombre)
-
-
 class Base_Detalle(models.Model):
     cantidad = models.PositiveIntegerField('Cantidad', default=1)
 
