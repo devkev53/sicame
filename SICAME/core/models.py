@@ -11,6 +11,7 @@ from imagekit.processors import ResizeToFill
 # Create your models here.
 
 
+# Creacion del Modelo Catalogo Categorias
 class Categoria(models.Model):
     nombre = models.CharField('Nombre', max_length=100)
 
@@ -22,6 +23,7 @@ class Categoria(models.Model):
         return self.nombre
 
 
+# Creacion del Modelo Catalogo Marcas
 class Marca(models.Model):
     nombre = models.CharField('Nombre', max_length=100)
 
@@ -31,15 +33,3 @@ class Marca(models.Model):
 
     def __str__(self):
         return self.nombre
-
-
-class Base_Detalle(models.Model):
-    cantidad = models.PositiveIntegerField('Cantidad', default=1)
-
-    class Meta:
-        abstract = True
-        verbose_name = "Base_Detalle"
-        verbose_name_plural = "Base_Detalles"
-
-    def __str__(self):
-        pass

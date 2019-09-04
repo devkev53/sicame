@@ -20,6 +20,14 @@ from django.utils.safestring import mark_safe
 # Create your models here.
 
 
+# Metodo para eliminar una fotografia si ya existe
+# en la base de datos y evitar llenar el especio '''
+def custom_upload_to(instance, filename):
+    old_instance = Material.objects.get(pk=instance.pk)
+    old_instance.foto.delete()
+    return 'Catalogo/Material' + filename
+
+
 # Creacion del Modelo Abstracto BaseObjeto
 class BaseObjeto(models.Model):
     nombre = models.CharField('Nombre', max_length=100)
@@ -76,9 +84,9 @@ class Material(BaseObjeto):
         total = 0
         try:
             # Importamos las librerias de Inventario
-            from inventario.models import Detalle_Materiales
+            from inventario.models import Material_Detalle
 
-            for detalle in Detalle_Materiales.objects.filter(
+            for detalle in Material_Detalle.objects.filter(
                     id_material=self.id):
                     total = total + detalle.cantidad
             return format_html(
@@ -124,18 +132,18 @@ class Material(BaseObjeto):
     transformado.short_description = 'Transformado'
 
     # Metodo que devolvera el monto en quetzales del material en Bodega
-    def monto_bodega(slef):
+    def monto_bodega(self):
         total = 0
         try:
             # Importamos las librerias de Inventario
-            from inventario.models import Detalle_Materiales
+            from inventario.models import Material_Detalle
 
-            for detalle in Detalle_Materiales.objects.filter(
+            for detalle in Material_Detalle.objects.filter(
                     id_material=self.id):
-                    total = total + detalle.monto
+                total = total + detalle.monto
             return format_html(
                 '<span style="color: #616669; font-weight: bold; font-size: 18px; text-shadow: 0px 0px 2px yellow;">' +
-                str(total) + '</span>')
+                'Q. ' + str(total) + '</span>')
 
         except Exception:
             return format_html(

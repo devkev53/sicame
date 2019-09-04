@@ -34,10 +34,8 @@ def val_tel(value):  # Funcion no permite menos de 7 #
             'Ingrese un numero de telefono valido')
 
 
-''' Metodo para eliminar una fotografia si ya existe
-    en la base de datos y evitar llenar el especio '''
-
-
+# Metodo para eliminar una fotografia si ya existe
+# en la base de datos y evitar llenar el especio '''
 def custom_upload_to(instance, filename):
     old_instance = Perfil.objects.get(pk=instance.pk)
     old_instance.foto.delete()
