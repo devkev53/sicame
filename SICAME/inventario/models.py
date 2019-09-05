@@ -75,6 +75,14 @@ class Base_Detalle(models.Model):
     # Agrega una descripcion al metodo para mostrar en el Admin
     por_unidad.short_description = 'Precio Unidad'
 
+    # Metodo que mostrara los precios por unidad
+    def fecha_ingreso(self):
+        ingreso = Ingreso.objects.filter(id=self.id_ingreso.id).get()
+        fecha = ingreso.fecha
+        return fecha
+    # Agrega una descripcion al metodo para mostrar en el Admin
+    fecha_ingreso.short_description = 'Fecha Ingreso'
+
     class Meta:
         abstract = True
         verbose_name = "Base_Detalle"
@@ -107,3 +115,13 @@ class Material_Detalle(Base_Detalle):
 
     def __str__(self):
         return self.ref_m()
+
+class Asignacion(models.Model):
+
+    class Meta:
+        verbose_name = "MODELNAME"
+        verbose_name_plural = "MODELNAMEs"
+
+    def __str__(self):
+        pass
+    

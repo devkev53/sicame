@@ -15,6 +15,55 @@
 
 {% block extrastyle %}
     <style>
+        #changelist #toolbar form #searchbar {
+            color: #000 !important;
+        }
+        #changelist #toolbar form input {
+            font-size: 16px !important;
+            color: white !important;
+            transition: width 2s;
+        }
+        #changelist #toolbar form input[type="submit"] {
+            background: #18CF00 !important;
+        }
+        #changelist #toolbar form input[type="submit"]:hover{
+            background: #0A5300 !important;
+        }
+        #changelist #toolbar {
+            border-top: 1px solid #fff !important;
+            border-bottom: 4px solid #eee !important;
+            background: #fff !important;
+        }
+        #changelist-filter li.selected a {
+            background:#f2f2f2;
+            padding-left: 10px;
+            margin-left: -10px;
+            margin-right: -14px;
+        }
+        #changelist-filter li.selected {
+            border-left: 5px solid #000 !important
+        }
+        #changelist-filter {
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            background: #fff !important;
+            border-left: 2px solid #265787 !important;
+            border-right: 2px solid #265787 !important;
+            border-bottom: 2px solid #265787 !important
+        }
+        input:focus{
+            box-shadow: 0px 0px 5px #36B4FF;
+        }
+        div.box1 {
+            margin: 0px !important;
+        }
+        .login #container {
+            border: 2px solid #265787 !important;
+            border-radius: 25px !important;
+            box-shadow: 6px 6px 2px #616669;
+        }
         div .submit-row {
             background: #fff;
             border: 1px solid #fff;
@@ -22,12 +71,14 @@
         #content-related{
             border-top-left-radius: 17px;
             border-top-right-radius: 17px;
+            border-bottom-left-radius: 17px;
+            border-bottom-right-radius: 17px;
             border-left: 1px solid #265787;
             border-right: 1px solid #265787;
             border-bottom: 1px solid #265787;
         }
         #content-related .module h2 {
-            border: 3px solid #265787;
+            border: 4px solid #265787;
         }
         #content-related {
             background: #fff;
@@ -90,7 +141,7 @@
             border-bottom-left-radius: 15px;
             border-bottom-right-radius: 15px;
             padding-left: 15px;
-            box-shadow: 3px 2px 2px #616669;
+            box-shadow: 3px 3px 1px #616669;
         }
         a:link, a:visited {
             color: black;

@@ -157,4 +157,4 @@ class Material(BaseObjeto):
     monto_bodega.short_description = 'Monto Total'
 
     def __str__(self):
-        return '%s %s' % (self.nombre, self.id_Marca)
+        return '%s, Marca: %s' % (self.nombre, self.id_Marca)

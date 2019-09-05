@@ -153,7 +153,6 @@ else:
     EMAIL_HOST_PASSWORD = 'kevin110590'
 
 # Auth Redirects
-LOGOUT_REDIRECT_URL = 'login'
 
 # Cerrar Sesion al Cerrar el Navegador
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
