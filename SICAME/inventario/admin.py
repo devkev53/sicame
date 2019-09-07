@@ -74,6 +74,23 @@ class AdminIngreso(admin.ModelAdmin):
     #     form.base_fields['create_by'].initial = request.user
     #     return form
 
+
+class AdminAsignacion(admin.ModelAdmin):
+    inlines = [Material_DetalleInline]
+    readonly_fields = ['fecha', 'hora']
+    fieldsets = (
+        ('Registrar nuevo Ingreso a Inventario', {
+            'fields': (('create_by', 'fecha', 'hora', 'referencia'), (
+                ))
+        }),)
+    list_display = [
+        'id', 'ref', 'create_by', 'fecha',
+        'hora', 'estado']
+    search_fields = ['referencia']
+    list_filter = ['create_by', 'fecha']
+    list_display_links = ('ref', )
+    actions = ['disponible_update']
+
 admin.site.register(Ingreso, AdminIngreso)
-admin.site.register(Asignacion)
+admin.site.register(Asignacion, AdminAsignacion)
 admin.site.register(Material_Detalle, AdminMaterial_Detalle)

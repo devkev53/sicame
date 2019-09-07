@@ -29,7 +29,11 @@ class Ingreso(models.Model):
     referencia = models.CharField(
         'No. de Referencia', max_length=75, help_text='Indique el No. de Documento que servira como ' +
         'referencia en la compra o donacion del material que ingresara a Bodega..!')
-    estado = models.BooleanField('Dispobible', default=False)
+    estado = models.BooleanField('Disponible', default=False)
+
+    # asingado = models.ForeignKey(
+    #     Perfil, on_delete=models.CASCADE,
+    #     verbose_name='Asignado a')
 
     # Campo que servira para saber quien realizo el ingreso
     create_by = models.ForeignKey(
@@ -116,12 +120,12 @@ class Material_Detalle(Base_Detalle):
     def __str__(self):
         return self.ref_m()
 
-class Asignacion(models.Model):
+
+class Asignacion(Ingreso):
 
     class Meta:
-        verbose_name = "MODELNAME"
-        verbose_name_plural = "MODELNAMEs"
+        verbose_name = "Asignacion"
+        verbose_name_plural = "Asignaciones"
 
     def __str__(self):
         pass
-    

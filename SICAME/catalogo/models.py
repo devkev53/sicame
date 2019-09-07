@@ -108,7 +108,7 @@ class Material(BaseObjeto):
     def disponible(self):
         total = 'Muestra el Disponible'
         return format_html(
-                '<span style="color: #009A19; font-weight: bold; text-shadow: 0px 0px 2px yellow;">' +
+                '<span style="color: #009A19; font-weight: bold; text-shadow: 0px 0px 2px #8AFF00;">' +
                 str(total) + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     disponible.short_description = 'Disponible'
@@ -142,7 +142,7 @@ class Material(BaseObjeto):
                     id_material=self.id):
                 total = total + detalle.monto
             return format_html(
-                '<span style="color: #616669; font-weight: bold; font-size: 18px; text-shadow: 0px 0px 2px yellow;">' +
+                '<span style="color: #616669; font-weight: bold; font-size: 18px; text-shadow: 0px 0px 2px #24FF00;">' +
                 'Q. ' + str(total) + '</span>')
 
         except Exception:
