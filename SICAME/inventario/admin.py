@@ -36,7 +36,7 @@ class AdminMaterial_Detalle(admin.ModelAdmin):
 
 class AdminIngreso(admin.ModelAdmin):
     inlines = [Material_DetalleInline]
-    readonly_fields = ['fecha', 'hora']
+    readonly_fields = ['create_by', 'fecha', 'hora']
     fieldsets = (
         ('Registrar nuevo Ingreso a Inventario', {
             'fields': (('create_by', 'fecha', 'hora', 'referencia'), (
@@ -49,6 +49,12 @@ class AdminIngreso(admin.ModelAdmin):
     list_filter = ['create_by', 'fecha']
     list_display_links = ('ref', )
     actions = ['disponible_update']
+    # Nos permite editar cualquier campo de la instancia desde
+    # la vsta con el listado de instanacias creadas
+    list_editable = []
+    # Cuando editamos una instancia ya creada remplaza el
+    # Guardar por un guardar como nuevo si este esta en True
+    save_as = False
 
     def disponible_update(self, request, queryset):
         for row in queryset.filter(estado=False):
@@ -71,28 +77,42 @@ class AdminIngreso(admin.ModelAdmin):
     disponible_update.short_description = 'Cambiar a disponible'
 
     # Funcion para que la fk author seleccione al usuario logueado
-    def get_form(self, request, *args, **kwargs):
-        form = super(AdminIngreso, self).get_form(
-            request, *args, **kwargs)
-        form.base_fields['create_by'].initial = request.user
-        return form
+    def save_model(self, request, obj, form, change):
+        re_user = request.user
+        perfil = Perfil.objects.filter(user=re_user).get()
+        obj .create_by = perfil
+        super().save_model(request, obj, form, change)
+
+    # Funcion para que la fk author seleccione al usuario logueado
+    # def get_form(self, request, *args, **kwargs):
+    #     form = super(AdminIngreso, self).get_form(
+    #         request, *args, **kwargs)
+    #     form.base_fields['create_by'].initial = request.user
+    #     return form
 
 
 class AdminAsignacion(admin.ModelAdmin):
-    inlines = [Material_DetalleInline]
-    readonly_fields = ['fecha', 'hora']
+    inlines = []
+    readonly_fields = ['create_by', 'referencia', 'fecha', 'hora']
     fieldsets = (
         ('Registrar nuevo Ingreso a Inventario', {
             'fields': (('create_by', 'fecha', 'hora', 'referencia'), (
-                ))
+                'assigned_to', 'module'))
         }),)
     list_display = [
         'id', 'ref', 'create_by', 'fecha',
-        'hora', 'estado']
+        'hora', 'assigned_to', 'estado_color']
     search_fields = ['referencia']
     list_filter = ['create_by', 'fecha']
     list_display_links = ('ref', )
     actions = ['disponible_update']
+
+    # Funcion para que la fk author seleccione al usuario logueado
+    def save_model(self, request, obj, form, change):
+        re_user = request.user
+        perfil = Perfil.objects.filter(user=re_user).get()
+        obj .create_by = perfil
+        super().save_model(request, obj, form, change)
 
 admin.site.register(Ingreso, AdminIngreso)
 admin.site.register(Asignacion, AdminAsignacion)

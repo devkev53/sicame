@@ -13,9 +13,13 @@ from django.utils.safestring import mark_safe
 
 # Importamos el MODELS para trabajar con el PERFIL * '''
 from registration.models import Perfil
+from django.contrib.auth.models import User
 
 # Importamos el MODELS para trabajar con el PERFIL * '''
 from catalogo.models import Material
+
+# Importamos la libreria para random
+import random
 
 # Create your models here.
 
@@ -122,10 +126,41 @@ class Material_Detalle(Base_Detalle):
 
 
 class Asignacion(Ingreso):
+    assigned_to = models.ForeignKey(
+        Perfil, on_delete=models.CASCADE,
+        verbose_name='Asignado a')
+    module = models.CharField('Modulo', max_length=50)
+
+    def get_rand_string(self):
+        """Devuelve un string de 4 caracteres aleatorios"""
+        return 'ASIG' + ''.join(random.choice(
+            '0123456789') for i in
+            range(10))
+
+    def set_referncia(self):
+        self.referencia = models.CharField(primary_key=True)
+        self.referencia = self.get_rand_string().upper()
+        return self.referencia
+
+    def estado_color(self):
+        if self.estado is True:
+            return format_html(
+                '<span style="color: #009A19; font-weight: bold; text-shadow: 0px 0px 2px #8AFF00;">' +
+                'Aceptada' + '</span>')
+        else:
+            return format_html(
+                '<span style="color: #D17B00; font-weight: bold; text-shadow: 0px 0px 2px yellow;">' +
+                'Pendiente' + '</span>')
+    estado_color.short_description = 'Estado'
 
     class Meta:
         verbose_name = "Asignacion"
         verbose_name_plural = "Asignaciones"
 
     def __str__(self):
-        return '%s' % (self.create_by)
+        return 'Creado por: %s, Asigando a: %s' % (
+            self.create_by, self.assigned_to)
+
+    def save(self):
+        self.set_referncia()
+        super(Asignacion, self).save()

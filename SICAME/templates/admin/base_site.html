@@ -15,7 +15,10 @@
 
 {% block extrastyle %}
     <style>
-            .inline-group .tabular tr.add-row td:hover {
+        .select2-container--admin-autocomplete .select2-results__option--highlighted[aria-selected] {
+            background-color: #265787 !important;
+        }
+        .inline-group .tabular tr.add-row td:hover {
                 font-weight: bold;
             }
         .inline-group .tabular tr.add-row td {
@@ -69,7 +72,7 @@
             background: #fff !important;
             border-left: 2px solid #265787 !important;
             border-right: 2px solid #265787 !important;
-            border-bottom: 2px solid #265787 !important
+            border-bottom: 2px solid #265787 !important;
         }
         input:focus{
             box-shadow: 0px 0px 5px #36B4FF;
@@ -103,14 +106,12 @@
         }
         a.section:hover {
             text-decoration: none;
-            font-size: 14px;
         }
         .intecap-img{
             padding-left: 20px;
         }
         th > a:link:hover, th>a:visited:hover {
             color: #265787;
-            font-size: 16px;
         }
         #changelist table thead th{
             background: #265787;
