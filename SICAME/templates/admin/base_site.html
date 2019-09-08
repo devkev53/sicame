@@ -15,6 +15,19 @@
 
 {% block extrastyle %}
     <style>
+            .inline-group .tabular tr.add-row td:hover {
+                font-weight: bold;
+            }
+        .inline-group .tabular tr.add-row td {
+            padding: 8px 7px;
+            border-bottom: none !important;
+            background: #fff !important;
+
+        }
+        .inline-group ul.tools a.add, .inline-group div.add-row a, .inline-group .tabular tr.add-row td a {
+            color: green;
+            text-shadow: 0px 0px 10px yellow;
+        }
         #header a:hover, #header a:hover {
             color: black !important;
             font-weight: bold;

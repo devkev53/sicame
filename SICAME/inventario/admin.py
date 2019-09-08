@@ -6,8 +6,11 @@ from .models import *
 
 class Material_DetalleInline(admin.TabularInline):
     model = Material_Detalle
-    extra = 0
-    # raw_id_fields = (,)
+    extra = 1
+    raw_id_fields = ('id_material',)
+    #  Crea un campo de busqueda y debe poseer un search_fields
+    #  en el modelo inicial para poder referenciar por esos campos
+    autocomplete_fields = ['id_material']
     fieldsets = (
         (None, {
             'fields': (('id_material', 'cantidad', 'monto', 'ubicacion'), (
@@ -68,11 +71,11 @@ class AdminIngreso(admin.ModelAdmin):
     disponible_update.short_description = 'Cambiar a disponible'
 
     # Funcion para que la fk author seleccione al usuario logueado
-    # def get_form(self, request, *args, **kwargs):
-    #     form = super(AdminIngreso, self).get_form(
-    #         request, *args, **kwargs)
-    #     form.base_fields['create_by'].initial = request.user
-    #     return form
+    def get_form(self, request, *args, **kwargs):
+        form = super(AdminIngreso, self).get_form(
+            request, *args, **kwargs)
+        form.base_fields['create_by'].initial = request.user
+        return form
 
 
 class AdminAsignacion(admin.ModelAdmin):

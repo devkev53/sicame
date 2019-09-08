@@ -128,4 +128,4 @@ class Asignacion(Ingreso):
         verbose_name_plural = "Asignaciones"
 
     def __str__(self):
-        pass
+        return '%s' % (self.create_by)
