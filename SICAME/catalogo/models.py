@@ -59,6 +59,7 @@ class BaseObjeto(models.Model):
 class Material(BaseObjeto):
 
     class Meta:
+        ordering = ['nombre']
         verbose_name = "Material"
         verbose_name_plural = "Materiales"
 

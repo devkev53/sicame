@@ -31,8 +31,8 @@ class Ingreso(models.Model):
     hora = models.TimeField(
         'Hora', auto_now_add=True, help_text='Se tomara la fecha automatica de creacion')
     referencia = models.CharField(
-        'No. de Referencia', max_length=75, help_text='Indique el No. de Documento que servira como ' +
-        'referencia en la compra o donacion del material que ingresara a Bodega..!')
+        'Dato o No. de Referencia', max_length=75, help_text='Indique el No. de Documento que servira como ' +
+        'Referencia en la compra, donacion o ingreso del material Bodega de Electricidad..!')
     estado = models.BooleanField('Disponible', default=False)
 
     # asingado = models.ForeignKey(
@@ -131,14 +131,13 @@ class Asignacion(Ingreso):
         verbose_name='Asignado a')
     module = models.CharField('Modulo', max_length=50)
 
-    def get_rand_string(self):
+    def get_rand_string():
         """Devuelve un string de 4 caracteres aleatorios"""
         return 'ASIG' + ''.join(random.choice(
             '0123456789') for i in
             range(10))
 
     def set_referncia(self):
-        self.referencia = models.CharField(primary_key=True)
         self.referencia = self.get_rand_string().upper()
         return self.referencia
 
