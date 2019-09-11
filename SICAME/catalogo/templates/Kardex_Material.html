@@ -12,15 +12,44 @@
     <link href="{% static "core/fonts/font-kp/fonts/style.css" %}" rel="stylesheet" type="text/css">
 </head>
 <style>
-	header img.int{
-		height: 200;
-		background: #000;
+	h1{
+		text-align: center;
+		font-size: 18px;
+	}
+	.mute{
+		color: #B8B8B8;
+	}
+	.row{
+		display: inline;
+	}
+	footer{
+		position: relative;
+        left: 0;
+        bottom: 0;
+        height: 100px;
+        color: white;
+        text-align: center;
 	}
 </style>
 <body>
-	<header>
-			<img class="int" src="../core/static/core/img/logo-intecap.png" height="55" alt="">
-			<img class="sicame" src="../core/static/core/img/Logo SICAME1.png" height="55" alt="">
+	<header class="header">
+		<div class="logos">
+			<img class="int" src="../core/static/core/img/logo-intecap.png" height="65" alt="">
+			<!--mg class="sicame-img" src="../core/static/core/img/Logo SICAME1.png" height="65" alt=""-->
+		</div>
+		<div class title="">
+			<h1>Tarjeta Kardex de Materiales</h1>
+		</div>
+
+		<hr class="mute">
+		<br>
+		<div class="row">
+			<h3>Articulo: {{material.nombre}}</h3> <h3>Metodo de Valoracion: Precio Promedio Ponderado</h3>
+		</div>
 	</header>
+	<p>{{material}}</p>
+	<footer>
+		<img class="sicame-img" src="../core/static/core/img/Logo SICAME1.png" height="65" alt="">
+	</footer>
 </body>
 </html>

@@ -91,29 +91,7 @@ class AdminIngreso(admin.ModelAdmin):
     #     return form
 
 
-class AdminAsignacion(admin.ModelAdmin):
-    inlines = []
-    readonly_fields = ['create_by', 'referencia', 'fecha', 'hora']
-    fieldsets = (
-        ('Registrar nuevo Ingreso a Inventario', {
-            'fields': (('create_by', 'fecha', 'hora', 'referencia'), (
-                'assigned_to', 'module'))
-        }),)
-    list_display = [
-        'id', 'ref', 'create_by', 'fecha',
-        'hora', 'assigned_to', 'estado_color']
-    search_fields = ['referencia']
-    list_filter = ['create_by', 'fecha']
-    list_display_links = ('ref', )
-    actions = ['disponible_update']
 
-    # Funcion para que la fk author seleccione al usuario logueado
-    def save_model(self, request, obj, form, change):
-        re_user = request.user
-        perfil = Perfil.objects.filter(user=re_user).get()
-        obj .create_by = perfil
-        super().save_model(request, obj, form, change)
 
 admin.site.register(Ingreso, AdminIngreso)
-admin.site.register(Asignacion, AdminAsignacion)
 admin.site.register(Material_Detalle, AdminMaterial_Detalle)

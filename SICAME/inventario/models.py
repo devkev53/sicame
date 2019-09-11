@@ -18,6 +18,9 @@ from django.contrib.auth.models import User
 # Importamos el MODELS para trabajar con el PERFIL * '''
 from catalogo.models import Material
 
+# Importamos la exepcion para mostrar el mensage de erro de validacion
+from django.core.exceptions import ValidationError
+
 # Importamos la libreria para random
 import random
 
@@ -78,8 +81,11 @@ class Base_Detalle(models.Model):
 
     # Metodo que mostrara los precios por unidad
     def por_unidad(self):
-        pu = self.monto/self.cantidad
-        return pu
+        try:
+            pu = self.monto/self.cantidad
+            return pu
+        except:
+            return None
     # Agrega una descripcion al metodo para mostrar en el Admin
     por_unidad.short_description = 'Precio Unidad'
 
@@ -123,43 +129,3 @@ class Material_Detalle(Base_Detalle):
 
     def __str__(self):
         return self.ref_m()
-
-
-class Asignacion(Ingreso):
-    assigned_to = models.ForeignKey(
-        Perfil, on_delete=models.CASCADE,
-        verbose_name='Asignado a')
-    module = models.CharField('Modulo', max_length=50)
-
-    def get_rand_string():
-        """Devuelve un string de 4 caracteres aleatorios"""
-        return 'ASIG' + ''.join(random.choice(
-            '0123456789') for i in
-            range(10))
-
-    def set_referncia(self):
-        self.referencia = self.get_rand_string().upper()
-        return self.referencia
-
-    def estado_color(self):
-        if self.estado is True:
-            return format_html(
-                '<span style="color: #009A19; font-weight: bold; text-shadow: 0px 0px 2px #8AFF00;">' +
-                'Aceptada' + '</span>')
-        else:
-            return format_html(
-                '<span style="color: #D17B00; font-weight: bold; text-shadow: 0px 0px 2px yellow;">' +
-                'Pendiente' + '</span>')
-    estado_color.short_description = 'Estado'
-
-    class Meta:
-        verbose_name = "Asignacion"
-        verbose_name_plural = "Asignaciones"
-
-    def __str__(self):
-        return 'Creado por: %s, Asigando a: %s' % (
-            self.create_by, self.assigned_to)
-
-    def save(self):
-        self.set_referncia()
-        super(Asignacion, self).save()
