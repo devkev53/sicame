@@ -1,0 +1,152 @@
+{% load i18n static %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
+<head>
+<title>{% block title %}{% endblock %}</title>
+
+<!-- Insertando mis estilos y los de bootstrap -->
+
+<link rel="stylesheet" href="{% static "core/css/fuentes.css" %}">
+<link href="{% static "core/fonts/font-kp/fonts/style.css" %}" rel="stylesheet" type="text/css">
+
+<link rel="stylesheet" type="text/css" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}">
+{% block extrastyle %}{% endblock %}
+{% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}">{% endif %}
+{% block extrahead %}{% endblock %}
+{% block responsive %}
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive.css" %}">
+    {% if LANGUAGE_BIDI %}<link rel="stylesheet" type="text/css" href="{% static "admin/css/responsive_rtl.css" %}">{% endif %}
+{% endblock %}
+{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE">{% endblock %}
+</head>
+{% load i18n %}
+
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
+  data-admin-utc-offset="{% now "Z" %}">
+
+<!-- Container -->
+<div id="container">
+
+    {% if not is_popup %}
+    <!-- Header -->
+    <div id="header">
+        <div id="branding">
+        {% block branding %}{% endblock %}
+        </div>
+        {% block usertools %}
+        {% if has_permission %}
+        <div id="user-tools">
+            <!--{% block welcome-msg %}
+                {% trans 'Welcome,' %}
+                <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+            {% endblock %}-->
+            {% block userlinks %}
+                <!--{% if site_url %}
+                    <a href="{{ site_url }}">{% trans 'View site' %}</a> /
+                {% endif %}-->
+                {% if user.is_active and user.is_staff %}
+                    {% url 'django-admindocs-docroot' as docsroot %}
+                    {% if docsroot %}
+                        <a href="{{ docsroot }}">{% trans 'Documentation' %}</a> /
+                    {% endif %}
+                {% endif %}
+                
+                <!-- Cambiar de Contrasena -->
+                {% if user.has_usable_password %}
+                    <a class="password-admin" href="{% url 'admin:password_change' %}">
+                    <span class="icon-key2"></span>
+                    <span>{% trans 'Change password' %}</span></a> /
+                {% endif %}
+
+                <!-- Cerrar Sesion -->
+                <a class="logut-admin" href="{% url 'admin:logout' %}">
+                <span class="icon-power-off"></span>
+                <span>{% trans 'Log out' %}</span>
+                </a>
+            {% endblock %}
+        </div>
+        {% endif %}
+        {% endblock %}
+        {% block nav-global %}{% endblock %}
+    </div>
+    <!-- END Header -->
+    {% block breadcrumbs %}
+    <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    {% if title %} &rsaquo; {{ title }}{% endif %}
+    </div>
+    {% endblock %}
+    {% endif %}
+
+    {% block messages %}
+        {% if messages %}
+        <ul class="messagelist">{% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
+        {% endfor %}</ul>
+        {% endif %}
+    {% endblock messages %}
+
+    <!-- Content -->
+    <div id="content" class="{% block coltype %}colM{% endblock %}">
+        {% block pretitle %}{% endblock %}
+        
+        <!-- Bloque de Bienvenida en el Admin-->
+        {% if request.path == "/login/" %}
+        
+        {% elif request.path == "/logout/"%}
+                    <h1 style="font-family: 'Russo One', sans-serif">Hasta Pronto..!<b>
+        {% else %}
+        {% block welcome-admin %}
+            {% if request.user.first_name %}
+                <h1 style="font-family: 'Russo One', sans-serif" class="welcome">Bienvenido: 
+                    <b><span class="icon-user-circle" style="padding-right: 5px; font-size: 28px;"></span>{{request.user.first_name}} {{request.user.last_name}}</b></h1>
+            {% else %}
+                <h1 style="font-family: 'Russo One', sans-serif">Bienvenido: 
+                    <b> <span class="icon-user-circle" style="padding-right: 5px; font-size: 28px;"></span>{{request.user}}</b></h1>
+            {% endif %}
+        {% endblock %}
+        {% endif %}
+
+        {% block content %}
+        {% block object-tools %}{% endblock %}
+        {{ content }}
+        {% endblock %}
+        {% block sidebar %}{% endblock %}
+        <br class="clear">
+    </div>
+    <!-- END Content -->
+
+    {% block footer %}
+    {% if request.path == "/login/" %}
+    {% else %}
+    <div class="footer">
+        <div class="" align="center">
+            <b>
+            <p>&copy; 
+                Sistema Prototipo Creado por:
+                <img src="{% static "core/img/Kevin.png" %}" width="50">
+                Estudiante de
+                <img src="{% static "core/img/umg.png" %}" width="50">
+            </p>
+            </b>
+        </div>
+        <div class="" align="center">
+            <a class="icon tube" href="">
+                <span class="icon-youtube3"></span>
+            </a>
+            <a class="icon git" href="">
+                <span class="icon-github"></span>
+            </a>
+            <a class="icon linkedin" href="">
+                <span class="icon-linkedin4"></span>
+            </a>
+        </div>
+    </div>
+    {% endif %}
+    {% endblock %}
+</div>
+<!-- END Container -->
+
+</body>
+</html>

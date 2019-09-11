@@ -1,13 +1,16 @@
 {% extends "admin/base.html" %}
 {% load static %}
 
-{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+{% block title %} 
+    INTECAP | SICAME
+{% endblock %}
 
 {% block branding %}
 <h1 id="site-name">
     <a href="{% url 'admin:index' %}">
-        <img class="intecap-img" src={% static "core/img/logo-intecap.png" %} height="55" alt="">
-        <!--img class="intecap-img" src={% static "core/img/no-img.jpg" %} height="55" alt=""-->
+        <img class="intecap-img" src={% static "core/img/logo-intecap.png" %} height="75" alt="">
+        
+        <!--img class="intecap-img" src={% static "core/img/no-img.jpg" %} height="75" alt=""-->
 </h1>
 {% endblock %}
 
@@ -15,6 +18,80 @@
 
 {% block extrastyle %}
     <style>
+        .logut-admin, .password-admin{
+            font-size: 16px;
+            text-decoration: none;
+        }
+        .icon-power-off{
+            color: red;
+            text-shadow: 0px 0px 35px #265787;
+        }
+        .icon-key2{
+            color: #23D700;
+            text-shadow: 0px 0px 35px #265787;
+        }
+        .icon-key2 a:hover{
+            text-shadow: 0px 0px 15px #000;
+        }
+        .icon-key2, .icon-power-off{
+            padding-right: 5px;
+            font-size: 24px;
+        }
+        .login .submit-row{
+            padding: 0px !important;
+            text-align: center !important;
+        }
+        .login-btn-in{
+            align-self: center;
+            width: 300px;
+        }
+        .img-xd1{
+            padding-right: 10px; 
+        }
+        .XD{
+            padding: 15px;
+        }
+        .footer {
+            position: relative;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            color: white;
+            text-align: center;
+        }
+        a.print{
+            text-decoration: none;
+        }
+        a.print span{
+            color: #265787;
+            font-size: 36px;
+        }
+        a.print span:hover{
+            text-shadow: 0px 0px 10px #000;
+        }
+        div.footer{
+        border-top: 3px solid #000;
+        border-bottom: 3px solid #000;
+        background: #616669;
+        padding: 10px;
+        color: white   
+        }
+        .footer .icon{
+            font-size: 32px;
+            margin: 5px;
+        }
+        .icon span{
+            text-shadow: 0px 0px 10px #000;
+        }
+        .icon span:hover{
+            text-shadow: 0px 0px 10px yellow;
+        }
+        .icon-github{
+            color: #9835FE;
+        }
+        h1.welcome{
+            color: black;
+        }
         form .aligned p.help:last-child, form .aligned div.help:last-child {
             color: #265787;
             font-weight: bold;
@@ -41,6 +118,7 @@
             color: black !important;
             font-weight: bold;
             text-decoration: none !important;
+            text-decoration-line: none;
         }
         #changelist #toolbar form #searchbar {
             color: #000 !important;
@@ -114,7 +192,7 @@
             text-decoration: none;
         }
         .intecap-img{
-            padding-left: 20px;
+            padding-left: 35px;
         }
         th > a:link:hover, th>a:visited:hover {
             color: #265787;

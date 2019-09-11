@@ -19,9 +19,15 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
+from django.conf.urls import url
+
+# Impotamos las vistas PDF de Catalogo
+from catalogo.views import Ficha_Kardex_PDF
 
 urlpatterns = [
     path('', admin.site.urls),
+    # Url's Para los PDF en Admin
+    url(r"^Ficha_Kardex_PDF/(?P<id>)", Ficha_Kardex_PDF.as_view()),
 ]
 
 # Truco para poder ver ficheros multimedia con el DEBUG=TRUE

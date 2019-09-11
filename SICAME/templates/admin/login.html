@@ -64,9 +64,15 @@
   </div>
   {% endif %}
   <div class="submit-row">
-    <label>&nbsp;</label><input type="submit" value="{% trans 'Log in' %}">
+    <input class="login-btn-in" type="submit" value="{% trans 'Log in' %}">
   </div>
 </form>
+<p class="XD" align="center">
+  System by:
+  <img class="img-xd1" src="{% static "core/img/KP Logo.png" %}" width="50">
+  Thanks to:
+  <img class="img-xd" src="{% static "core/img/umg.png" %}" width="50">
+</p>
 
 </div>
 {% endblock %}

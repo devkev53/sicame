@@ -9,8 +9,8 @@ from django.utils.html import format_html
 # Importamos el app de CK Editor para enriqueze la descripcion
 from ckeditor.fields import RichTextField
 
-''' * Librerias de importacion de PILLOW para poder
-mostrar thubnails de las imagenes subidas al sistema*'''
+# Librerias de importacion de PILLOW para poder
+# mostrar thubnails de las imagenes subidas al sistema*'''
 from imagekit.models import ImageSpecField
 from imagekit.processors import ResizeToFill
 
@@ -63,19 +63,29 @@ class Material(BaseObjeto):
         verbose_name = "Material"
         verbose_name_plural = "Materiales"
 
+    # Permitira mostrar el Link de descarga del detalle del Ingreso
+    def ficha(self):
+        return mark_safe(
+            u'<a class="print" href="/Ficha_Kardex_PDF/?id=%s" target="_blank">'
+            '<span class="icon-printer6" align="center"></span></a>'
+            % self.id)
+    ficha.short_description = 'Tarjeta Kardex'
+
     # Metodo que mostara la img thubnail si no la encutra mostara otra
     def image_thub(self):
         if self.img_thubmnail:
-            return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
-                url=self.img_thubmnail.url,
-                width=50,
-                height=50,
+            return mark_safe(
+                '<img src="{url}" width="{width}" height={height} />'.format(
+                    url=self.img_thubmnail.url,
+                    width=50,
+                    height=50,
                 ))
         else:
-            return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
-                url='/../static/core/img/no-img.jpg',
-                width=50,
-                height=50,
+            return mark_safe(
+                '<img src="{url}" width="{width}" height={height} />'.format(
+                    url='/../static/core/img/no-img.jpg',
+                    width=50,
+                    height=50,
                 ))
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     image_thub.short_description = 'Imagen'
@@ -83,31 +93,37 @@ class Material(BaseObjeto):
     # Metodo que devolvera el stock de materiales ingresados en Bodega
     def stock(self):
         total = 0
-        try:
-            # Importamos las librerias de Inventario
-            from inventario.models import Material_Detalle
+        # Importamos las librerias de Inventario
+        from inventario.models import Material_Detalle
 
-            for detalle in Material_Detalle.objects.filter(
-                    id_material=self.id):
-                    total = total + detalle.cantidad
-            return format_html(
-                '<span style="color: #02AD02; font-weight: bold; text-shadow: 0px 0px 2px yellow;">' +
-                str(total) + '</span>')
-
-        except Exception:
-            return format_html(
-                '<span style="color: #02AD02; font-weight: bold; text-shadow: 0px 0px 2px yellow;">' +
-                str(total) + '</span>')
+        for detalle in Material_Detalle.objects.filter(
+                id_material=self.id):
+                total = total + detalle.cantidad
+        if total == 0:
+            total = '--'
         else:
-            return format_html(
-                '<span style="color: #02AD02; font-weight: bold; text-shadow: 0px 0px 2px yellow;">' +
-                str(total) + '</span>')
+            None
+        return format_html(
+            '<span style="color: #616669; font-weight: bold; text-shadow: 0px 0px 2px yellow;">' +
+            str(total) + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
-    stock.short_description = 'Registrado'
+    stock.short_description = 'Ingresado'
 
     # Metodo que devolvera el stock de materiales Disponibles
     def disponible(self):
-        total = 'Muestra el Disponible'
+        total = 0
+
+        # Importamos las librerias de Inventario
+        from inventario.models import Material_Detalle, Ingreso
+
+        for ingreso in Ingreso.objects.filter(estado=True):
+            for detalle in Material_Detalle.objects.filter(
+                        id_material=self.id, id_ingreso=ingreso):
+                        total = total + detalle.cantidad
+        if total == 0:
+            total = '--'
+        else:
+            None
         return format_html(
                 '<span style="color: #009A19; font-weight: bold; text-shadow: 0px 0px 2px #8AFF00;">' +
                 str(total) + '</span>')
