@@ -127,8 +127,8 @@ class Material_Asig(models.Model):
     ref_m.short_description = 'Referencia'
 
     class Meta:
-        verbose_name = "Material Asignado"
-        verbose_name_plural = "Materiales Asignados"
+        verbose_name = "Material"
+        verbose_name_plural = "Materiales"
 
     def __str__(self):
         return self.ref_ingreso
