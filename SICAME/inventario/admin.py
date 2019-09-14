@@ -23,7 +23,7 @@ class AdminMaterial_Detalle(admin.ModelAdmin):
         'id_ingreso', 'id_material', 'cantidad', 'monto',
         'por_unidad', 'ubicacion']
     fieldsets = (
-        ('Registrar nuevo Ingreso a Inventario', {
+        (None, {
             'fields': (('id_ingreso',), (
                 'id_material', 'cantidad', 'monto', 'por_unidad', 'ubicacion'))
         }),)
@@ -38,7 +38,7 @@ class AdminIngreso(admin.ModelAdmin):
     inlines = [Material_DetalleInline]
     readonly_fields = ['create_by', 'fecha', 'hora']
     fieldsets = (
-        ('Registrar nuevo Ingreso a Inventario', {
+        (None, {
             'fields': (('create_by', 'fecha', 'hora', 'referencia'), (
                 ))
         }),)

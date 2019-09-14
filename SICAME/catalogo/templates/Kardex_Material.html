@@ -12,44 +12,130 @@
     <link href="{% static "core/fonts/font-kp/fonts/style.css" %}" rel="stylesheet" type="text/css">
 </head>
 <style>
-	h1{
+	@page {
+	            size: legal landscape; margin: 2cm;
+	}
+	h1.title{
+		font-style: bold;
+		font-size: 22px;
 		text-align: center;
-		font-size: 18px;
 	}
-	.mute{
-		color: #B8B8B8;
+	h3.articulo{
+		font-size: 14px;
 	}
-	.row{
-		display: inline;
+	strong.nombre{
+		text-decoration: underline;
 	}
 	footer{
-		position: relative;
+		position: absolute;
         left: 0;
         bottom: 0;
         height: 100px;
         color: white;
         text-align: center;
 	}
+	.kardex{
+		border: 1px solid #000;
+		border-style: solid;
+	}
+	th{
+		padding-top: 4px;
+		margin-left: 4px;
+		margin-right: 4px;
+		font-size: 14px;
+	}
+	td{
+		padding-top: 4px;
+		margin-left: 4px;
+		margin-right: 4px;
+		font-size: 12px;
+	}
+	img.material-img{
+		display: inline;
+		width: 150px;
+	}
 </style>
 <body>
 	<header class="header">
 		<div class="logos">
-			<img class="int" src="../core/static/core/img/logo-intecap.png" height="65" alt="">
-			<!--mg class="sicame-img" src="../core/static/core/img/Logo SICAME1.png" height="65" alt=""-->
+				<img src="../core/static/core/img/logo-intecap.png" height="75">
 		</div>
-		<div class title="">
-			<h1>Tarjeta Kardex de Materiales</h1>
-		</div>
-
+		<h1 class="title">Tarjeta Kardex de Materiales</h1>
 		<hr class="mute">
+		<table>
+			<tr>
+				<th rowspan="2" style="width:200px;">
+					<img class="material-img" src={{material.img.url}} alt="" width="">
+				</th>
+				<th>Articulo</th>
+				<th>Marca</th>
+				<th style="width:400px;">Descripcion</th>
+			</tr>
+			<tbody>
+				<tr>
+					<th style="padding-bottom: 30px;">{{material.nombre}}</th>
+					<th style="padding-bottom: 30px;">{{material.id_Marca}}</th>
+					<th style="padding-bottom: 30px;">{{material.descripcion|safe}}</th>
+				</tr>
+			</tbody>
+		</table>
+		<hr>	
 		<br>
-		<div class="row">
-			<h3>Articulo: {{material.nombre}}</h3> <h3>Metodo de Valoracion: Precio Promedio Ponderado</h3>
-		</div>
 	</header>
-	<p>{{material}}</p>
+	<body>
+		<table class="kardex">
+		  <tr class="encabezado">
+		    <th rowspan="2" style="width: 250px;">FECHA</th>
+		    <th rowspan="2" style="width: 350px">DETALLE</th>
+		    <th rowspan="2">VALOR UNIDAD</th>
+		    <th colspan="2">ENTRADAS</th>
+		    <th colspan="2">SALIDAS</th>
+		    <th colspan="2">SALDO</th>
+		    <th rowspan="2">PROMEDIO</th>
+		  </tr>
+		  <tr class="sub-encabezado">
+		  	<th>CANTIDAD</th>
+		  	<th>VALORES</th>
+		  	<th>CANTIDAD</th>
+		  	<th>VALORES</th>
+		  	<th>CANTIDAD</th>
+		  	<th>VALORES</th>
+		  </tr>
+		  {% for detalle in detalle  %}
+		  <tr>
+		  	<td align="center">{{detalle.id_ingreso.fecha}}</td>
+		  	<td align="left">{{detalle.id_ingreso.ref}}</td>
+		  	<td align="center">{{detalle.por_unidad}}</td>
+		  	<td align="center">{{detalle.cantidad}}</td>
+		  	<td align="center">{{detalle.monto}}</td>
+		  	<td align="center">---</td>
+		  	<td align="center">---</td>
+		  	<td align="center">{{detalle.saldo_cantidad}}</td>
+		  	<td align="center">{{detalle.saldo_valores}}</td>
+		  	<td align="center">{{detalle.valor_promedio_ponderado|floatformat:2 }}</td>
+		  </tr>
+		  {% endfor %}
+		</table>
+		<p align="center" style="font-size:12px;">El metodo de valoracion de esta tarjeta <b>Kardex</b> es el de <i style="text-decoration: underline;">Valor Promedio Ponderado</i>..!</p>
+		<h2 align="right">RESUMEN:</h2>
+		<table class="kardex" align="right">
+			<tr>
+				<th style="width: 100px">CANTIDAD</th>
+				<th style="width: 150px">VR PROMEDIO</th>
+				<th style="width: 100px">VR TOTAL</th>
+			</tr>
+			<tbody>
+				<tr>
+					<th>{{ultimo.saldo_cantidad}}</th>
+					<th>{{ultimo.valor_promedio_ponderado}}</th>
+					<th>{{ultimo.saldo_valores}}</th>
+				</tr>
+			</tbody>
+		</table>
+	</body>
 	<footer>
-		<img class="sicame-img" src="../core/static/core/img/Logo SICAME1.png" height="65" alt="">
+		<br>	
+		<center><img class="sicame-img" src="../core/static/core/img/Logo SICAME1.png" height="65" alt=""></center>
 	</footer>
 </body>
 </html>
