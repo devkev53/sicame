@@ -110,6 +110,19 @@ class Material(BaseObjeto):
     stock.short_description = 'Ingresado'
 
     # Metodo que devolvera el stock de materiales Disponibles
+    def disponible_int(self):
+        total = 0
+
+        # Importamos las librerias de Inventario
+        from inventario.models import Material_Detalle, Ingreso
+
+        for ingreso in Ingreso.objects.filter(estado=True):
+            for detalle in Material_Detalle.objects.filter(
+                        id_material=self.id, id_ingreso=ingreso):
+                        total = total + detalle.cantidad
+        return total
+
+    # Metodo que devolvera el stock de materiales Disponibles
     def disponible(self):
         total = 0
 

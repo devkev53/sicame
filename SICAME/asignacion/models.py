@@ -21,6 +21,9 @@ from catalogo.models import Material
 # Importamos la libreria para random
 import random
 
+# Importamos la exepcion para mostrar el mensage de erro de validacion
+from django.core.exceptions import ValidationError
+
 # Create your models here.
 
 
@@ -95,10 +98,10 @@ class Material_Asig(models.Model):
         'Cantidad', default=1)
     ubicacion = models.CharField(
         'Ubicacion', max_length=75,
-        help_text='Debo de corregir y anclar bien la ubicacion')
-    ref_ingreso = models.CharField(
-        'Ref.', max_length=75,
-        help_text='Referencia segun el ingreso', editable=False)
+        help_text='Debo de corregir y anclar bien la ubicacion', null=True)
+    ref_asignacion = models.CharField(
+        'Ref_Asignacion.', max_length=75,
+        help_text='Referencia segun el ingreso', editable=False, null=True)
     id_material = models.ForeignKey(
         Material, on_delete=models.CASCADE,
         verbose_name='Material')
@@ -132,3 +135,18 @@ class Material_Asig(models.Model):
 
     def __str__(self):
         return self.ref_ingreso
+
+    ''' -- Modificamos el metodo CLEAN para evaluar si existe materia
+    dispobible y si es correcta la cantidad en la ubicacion a seleccionar--'''
+    def clean(self, **kwargs):
+        super(Material_Asig, self).clean()
+
+        material = Material.objects.filter(id=self.id_material.id).get()
+
+        if self.cantidad < material.disponible_int():
+            pass
+        else:
+            raise ValidationError(
+                        'No se cuenta con la cantidad seleccionada, ' +
+                        'la cantidad actuald disponible es de: ' +
+                        str(material.disponible_int()))

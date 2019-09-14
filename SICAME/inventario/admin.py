@@ -90,8 +90,5 @@ class AdminIngreso(admin.ModelAdmin):
     #     form.base_fields['create_by'].initial = request.user
     #     return form
 
-
-
-
 admin.site.register(Ingreso, AdminIngreso)
 admin.site.register(Material_Detalle, AdminMaterial_Detalle)
