@@ -24,6 +24,9 @@ from imagekit.processors import ResizeToFill
 from django.dispatch import receiver
 from django.db.models.signals import post_save
 
+# Importacion de Material
+from catalogo.models import Material
+
 # Create your models here.
 
 
@@ -124,3 +127,4 @@ def ensure_profile_exits(sender, instance, **kwargs):
     if kwargs.get('created', False):
         Perfil.objects.get_or_create(user=instance)
         print('se acaba de crear un usuario y su perfil enlazado')
+
