@@ -35,7 +35,7 @@
         text-align: center;
 	}
 	.kardex{
-		border: 1px solid #000;
+		border: 1px solid #ddd;
 		border-style: solid;
 	}
 	th{
@@ -52,7 +52,18 @@
 	}
 	img.material-img{
 		display: inline;
-		width: 150px;
+		width: 100px;
+	}
+	table tr .encabezado th{
+		color: #fff;
+		background-color: #2B2B2B;
+	}
+	table tr .sub-encabezado th{
+		color: #fff;
+		background-color: #505050;
+	}
+	.content-table {
+	  	border: 1px solid #424242;
 	}
 </style>
 <body>
@@ -62,23 +73,30 @@
 		</div>
 		<h1 class="title">Tarjeta Kardex de Materiales</h1>
 		<hr class="mute">
-		<table>
-			<tr>
-				<th rowspan="2" style="width:200px;">
-					<img class="material-img" src={{material.img.url}} alt="" width="">
-				</th>
-				<th>Articulo</th>
-				<th>Marca</th>
-				<th style="width:400px;">Descripcion</th>
-			</tr>
-			<tbody>
+		<center>
+			<table>
 				<tr>
-					<th style="padding-bottom: 30px;">{{material.nombre}}</th>
-					<th style="padding-bottom: 30px;">{{material.id_Marca}}</th>
-					<th style="padding-bottom: 30px;">{{material.descripcion|safe}}</th>
+					<th rowspan="2" style="width:200px;">
+						<img class="material-img" src={{material.img.url}} alt="" width="">
+					</th>
+					<th style="width:250px;">Articulo</th>
+					<th style="width:250px;">Marca</th>
+					<th style="width:400px;">Descripcion</th>
 				</tr>
-			</tbody>
-		</table>
+				<tbody>
+					<tr>
+						<th style="padding-bottom: 30px;">{{material.nombre}}</th>
+						<th style="padding-bottom: 30px;">{{material.id_Marca}}</th>
+						<th style="padding-bottom: 30px;">{{material.descripcion|safe}}</th>
+					</tr>
+					<tr>
+						<th colspan="4" align="center">
+							Metodo de valor de Inventario Utilizado: <strong>Valor Promedio Ponderado</strong>
+						</th>
+					</tr>
+				</tbody>
+			</table>
+		</center>
 		<hr>	
 		<br>
 	</header>
@@ -102,7 +120,7 @@
 		  	<th>VALORES</th>
 		  </tr>
 		  {% for detalle in detalle  %}
-		  <tr>
+		  <tr class="content-table">
 		  	<td align="center">{{detalle.id_ingreso.fecha}}</td>
 		  	<td align="left">{{detalle.id_ingreso.ref}}</td>
 		  	<td align="center">{{detalle.por_unidad}}</td>
@@ -111,7 +129,7 @@
 		  	<td align="center">---</td>
 		  	<td align="center">---</td>
 		  	<td align="center">{{detalle.saldo_cantidad}}</td>
-		  	<td align="center">{{detalle.saldo_valores}}</td>
+		  	<td align="center">{{detalle.saldo_valores|floatformat:2 }}</td>
 		  	<td align="center">{{detalle.valor_promedio_ponderado|floatformat:2 }}</td>
 		  </tr>
 		  {% endfor %}
@@ -119,16 +137,16 @@
 		<p align="center" style="font-size:12px;">El metodo de valoracion de esta tarjeta <b>Kardex</b> es el de <i style="text-decoration: underline;">Valor Promedio Ponderado</i>..!</p>
 		<h2 align="right">RESUMEN:</h2>
 		<table class="kardex" align="right">
-			<tr>
-				<th style="width: 100px">CANTIDAD</th>
-				<th style="width: 150px">VR PROMEDIO</th>
-				<th style="width: 100px">VR TOTAL</th>
+			<tr style="color: #fff;">
+				<th style="background-color: #4B4A4A; width: 100px">CANTIDAD</th>
+				<th style="background-color: #4B4A4A; width: 150px">VR PROMEDIO</th>
+				<th style="background-color: #4B4A4A; width: 100px">VR TOTAL</th>
 			</tr>
 			<tbody>
-				<tr>
-					<th>{{ultimo.saldo_cantidad}}</th>
-					<th>{{ultimo.valor_promedio_ponderado}}</th>
-					<th>{{ultimo.saldo_valores}}</th>
+				<tr class="content-table">
+					<th style="background-color: #C2FF91;">{{ultimo.saldo_cantidad}}</th>
+					<th style="background-color: #C2FF91;">{{ultimo.valor_promedio_ponderado|floatformat:2 }}</th>
+					<th style="background-color: #C2FF91;">{{ultimo.saldo_valores|floatformat:2 }}</th>
 				</tr>
 			</tbody>
 		</table>

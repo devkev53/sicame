@@ -65,8 +65,19 @@ class Material(BaseObjeto):
 
     # Permitira mostrar el Link de descarga del detalle del Ingreso
     def ficha(self):
+        ''' Llama al un template que sera drenderizado como un pdf'''
         return mark_safe(
-            u'<a class="print" href="/Ficha_Kardex_PDF/?id=%s" target="_blank">'
+            u'<a class="print" href="/Ficha_Kardex_PDF/?id=%s"'
+            'target="_blank">'
+            '<span class="icon-printer6" align="center"></span></a>'
+            % self.id)
+    ficha.short_description = 'Tarjeta Kardex'
+
+    def listado(self):
+        ''' Llama al un template que sera drenderizado como un pdf'''
+        return mark_safe(
+            u'<a class="print" href="/Listado_Material/?id=%s"'
+            'target="_blank">'
             '<span class="icon-printer6" align="center"></span></a>'
             % self.id)
     ficha.short_description = 'Tarjeta Kardex'

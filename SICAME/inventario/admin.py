@@ -39,7 +39,7 @@ class AdminIngreso(admin.ModelAdmin):
     readonly_fields = ['create_by', 'fecha', 'hora']
     fieldsets = (
         (None, {
-            'fields': (('create_by', 'fecha', 'hora', 'referencia'), (
+            'fields': (('create_by', 'fecha', 'hora', 'referencia', 'descripcion'), (
                 ))
         }),)
     list_display = [

@@ -26,3 +26,16 @@ class Ficha_Kardex_PDF(PDFTemplateView):
             material=material,
             **kwargs
             )
+
+
+class Listado_Material(PDFTemplateView):
+    template_name = 'Kardex_Material.html'
+
+    def get_context_data(self, **kwargs):
+        material = Material.objects.all()
+
+        return super(Ficha_Kardex_PDF, self).get_context_data(
+            pagesize='Legal landscape',
+            material=material,
+            **kwargs
+            )

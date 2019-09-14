@@ -24,19 +24,29 @@ from django.core.exceptions import ValidationError
 # Importamos la libreria para random
 import random
 
+# Importamos el app de CK Editor para enriqueze la descripcion
+from ckeditor.fields import RichTextField
+
 # Create your models here.
 
 
 # Creacion del Modelo Ingreso
 class Ingreso(models.Model):
     fecha = models.DateField(
-        'Fecha', auto_now_add=True, help_text='Se tomara la fecha automatica de creacion')
+        'Fecha', auto_now_add=True,
+        help_text='Se tomara la fecha automatica de creacion')
     hora = models.TimeField(
-        'Hora', auto_now_add=True, help_text='Se tomara la fecha automatica de creacion')
+        'Hora', auto_now_add=True,
+        help_text='Se tomara la fecha automatica de creacion')
     referencia = models.CharField(
-        'Dato o No. de Referencia', max_length=75, help_text='Indique el No. de Documento que servira como ' +
-        'Referencia en la compra, donacion o ingreso del material Bodega de Electricidad..!')
+        'Dato o No. de Referencia', max_length=75,
+        help_text='Indique el No. de Documento que servira como ' +
+        'Referencia en la compra, donacion o ingreso del material' +
+        'Bodega de Electricidad..!')
     estado = models.BooleanField('Disponible', default=False)
+    descripcion = models.CharField(
+        'Descripcion', default='S/D', max_length=100,
+        help_text='Descripcion del Ingreso o la Referencia de INgreso')
 
     # asingado = models.ForeignKey(
     #     Perfil, on_delete=models.CASCADE,

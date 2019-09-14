@@ -8,4 +8,5 @@ urlpatterns = [
     # -- URL PATH DE LOS PDFS
     # path de detalle de ingresos
     path('<int:id>/', IngresoDetailPDF.as_view(), name='detallePDF'),
+    path('<int:id>/', Listado_Material.as_view(), name='listadoPDF'),
 ]

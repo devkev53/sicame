@@ -13,5 +13,13 @@ class AdminMaterial(admin.ModelAdmin):
     search_fields = ['nombre']
     list_display_links = ('nombre', 'image_thub',)
     list_per_page = 10
+    actions = ['listado_pdf']
+
+    def listado_pdf(self, request, queryset):
+        queryset.all()
+        self.message_user(
+            request, 'Se ha realizado la Impresion de Materiales')
+    listado_pdf.short_description = 'Imprimir Listado de Material'
+
 
 admin.site.register(Material, AdminMaterial)

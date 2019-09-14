@@ -21,7 +21,7 @@ class AdminAsignacion(admin.ModelAdmin):
     inlines = [Material_Asig_Inline, ]
     readonly_fields = ['create_by', 'asig_id', 'fecha', 'hora']
     fieldsets = (
-        ('Registrar nuevo Ingreso a Inventario', {
+        (None, {
             'fields': (('asig_id', 'create_by', 'fecha', 'hora'), (
                 'assigned_to', 'module'))
         }),)
