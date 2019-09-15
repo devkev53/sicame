@@ -44,7 +44,7 @@ class AdminIngreso(admin.ModelAdmin):
         }),)
     list_display = [
         'id', 'ref', 'create_by', 'fecha',
-        'hora', 'estado']
+        'hora', 'estado', 'boleta']
     search_fields = ['referencia']
     list_filter = ['create_by', 'fecha']
     list_display_links = ('ref', )

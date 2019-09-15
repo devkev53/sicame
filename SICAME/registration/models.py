@@ -31,7 +31,9 @@ from catalogo.models import Material
 
 
 # Metodo que valida el Numero de Telefono
-def val_tel(value):  # Funcion no permite menos de 7 #
+def val_tel(value):
+    ''' Metodo que valida el numero de telefono y solo permite
+    numeros, ademas no permite cadenas mayores a ocho numeros '''
     if not len(value) > 7:  # Si el largo es menor de 7
         raise ValidationError(  # Muesra un mensaje de error
             'Ingrese un numero de telefono valido')
@@ -40,6 +42,8 @@ def val_tel(value):  # Funcion no permite menos de 7 #
 # Metodo para eliminar una fotografia si ya existe
 # en la base de datos y evitar llenar el especio '''
 def custom_upload_to(instance, filename):
+    ''' Metodo para borrar la imagen ya existente, en caso
+    de acturalizar la imagen ya subida al sistema '''
     old_instance = Perfil.objects.get(pk=instance.pk)
     old_instance.foto.delete()
     return 'profile/' + filename
@@ -47,15 +51,17 @@ def custom_upload_to(instance, filename):
 
 # Cracion de la Clase Perfil para manejo del Usuario
 class Perfil(models.Model):
+    ''' Declaracion de la Clase Perfil para controlar los perfiles
+    de usuario, ingresados al sistema '''
     user = models.OneToOneField(
         User, verbose_name='Usuario', on_delete=models.CASCADE)
     foto = models.ImageField(upload_to=custom_upload_to, null=True, blank=True)
     direccion = models.CharField('Direccion', max_length=50, blank=True)
     telefono = models.CharField(
-            'Telefono', validators=[RegexValidator(  # Clases para hacer validaciones
-                regex=r'^[0-9]*$',  # cadenas permitidas
-                message=('Ingrese solamente numeros'),  # Mensaje de error
-            ), val_tel], max_length=8, blank=True)  # Caracteres maximos)
+            'Telefono', validators=[RegexValidator(
+                regex=r'^[0-9]*$',
+                message=('Ingrese solamente numeros'),
+            ), val_tel], max_length=8, blank=True)
     puesto = models.CharField('Puesto', max_length=25, blank=True)
 
     # Campo para crear una Thubmnail de la fotografia de perfil
@@ -67,22 +73,25 @@ class Perfil(models.Model):
 
     def image_thub(self):
         if self.img_thubmnail:
-            return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
-                url=self.img_thubmnail.url,
-                width=50,
-                height=50,
+            return mark_safe(
+                '<img src="{url}" width="{width}" height={height} />'.format(
+                    url=self.img_thubmnail.url,
+                    width=50,
+                    height=50,
                 ))
         else:
-            return mark_safe('<img src="{url}" width="{width}" height={height} />'.format(
-                url='/../static/core/img/no-img.jpg',
-                width=50,
-                height=50,
+            return mark_safe(
+                '<img src="{url}" width="{width}" height={height} />'.format(
+                    url='/../static/core/img/no-img.jpg',
+                    width=50,
+                    height=50,
                 ))
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     image_thub.short_description = 'Avatar'
 
     # Metodo Para regresar el Nombre Completo
     def full_name(self):
+        ''' Regresa el nombre completo del perfil '''
         if self.user.first_name:
             return '%s %s' % (self.user.first_name, self.user.last_name)
         else:
@@ -93,7 +102,8 @@ class Perfil(models.Model):
     def material_asignado(self):
         total = '0.00'
         return format_html(
-                '<span style="color: #265787; font-weight: bold; text-shadow: 0px 0px 2px #A1E8FD;">' +
+                '<span style="color: #265787; font-weight: bold;' +
+                'text-shadow: 0px 0px 2px #A1E8FD;">' +
                 str(total) + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     material_asignado.short_description = 'Q. Material'
@@ -101,7 +111,8 @@ class Perfil(models.Model):
     def equipo_asignado(self):
         total = '0.00'
         return format_html(
-                '<span style="color: #000; font-weight: bold; text-shadow: 0px 0px 2px #616669;">' +
+                '<span style="color: #000; font-weight: bold;' +
+                'text-shadow: 0px 0px 2px #616669;">' +
                 str(total) + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     equipo_asignado.short_description = 'Q. Equipo'
@@ -109,7 +120,8 @@ class Perfil(models.Model):
     def Total_asignado(self):
         total = '0.00'
         return format_html(
-                '<span style="color: #02AD02; font-weight: bold; text-shadow: 0px 0px 2px yellow;">' +
+                '<span style="color: #02AD02; font-weight: bold;' +
+                'text-shadow: 0px 0px 2px yellow;">' +
                 str(total) + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     Total_asignado.short_description = 'Monto Q. Total'
@@ -128,3 +140,14 @@ def ensure_profile_exits(sender, instance, **kwargs):
         Perfil.objects.get_or_create(user=instance)
         print('se acaba de crear un usuario y su perfil enlazado')
 
+
+class Tarjeta(models.Model):
+    usuario = models.ForeignKey(
+        Perfil, verbose_name='Usuario', on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Mi Tarjeta de Responsabilidad"
+        verbose_name_plural = "Tarjetas de Responsabilidad"
+
+    def __str__(self):
+        pass

@@ -146,11 +146,26 @@ class Material(BaseObjeto):
                         total = total + detalle.cantidad
         if total == 0:
             total = '--'
+            return format_html(
+                    '<span style="color: #D7142B; font-weight: bold;' +
+                    ' text-shadow: 0px 0px 2px #FF7800;">' +
+                    str(total) + '</span>')
         else:
-            None
-        return format_html(
-                '<span style="color: #009A19; font-weight: bold; text-shadow: 0px 0px 2px #8AFF00;">' +
-                str(total) + '</span>')
+            if total <= 25:
+                return format_html(
+                    '<span style="color: #D7142B; font-weight: bold;' +
+                    ' text-shadow: 0px 0px 2px #FF7800;">' +
+                    str(total) + '</span>')
+            elif total <= 50:
+                return format_html(
+                        '<span style="color: #FF7800; font-weight: bold;' +
+                        ' text-shadow: 0px 0px 2px yellow;">' +
+                        str(total) + '</span>')
+            else:
+                return format_html(
+                        '<span style="color: #009A19; font-weight: bold;' +
+                        ' text-shadow: 0px 0px 2px #8AFF00;">' +
+                        str(total) + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     disponible.short_description = 'Disponible'
 

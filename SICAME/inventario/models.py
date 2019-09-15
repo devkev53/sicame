@@ -1,5 +1,9 @@
 from django.db import models
 
+# Importamos para realizar un signal
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 # Importaciones para trabajar con Signals
 from django.dispatch import receiver
 from django.db.models.signals import post_save
@@ -57,6 +61,15 @@ class Ingreso(models.Model):
         Perfil, on_delete=models.CASCADE,
         verbose_name='Creado Por')
 
+    def boleta(self):
+        ''' Llama al un template que sera drenderizado como un pdf'''
+        return mark_safe(
+            u'<a class="print" href="/Ingreso_PDF/?id=%s"'
+            'target="_blank">'
+            '<span class="icon-clipboard-list" align="center"></span></a>'
+            % self.id)
+    boleta.short_description = 'Detalle de Ingreso'
+
     # Metodo que mostrara los precios por unidad
     def ref(self):
         return 'No-%s' % (self.referencia)
@@ -69,6 +82,14 @@ class Ingreso(models.Model):
 
     def __str__(self):
         return self.referencia
+
+
+@receiver(post_save, sender=Ingreso)
+def post_save_detalleproducto(sender, instance, **kwargs):
+    # Verifico que se crea un detalleproducto
+    ingreso = Ingreso.objects.filter(id=instance.id).get()
+    if kwargs['created']:
+        ingreso.boleta()
 
 
 # Creacion del Modelo Abstracto Base_Detalle

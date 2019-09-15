@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Ingreso | SICAME </title>
+    <link rel="stylesheet" href="{% static "core/css/Bootstrap/estilos-intecap.css" %}">
+    <link rel="stylesheet" href="{% static "core/css/fuentes.css" %}">
+    <link rel="stylesheet" href="{% static "core/css/Bootstrap/Bootstrap.min.css" %}">
+    <link href="{% static "core/fonts/font-kp/fonts/style.css" %}" rel="stylesheet" type="text/css">
+    <div>
+    	<h3 align="right">ID-{{ingreso.id}}-{{ingreso.referencia}}</h3>
+    	<img src="../core/static/core/img/logo-intecap.png" height="75">
+    </div>
+    <div class="title">
+    	<h1 class="title">Detalle de Ingreso de Material y Equipo a Bodega de Electricidad</h1>
+    </div>
+    <table class="ingreso-detail">
+    	<thead>
+    		<tr>
+    			<th>Creado por: <span>{{ingreso.create_by}}</span></th>
+    			<th>Fecha: <span>{{ingreso.fecha}}</span></th>
+    			<th>Hora: <span>{{ingreso.hora}}</span></th>
+    		</tr>
+    		<tr>
+    			<th>Documento de Referencia: {{ingreso.ref}}</th>
+    			<th colspan="2">Descripcion de la Referencia: {{ingreso.descripcion}}</th>
+    		</tr>
+    	</thead>
+    </table>
+		<hr>	
+</head>
+<body>
+	<div class="subtitle">
+		<h2 align="center">Detalle:</h2>
+	</div>
+	<table class="detalle">
+		<thead>
+			<tr>
+				<th>No.</th>
+				<th style="width: 600px;">DESCRIPCION</th>
+				<th style="width: 120px;">CANTIDAD</th>
+				<th>PRECIO UNIDAD</th>
+				<th>MONTO</th>
+				<th>UBICACION</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for detalle in detalle %}
+				<tr>
+					<td>{{detalle.ref_m}}</td>
+					<td>{{detalle.id_material.nombre}}</td>
+					<td align="center">{{detalle.cantidad}}</td>
+					<td align="right">Q. {{detalle.por_unidad}}</td>
+					<td align="right">Q. {{detalle.monto}}</td>
+					<td>{{detalle.ubicacion}}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<br>
+	<p align="right">Impreso por: {{request.user}}</p>
+	<br>	
+</body>
+<footer>
+	<div class="footer">
+		<center><img class="sicame-img" src="../core/static/core/img/Logo SICAME1.png" height="65" alt=""></center>
+	</div>
+</footer>
+</html>
+<style>
+	@page {
+	            size: legal; margin: 1cm;
+	}
+	span{
+		text-decoration: underline;
+	}
+	.detalle tr:nth-child(even) {
+    background-color: #eee;
+	}
+	.detalle tr:nth-child(odd) {
+    background-color: #000;
+	}
+	.detalle{
+		border: 1px solid #ddd;
+	}
+	th , td{
+		padding-top: 4px;
+		margin-left: 4px;
+		margin-right: 4px;
+	}
+	.ingreso-detail{
+		font-size: 10px;
+		text-align: left;
+	}
+	div.footer{
+		border-top: 1px solid #000;
+	}
+	div.title{
+		border-bottom: 1px solid #000;
+	}
+	h1.title{
+		font-style: bold;
+		font-size: 22px;
+		text-align: center;
+	}
+	h3.articulo{
+		font-size: 14px;
+	}
+	footer{
+		position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 100px;
+        color: white;
+        text-align: center;
+	}
+	table tr .encabezado th{
+		color: #fff;
+		background-color: #2B2B2B;
+	}
+</style>
