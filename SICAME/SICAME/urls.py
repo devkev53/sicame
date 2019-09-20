@@ -28,7 +28,9 @@ urlpatterns = [
     path('', admin.site.urls),
     # Url's Para los PDF en Admin
     url(r"^Ficha_Kardex_PDF/(?P<id>)", Ficha_Kardex_PDF.as_view()),
-    path('', include('inventario.urls'))
+    path('', include('inventario.urls')),
+    path('', include('registration.urls')),
+    path('', include('movimientos.urls')),
 ]
 
 # Truco para poder ver ficheros multimedia con el DEBUG=TRUE

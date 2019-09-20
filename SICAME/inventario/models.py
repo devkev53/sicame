@@ -1,5 +1,7 @@
 from django.db import models
 
+from django.shortcuts import redirect
+
 # Importamos para realizar un signal
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -83,13 +85,18 @@ class Ingreso(models.Model):
     def __str__(self):
         return self.referencia
 
+    def save(self):
+        print('Se creo un nuevo ingreso')
+        super(Ingreso, self).save()
+        return redirect('ingerso_pdf', self.boleta())
 
-@receiver(post_save, sender=Ingreso)
-def post_save_detalleproducto(sender, instance, **kwargs):
-    # Verifico que se crea un detalleproducto
-    ingreso = Ingreso.objects.filter(id=instance.id).get()
-    if kwargs['created']:
-        ingreso.boleta()
+
+# @receiver(post_save, sender=Ingreso)
+# def post_save_detalleproducto(sender, instance, **kwargs):
+#     # Verifico que se crea un detalleproducto
+#     ingreso = Ingreso.objects.filter(id=instance.id).get()
+#     if kwargs['created']:
+#         ingreso.boleta()
 
 
 # Creacion del Modelo Abstracto Base_Detalle

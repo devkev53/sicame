@@ -1,6 +1,8 @@
+{% extends "easy_pdf/base.html" %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+{% block content %}
 <head>
 	<meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -27,6 +29,13 @@
     		<tr>
     			<th>Documento de Referencia: {{ingreso.ref}}</th>
     			<th colspan="2">Descripcion de la Referencia: {{ingreso.descripcion}}</th>
+    		</tr>
+    		<tr>
+    			<th colspan="3">Estado: {% if ingreso.estado == False %}
+    				<span class="nodispo">NO DISPONIBLE</span>
+    			{% else %}	
+    				<span class="dispo">DISPONIBLE</span>
+    			{% endif %}</th>
     		</tr>
     	</thead>
     </table>
@@ -60,6 +69,8 @@
 			{% endfor %}
 		</tbody>
 	</table>
+	<br>	
+	<p class="nota"><center>Recuerde cambiar el estado a <span class="disponible">Dispobible</span> para poder asignar el equipo a los isntructores</center></p>
 	<br>
 	<p align="right">Impreso por: {{request.user}}</p>
 	<br>	
@@ -73,6 +84,15 @@
 <style>
 	@page {
 	            size: legal; margin: 1cm;
+	}
+	span.nodispo{
+		color: red;
+	}
+	span.dispo{
+		color: green;
+	}
+	.disponible{
+		font-weight: bold;
 	}
 	span{
 		text-decoration: underline;
@@ -122,3 +142,4 @@
 		background-color: #2B2B2B;
 	}
 </style>
+{% endblock content %}

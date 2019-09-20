@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'inventario',
     'registration',
     'catalogo',
-    'asignacion',
+    'movimientos',
 ]
 
 MIDDLEWARE = [

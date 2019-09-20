@@ -1,0 +1,175 @@
+{% extends "easy_pdf/base.html" %}
+{% load static %}
+{% block content %}
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Ingreso | SICAME </title>
+    <link rel="stylesheet" href="{% static "core/css/Bootstrap/estilos-intecap.css" %}">
+    <link rel="stylesheet" href="{% static "core/css/fuentes.css" %}">
+    <link rel="stylesheet" href="{% static "core/css/Bootstrap/Bootstrap.min.css" %}">
+    <link href="{% static "core/fonts/font-kp/fonts/style.css" %}" rel="stylesheet" type="text/css">
+    	<img src="../core/static/core/img/logo-intecap.png" height="75">
+    	<h1 class="title">TARJETA DE RESPONSABILIDAD</h1>
+
+    	<table class="ingreso-detail" style="margin: 0 auto;" align="center">
+    		<thead>
+    			<tr>
+    				<th align="left" style="width: 400px;">
+    					Responsable: <span><b>{{perfil.full_name}}</b></span>
+    				</th>
+    				<th align="left" style="width: 250px; color:black !important;">
+    					Monto Total: <span><b>{{perfil.Total_asig}}</b></span>
+    				</th>
+    				<th align="left" style="width: 250px;">
+    					fecha: <span><b>{{today}}</b></span>
+    				</th>
+    				<th align="left" style="width: 250px;">
+    					Asignaciones: <span><b>{{numero}}</b></span>
+    				</th>
+    			</tr>
+       		</thead>
+    	</table>
+    </div style="text-align: center;">
+		<hr>	
+</head>
+<body>
+	<div class="subtitle">
+		<h2 align="center">DETALLE DE CARGOS Y DEVOLUCIONES:</h2>
+		<center>
+					<h2>Verfifique si no cuenta con asignaciones por aceptar: pendientes=
+						<span style="color:red; text-decoration:none;"><b>{{pendientes}}</b></span></h3>
+				</center>
+		<table style="align:center; margin: 0 auto;" align="right">
+			<tr>
+				<th style="width:50px;">Cargos:</th>
+				<th style="background-color:#FFCACA; width:30px; border:1px solid #000;"></th>
+				<th style="width:85px;">Devoluciones:</th>
+				<th style="background-color:#D0FFCA; width:30px; border:1px solid #000;"></th>
+				<th style="width:100px;">Transformaciones:</th>
+				<th style="background-color:#265787; width:30px; border:1px solid #000;"></th>
+			</tr>
+		</table>
+	</div>
+	<br>
+	<table class="detalle">
+			<center style="font-size:16px; font-weight:bold;">MATERIALES</center>
+		<thead>
+			<tr class="head">
+				<th>ID Asignacion</th>
+				<th>FECHA</th>
+				<th style="width: 600px;">MATERIAL</th>
+				<th>MODULO</th>
+				<th style="width: 120px;">CANTIDAD</th>
+				<th>PRECIO PPP</th>
+				<th>MONTO</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for algo in algo%}
+				<tr class="ingresos">
+					<td>{{algo.id_asig}}</td>
+					<td>{{algo.fecha}}</td>
+					<td align="center">{{algo.id_material}}</td>
+					<td>{{algo.module}}</td>
+					<td align="right">{{algo.cantidad}}</td>
+					<td>Q. {{algo.p_ubidad_ppp|floatformat:2}}</td>
+					<td>Q. {{algo.monto|floatformat:2}}</td>
+				</tr>
+			{% endfor %}
+			<tr class="total">
+				<td colspan="6" align="center" style="font-size:18px; font-weight:bold;">Total</td>
+				<td style="font-size:18px; font-weight:bold; color:#000 !important;">Q. {{perfil.Total_asig}}</td>
+			</tr>
+		</tbody>
+	</table>
+	<hr>
+	<br>	
+	<p class="nota"><center>Recuerde cambiar el estado a <span class="disponible">Dispobible</span> para poder asignar el equipo a los isntructores</center></p>
+	<p align="right"><span><b>Impresa el: </b>{{now}}</span></p>	
+</body>
+<footer>
+	<div class="footer">
+		<center><img class="sicame-img" src="../core/static/core/img/Logo SICAME1.png" height="65" alt=""></center>
+	</div>
+</footer>
+</html>
+<style>
+	@page landscape{
+	            size: legal;
+	}
+	span.nodispo{
+		color: red;
+	}
+	span.dispo{
+		color: green;
+	}
+	.disponible{
+		font-weight: bold;
+	}
+	span{
+		text-transform: uppercase;
+	}
+	.detalle tr:nth-child(even) {
+    background-color: #eee;
+	}
+	.detalle tr:nth-child(odd) {
+    background-color: #000;
+	}
+	.detalle{
+		border: 1px solid #ddd;
+	}
+	th , td{
+		padding-top: 4px;
+		padding-left: 4px;
+		margin-left: 4px;
+		margin-right: 4px;
+		font-weight: normal;
+	}
+	.ingreso-detail{
+		font-size: 14px;
+		text-align: left;
+		margin: 0 auto;
+	}
+	div.footer{
+		border-top: 1px solid #000;
+	}
+	div.title{
+		border-bottom: 1px solid #000;
+	}
+	h1.title{
+		font-style: bold;
+		font-size: 22px;
+		text-align: center;
+	}
+	h3.articulo{
+		font-size: 14px;
+	}
+	footer{
+		position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 100px;
+        color: white;
+        text-align: center;
+	}
+	table tr .encabezado th{
+		color: #fff;
+		background-color: #2B2B2B;
+	}
+	.ingresos td{
+		border: 1px solid #000;
+		background-color: #FFCACA;
+		font-weight: bold;
+	}
+	.head th{
+		background-color: #7C7C7C;
+		color: white;
+	}
+</style>
+	{{perfil}}
+	{% for material in material %}
+		{{material}}
+	{% endfor %}
+{% endblock content %}

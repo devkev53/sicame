@@ -198,16 +198,16 @@ class Material(BaseObjeto):
                     id_material=self.id):
                 total = total + detalle.monto
             return format_html(
-                '<span style="color: #616669; font-weight: bold; font-size: 18px; text-shadow: 0px 0px 2px #24FF00;">' +
+                '<span style="color: #616669; font-weight: bold; font-size: 14px; text-shadow: 0px 0px 2px #24FF00;">' +
                 'Q. ' + str(total) + '</span>')
 
         except Exception:
             return format_html(
-                '<span style="color: #616669; font-weight: bold; font-size: 18px; text-shadow: 0px 0px 2px yellow;">' +
+                '<span style="color: #616669; font-weight: bold; font-size: 14px; text-shadow: 0px 0px 2px yellow;">' +
                 str(total) + '</span>')
         else:
             return format_html(
-                '<span style="color: #616669; font-weight: bold; font-size: 18px; text-shadow: 0px 0px 2px yellow;">' +
+                '<span style="color: #616669; font-weight: bold; font-size: 14px; text-shadow: 0px 0px 2px yellow;">' +
                 str(total) + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     monto_bodega.short_description = 'Monto Total'

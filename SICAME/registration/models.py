@@ -100,7 +100,11 @@ class Perfil(models.Model):
     full_name.short_description = 'Nombre'
 
     def material_asignado(self):
-        total = '0.00'
+        total = 0
+        from movimientos.models import Asignacion
+        for asignacion in Asignacion.objects.filter(
+                assigned_to=self.id, estado=True):
+            total = total + asignacion.monto_total()
         return format_html(
                 '<span style="color: #265787; font-weight: bold;' +
                 'text-shadow: 0px 0px 2px #A1E8FD;">' +
@@ -118,13 +122,31 @@ class Perfil(models.Model):
     equipo_asignado.short_description = 'Q. Equipo'
 
     def Total_asignado(self):
-        total = '0.00'
+        total = 0
+        total1 = 0
+        from movimientos.models import Asignacion
+        for asignacion in Asignacion.objects.filter(
+                assigned_to=self.id, estado=True):
+            total1 = total1 + asignacion.monto_total()
+        total = total + total1
         return format_html(
-                '<span style="color: #02AD02; font-weight: bold;' +
+                '<span style="color: #02AD02; font-weight: bold; text-decoration:underline;' +
                 'text-shadow: 0px 0px 2px yellow;">' +
                 str(total) + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     Total_asignado.short_description = 'Monto Q. Total'
+
+    def Total_asig(self):
+        total = 0
+        total1 = 0
+        from movimientos.models import Asignacion
+        for asignacion in Asignacion.objects.filter(
+                assigned_to=self.id, estado=True):
+            total1 = total1 + asignacion.monto_total()
+        total = total + total1
+        return total
+    # Sirve para mostrar la descripcion del metodo en el ADMIN
+    Total_asig.short_description = 'Monto Q. Total'
 
     class Meta:
         verbose_name = "Perfile"
@@ -132,6 +154,17 @@ class Perfil(models.Model):
 
     def __str__(self):
         return '%s' % (self.full_name())
+
+    def tarjeta(self):
+            ''' Llama al un template que sera drenderizado como un pdf'''
+            return mark_safe(
+                u'<a class="print"'
+                'href="/Tarjeta_de_Responsabilidad_PDF/?id=%s"'
+                'target="_blank">'
+                '<span><span class="icon-id-card-o" align="center"></span>'
+                '<span class="icon-moneybag" align="center"></span></span></a>'
+                % self.id)
+    tarjeta.short_description = 'Tarjeta de Responsabilidad'
 
 
 @receiver(post_save, sender=User)
@@ -141,13 +174,12 @@ def ensure_profile_exits(sender, instance, **kwargs):
         print('se acaba de crear un usuario y su perfil enlazado')
 
 
-class Tarjeta(models.Model):
-    usuario = models.ForeignKey(
-        Perfil, verbose_name='Usuario', on_delete=models.CASCADE)
+class Mi_Perfil(Perfil):
 
     class Meta:
-        verbose_name = "Mi Tarjeta de Responsabilidad"
-        verbose_name_plural = "Tarjetas de Responsabilidad"
+        proxy = True
+        verbose_name = "Mi Perfil"
+        verbose_name_plural = "Mi Perfil"
 
     def __str__(self):
-        pass
+        return '%s' % (self.full_name())
