@@ -65,6 +65,9 @@
 	.content-table {
 	  	border: 1px solid #424242;
 	}
+	.no-dispo td{
+		background-color: #FFBEBE;
+	}
 </style>
 <body>
 	<header class="header">
@@ -104,7 +107,8 @@
 		<table class="kardex">
 		  <tr class="encabezado">
 		    <th rowspan="2" style="width: 250px;">FECHA</th>
-		    <th rowspan="2" style="width: 350px">DETALLE</th>
+		    <th rowspan="2" style="width: 200px">DETALLE</th>
+		    <th rowspan="2" style="width: 200px">ESTADO</th>
 		    <th rowspan="2">VALOR UNIDAD</th>
 		    <th colspan="2">ENTRADAS</th>
 		    <th colspan="2">SALIDAS</th>
@@ -120,9 +124,15 @@
 		  	<th>VALORES</th>
 		  </tr>
 		  {% for detalle in detalle  %}
-		  <tr class="content-table">
+		  <tr class="content-table {% if detalle.estado == False %} no-dispo {% endif %}">
 		  	<td align="center">{{detalle.id_ingreso.fecha}}</td>
 		  	<td align="left">{{detalle.id_ingreso.ref}}</td>
+		  	<td align="left">
+		  		{% if detalle.estado == True %}
+		  			DISPONIBLE
+		  		{% else %}
+		  			NO DISPONIBLE
+		  		{% endif %}</td>
 		  	<td align="center">{{detalle.por_unidad}}</td>
 		  	<td align="center">{{detalle.cantidad}}</td>
 		  	<td align="center">{{detalle.monto}}</td>
@@ -138,13 +148,15 @@
 		<h2 align="right">RESUMEN:</h2>
 		<table class="kardex" align="right">
 			<tr style="color: #fff;">
-				<th style="background-color: #4B4A4A; width: 100px">CANTIDAD</th>
+				<th style="background-color: #4B4A4A; width: 100px">INGRESADO</th>
+				<th style="background-color: #4B4A4A; width: 120px">DISPONIBLE</th>
 				<th style="background-color: #4B4A4A; width: 150px">VR PROMEDIO</th>
 				<th style="background-color: #4B4A4A; width: 100px">VR TOTAL</th>
 			</tr>
 			<tbody>
 				<tr class="content-table">
 					<th style="background-color: #C2FF91;">{{ultimo.saldo_cantidad}}</th>
+					<th style="background-color: #C2FF91;">{{material.disponible_int}}</th>
 					<th style="background-color: #C2FF91;">{{ultimo.valor_promedio_ponderado|floatformat:2 }}</th>
 					<th style="background-color: #C2FF91;">{{ultimo.saldo_valores|floatformat:2 }}</th>
 				</tr>

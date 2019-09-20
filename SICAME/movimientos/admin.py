@@ -122,11 +122,17 @@ class AdminDevolucion(admin.ModelAdmin):
     actions = ['disponible_update']
 
     # Funcion para que la fk author seleccione al usuario logueado
-    def save_model(self, request, obj, form, change):
-        re_user = request.user
-        perfil = Perfil.objects.filter(user=re_user).get()
-        obj .create_by = perfil
-        super().save_model(request, obj, form, change)
+    def get_form(self, request, *args, **kwargs):
+        form = super(AdminDevolucion, self).get_form(
+            request, *args, **kwargs)
+        users = User.objects.all()
+        admin = None
+        for user in users:
+            if user.groups.filter(name='Administradores'):
+                admin = user
+        perfil = Perfil.objects.filter(user=admin).get()
+        form.base_fields['assigned_to'].initial = perfil
+        return form
 
     def save_model_to(self, request, obj, form, change):
         users = User.objects.all()

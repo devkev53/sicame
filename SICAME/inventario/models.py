@@ -164,33 +164,42 @@ class Material_Detalle(Base_Detalle):
     def saldo_cantidad(self):
         ''' --- Metodo que sumara las cantidades ingresados en los
         detalles segun la fecha de ingreso de menor a mayor --- '''
-        cantidad_saldo = 0
-        for detalles in Material_Detalle.objects.filter(
-                    id_material=self.id_material):
+        cantidad_saldo = self.cantidad
+        detalles = Material_Detalle.objects.filter(
+                    id_material=self.id_material).order_by(
+                    'id_ingreso__fecha')
+        for detalles in detalles:
             if detalles.id_ingreso.fecha < self.id_ingreso.fecha:
-                cantidad_saldo = self.cantidad + detalles.cantidad
-                return cantidad_saldo
-            else:
-                cantidad_saldo = self.cantidad
-                return cantidad_saldo
+                cantidad_saldo = cantidad_saldo + detalles.cantidad
+        return cantidad_saldo
 
     def saldo_valores(self):
         ''' --- Metodo que sumara los valores ingresados en los
         detalles segun la fecha de ingreso de menor a mayor --- '''
-        monto_saldo = 0
-        for detalles in Material_Detalle.objects.filter(
-                    id_material=self.id_material):
+        monto_saldo = self.monto
+        detalles = Material_Detalle.objects.filter(
+                    id_material=self.id_material).order_by(
+                    'id_ingreso__fecha')
+        for detalles in detalles:
             if detalles.id_ingreso.fecha < self.id_ingreso.fecha:
-                monto_saldo = self.monto + detalles.monto
-                return monto_saldo
-            else:
-                monto_saldo = self.monto
-                return monto_saldo
+                monto_saldo = monto_saldo + detalles.monto
+        # for detalles in Material_Detalle.objects.filter(
+        #             id_material=self.id_material):
+        #     if detalles.id_ingreso.fecha < self.id_ingreso.fecha:
+        #         monto_saldo = self.monto + detalles.monto
+        #         return monto_saldo
+        #     else:
+        #         monto_saldo = self.monto
+        return monto_saldo
 
     def valor_promedio_ponderado(self):
         promedio = 0.00
         promedio = self.saldo_valores() / self.saldo_cantidad()
         return promedio
+
+    def estado(self):
+        estado = self.id_ingreso.estado
+        return estado
 
     class Meta:
         verbose_name = "Detalle de Material"

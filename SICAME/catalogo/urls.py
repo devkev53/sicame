@@ -7,6 +7,5 @@ from .views import *
 urlpatterns = [
     # -- URL PATH DE LOS PDFS
     # path de detalle de ingresos
-    path('<int:id>/', IngresoDetailPDF.as_view(), name='detallePDF'),
-    path('<int:id>/', Listado_Material.as_view(), name='listadoPDF'),
+    url(r"^Ficha_Kardex_PDF/(?P<id>)", Ficha_Kardex_PDF.as_view()),
 ]

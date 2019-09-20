@@ -27,7 +27,7 @@ from catalogo.views import Ficha_Kardex_PDF
 urlpatterns = [
     path('', admin.site.urls),
     # Url's Para los PDF en Admin
-    url(r"^Ficha_Kardex_PDF/(?P<id>)", Ficha_Kardex_PDF.as_view()),
+    path('', include('catalogo.urls')),
     path('', include('inventario.urls')),
     path('', include('registration.urls')),
     path('', include('movimientos.urls')),

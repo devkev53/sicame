@@ -71,16 +71,16 @@ class Material(BaseObjeto):
             'target="_blank">'
             '<span class="icon-printer6" align="center"></span></a>'
             % self.id)
-    ficha.short_description = 'Tarjeta Kardex'
+    ficha.short_description = 'T Kardex'
 
-    def listado(self):
-        ''' Llama al un template que sera drenderizado como un pdf'''
-        return mark_safe(
-            u'<a class="print" href="/Listado_Material/?id=%s"'
-            'target="_blank">'
-            '<span class="icon-printer6" align="center"></span></a>'
-            % self.id)
-    ficha.short_description = 'Tarjeta Kardex'
+    # def listado(self):
+    #     ''' Llama al un template que sera drenderizado como un pdf'''
+    #     return mark_safe(
+    #         u'<a class="print" href="/Listado_Material/?id=%s"'
+    #         'target="_blank">'
+    #         '<span class="icon-printer6" align="center"></span></a>'
+    #         % self.id)
+    # ficha.short_description = 'T Kardex'
 
     # Metodo que mostara la img thubnail si no la encutra mostara otra
     def image_thub(self):
@@ -115,7 +115,7 @@ class Material(BaseObjeto):
         else:
             None
         return format_html(
-            '<span style="color: #616669; font-weight: bold; text-shadow: 0px 0px 2px yellow;">' +
+            '<span style="color: #000; text-shadow: 0px 0px 2px yellow;">' +
             str(total) + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     stock.short_description = 'Ingresado'
@@ -131,6 +131,7 @@ class Material(BaseObjeto):
             for detalle in Material_Detalle.objects.filter(
                         id_material=self.id, id_ingreso=ingreso):
                         total = total + detalle.cantidad
+        total = total - self.asignado_int()
         return total
 
     # Metodo que devolvera el stock de materiales Disponibles
@@ -144,48 +145,86 @@ class Material(BaseObjeto):
             for detalle in Material_Detalle.objects.filter(
                         id_material=self.id, id_ingreso=ingreso):
                         total = total + detalle.cantidad
+        # Ahora restamos el total asignado para no qeudarnos sin disponibles
+        total = total - self.asignado_int()
+        color1 = None
+        color2 = None
         if total == 0:
             total = '--'
-            return format_html(
-                    '<span style="color: #D7142B; font-weight: bold;' +
-                    ' text-shadow: 0px 0px 2px #FF7800;">' +
-                    str(total) + '</span>')
+            color1 = '#D7142B'
+            color2 = '#FF7800'
         else:
             if total <= 25:
-                return format_html(
-                    '<span style="color: #D7142B; font-weight: bold;' +
-                    ' text-shadow: 0px 0px 2px #FF7800;">' +
-                    str(total) + '</span>')
+                color1 = '#D7142B'
+                color2 = "#FF7800"
             elif total <= 50:
-                return format_html(
-                        '<span style="color: #FF7800; font-weight: bold;' +
-                        ' text-shadow: 0px 0px 2px yellow;">' +
-                        str(total) + '</span>')
+                color1 = '#FF7800'
+                color2 = 'yellow'
             else:
-                return format_html(
-                        '<span style="color: #009A19; font-weight: bold;' +
-                        ' text-shadow: 0px 0px 2px #8AFF00;">' +
-                        str(total) + '</span>')
+                color1 = '#009A19'
+                color2 = '#8AFF00'
+
+        return format_html(
+                    '<span style="color:' + color1 + '; font-weight: bold;' +
+                    ' text-shadow: 0px 0px 2px ' + color2 + ';">' +
+                    str(total) + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     disponible.short_description = 'Disponible'
 
     # Metodo que devolvera el stock de materiales Asignados
+    def asignado_int(self):
+        total = 0
+        from movimientos.models import Asignacion, Material_Asignado
+
+        for asignacion in Asignacion.objects.filter(estado=True):
+            for detalle in Material_Asignado.objects.filter(
+                        id_material=self.id, id_asignacion=asignacion):
+                        total = total + detalle.cantidad
+        return total
+
+    # Metodo que devolvera el stock de materiales Asignados
     def asignado(self):
-        total = 'Asginado'
+        total = 0
+        from movimientos.models import Asignacion, Material_Asignado
+
+        for asignacion in Asignacion.objects.filter(estado=True):
+            for detalle in Material_Asignado.objects.filter(
+                        id_material=self.id, id_asignacion=asignacion):
+                        total = total + detalle.cantidad
+        if total == 0:
+            total = '--'
+        else:
+            pass
         return format_html(
-                '<span style="color: #265787; font-weight: bold; text-shadow: 0px 0px 2px #A1E8FD;">' +
+                '<span style="color: #265787; text-shadow: 0px 0px 2px #A1E8FD;">' +
                 str(total) + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     asignado.short_description = 'Asignado'
 
     # Metodo que devolvera el stock de materiales Transformados
     def transformado(self):
-        total = 'Transformado'
+        total = 0
+        if total == 0:
+            total = '--'
+        else:
+            pass
         return format_html(
-                '<span style="color: #D17B00; font-weight: bold; text-shadow: 0px 0px 2px yellow;">' +
+                '<span style="color: #520078; text-shadow: 0px 0px 2px yellow;">' +
                 str(total) + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     transformado.short_description = 'Transformado'
+
+    def consumido(self):
+        total = 0
+        if total == 0:
+            total = '--'
+        else:
+            pass
+        return format_html(
+                '<span style="color: #000; text-shadow: 0px 0px 1px #919191;">' +
+                str(total) + '</span>')
+    # Sirve para mostrar la descripcion del metodo en el ADMIN
+    consumido.short_description = 'Consumido'
 
     # Metodo que devolvera el monto en quetzales del material en Bodega
     def monto_bodega(self):
@@ -198,9 +237,8 @@ class Material(BaseObjeto):
                     id_material=self.id):
                 total = total + detalle.monto
             return format_html(
-                '<span style="color: #616669; font-weight: bold; font-size: 14px; text-shadow: 0px 0px 2px #24FF00;">' +
+                '<span style="color: #265787; font-weight: bold; font-size: 14px;">' +
                 'Q. ' + str(total) + '</span>')
-
         except Exception:
             return format_html(
                 '<span style="color: #616669; font-weight: bold; font-size: 14px; text-shadow: 0px 0px 2px yellow;">' +
