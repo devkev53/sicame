@@ -80,7 +80,7 @@ class AdminIngreso(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         re_user = request.user
         perfil = Perfil.objects.filter(user=re_user).get()
-        obj .create_by = perfil
+        obj.create_by = perfil
         super().save_model(request, obj, form, change)
 
     # Funcion para que la fk author seleccione al usuario logueado

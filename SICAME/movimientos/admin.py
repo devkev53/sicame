@@ -107,11 +107,11 @@ class AdminAsignacion(admin.ModelAdmin):
 
 class AdminDevolucion(admin.ModelAdmin):
     # inlines = [Material_AsignadoInline, ]
-    readonly_fields = ['create_by', 'id_no', 'fecha', 'hora']
+    readonly_fields = ['create_by', 'id_no', 'fecha', 'hora', 'assigned_to']
     fieldsets = (
         (None, {
             'fields': (('id_no', 'create_by', 'fecha', 'hora'), (
-                'assigned_to', 'module'))
+                'assigned_to', 'asig_id'))
         }),)
     list_display = [
         'id_no', 'create_by', 'fecha',
@@ -122,25 +122,31 @@ class AdminDevolucion(admin.ModelAdmin):
     actions = ['disponible_update']
 
     # Funcion para que la fk author seleccione al usuario logueado
-    def get_form(self, request, *args, **kwargs):
-        form = super(AdminDevolucion, self).get_form(
-            request, *args, **kwargs)
+    # def get_form(self, request, *args, **kwargs):
+    #     form = super(AdminDevolucion, self).get_form(
+    #         request, *args, **kwargs)
+    #     users = User.objects.all()
+    #     admin = None
+    #     for user in users:
+    #         if user.groups.filter(name='Administradores'):
+    #             admin = user
+    #     perfil_admin = Perfil.objects.filter(user=admin).get()
+    #     form.base_fields['assigned_to'].initial = perfil_admin
+    #     return form
+
+    # Funcion para que la fk author seleccione al usuario logueado
+    def save_model(self, request, obj, form, change):
+        ''' trabajamos sobre el usuario logeado '''
+        re_user = request.user
+        perfil = Perfil.objects.filter(user=re_user).get()
+        ''' ahora trabajamos sobre el perfil del administrador '''
         users = User.objects.all()
         admin = None
         for user in users:
             if user.groups.filter(name='Administradores'):
                 admin = user
-        perfil = Perfil.objects.filter(user=admin).get()
-        form.base_fields['assigned_to'].initial = perfil
-        return form
-
-    def save_model_to(self, request, obj, form, change):
-        users = User.objects.all()
-        admin = None
-        for user in users:
-            if user.groups.all == 'Administardor':
-                admin = user
-        perfil = Perfil.objects.filter(user=admin).get()
+        perfil_admin = Perfil.objects.filter(user=admin).get()
+        obj.assigned_to = perfil_admin
         obj .create_by = perfil
         super().save_model(request, obj, form, change)
 

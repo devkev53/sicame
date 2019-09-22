@@ -107,8 +107,8 @@ class Asignacion(models.Model):
         verbose_name_plural = "Asignaciones"
 
     def __str__(self):
-        return 'Creado por: %s, Asigando a: %s' % (
-            self.create_by, self.assigned_to)
+        return '%s, Fecha: %s, Modulo: %s' % (
+            self.id_no, self.fecha, self.module)
 
     def save(self):
         self.set_referncia()
@@ -202,7 +202,10 @@ class Devolucion(models.Model):
     hora = models.TimeField(
         'Hora', auto_now_add=True,
         help_text='Se tomara la fecha automatica de creacion')
-    module = models.CharField('Modulo', max_length=50)
+    asig_id = models.ForeignKey(
+        Asignacion, on_delete=models.CASCADE,
+        verbose_name='Ref. Asignacion',
+        help_text='La devolucion debe conicidir con una Asignacion')
     estado = models.BooleanField('Estado', default=False)
 
     create_by = models.ForeignKey(
