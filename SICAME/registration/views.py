@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views.generic.base import TemplateView
 
 # importamos los movimientos
 from movimientos.models import Asignacion, Material_Asignado
@@ -9,7 +10,7 @@ import datetime
 # Create your views here.
 
 
-class T_Responsabilidad_PDF(PDFTemplateView):
+class T_Responsabilidad_PDF(PDFTemplateView, TemplateView):
     template_name = 'T_Responsabilidad.html'
 
     def get_context_data(self, **kwargs):

@@ -99,6 +99,9 @@
 	@page landscape{
 	            size: legal;
 	}
+	@media print {
+	  footer {page-break-after: always;}
+	}
 	span.nodispo{
 		color: red;
 	}
@@ -168,8 +171,4 @@
 		color: white;
 	}
 </style>
-	{{perfil}}
-	{% for material in material %}
-		{{material}}
-	{% endfor %}
 {% endblock content %}

@@ -1,5 +1,11 @@
 from django.db import models
 
+# Importamos los Regex y ValidatorError para poder
+# validar el numero de telefono y que solo permita los
+# datos validos * '''
+from django.core.exceptions import ValidationError
+from django.core.validators import RegexValidator
+
 # Importaciones para trabajar con Signals
 from django.dispatch import receiver
 from django.db.models.signals import post_save
@@ -205,7 +211,8 @@ class Devolucion(models.Model):
     asig_id = models.ForeignKey(
         Asignacion, on_delete=models.CASCADE,
         verbose_name='Ref. Asignacion',
-        help_text='La devolucion debe conicidir con una Asignacion')
+        help_text='La devolucion debe conicidir con una Asignacion asi'
+        'como los elementos deben cuadrar')
     estado = models.BooleanField('Estado', default=False)
 
     create_by = models.ForeignKey(
@@ -216,7 +223,9 @@ class Devolucion(models.Model):
     assigned_to = models.ForeignKey(
         Perfil, on_delete=models.CASCADE,
         related_name='User_Send_Dev',
-        verbose_name='Asignado a')
+        verbose_name='Asignado a',
+        help_text='Se asignara automaticamente a un '
+        ' usuario encargado de bodega',)
 
     def set_referncia(self):
         self.id_no = self.id_no
@@ -262,3 +271,64 @@ class Devolucion(models.Model):
     def save(self):
         self.set_referncia()
         super(Devolucion, self).save()
+
+
+class Material_Devuelto(models.Model):
+    id_devolucion = models.ForeignKey(
+        Devolucion, on_delete=models.CASCADE,
+        verbose_name='Ingreso')
+    buenos = models.PositiveIntegerField(
+        'Sin Utilizar', default=0,
+        help_text='Material que no se utilizo')
+    usados = models.PositiveIntegerField(
+        'Utilizados', default=0,
+        help_text='Material que se utilizo y se puede seguir usando')
+    consumidos = models.PositiveIntegerField(
+        'Consumidos', default=0,
+        help_text='Material que fue consumido en total'
+        ' y no es posible reutilizar')
+
+    def tota_xd(self):
+        suma = self.buenos + self.usados + self.consumidos
+        return suma
+
+    total = models.PositiveIntegerField(
+        'Total', default=0)
+
+    id_material = models.ForeignKey(
+        Material, on_delete=models.CASCADE,
+        verbose_name='Material')
+
+    def validation(self):
+        asig_mat = Material_Asignado.objects.filter(
+            id_asignacion=self.id_devolucion.asig_id,
+            id_material=self.id_material).get()
+        if asig_mat.cantidad != self.total:
+            raise ValidationError(
+                'Se debe cuadrar la cantidad toal de materiales'
+                ' con la cantidad que fue entregada en la Asignacion')
+
+    class Meta:
+        verbose_name = "Material Devuelto"
+        verbose_name_plural = "Materiales Devueltos"
+
+    def __str__(self):
+        return self.id_devolucion()
+
+    def clean(self, **kwargs):
+        super(Material_Devuelto, self).clean()
+        self.validation()
+
+    def save(self):
+        super(Devolucion, self).save()
+
+
+class Recepccion(Devolucion):
+
+    class Meta:
+        proxy = True
+        verbose_name = "Recepccion"
+        verbose_name_plural = "Recepcciones"
+
+    def __str__(self):
+        pass

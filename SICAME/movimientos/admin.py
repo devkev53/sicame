@@ -105,8 +105,24 @@ class AdminAsignacion(admin.ModelAdmin):
         super().save_model(request, obj, form, change)
 
 
+class Material_DevueltoInline(admin.StackedInline):
+    model = Material_Devuelto
+    extra = 1
+    raw_id_fields = ('id_material',)
+    #  Crea un campo de busqueda y debe poseer un search_fields
+    #  en el modelo inicial para poder referenciar por esos campos
+    autocomplete_fields = ['id_material']
+    fieldsets = (
+        (None, {
+            'fields': ((
+                'id_material',), (
+                'buenos', 'usados', 'consumidos'), (
+                ))
+        }),)
+
+
 class AdminDevolucion(admin.ModelAdmin):
-    # inlines = [Material_AsignadoInline, ]
+    inlines = [Material_DevueltoInline, ]
     readonly_fields = ['create_by', 'id_no', 'fecha', 'hora', 'assigned_to']
     fieldsets = (
         (None, {
@@ -152,4 +168,5 @@ class AdminDevolucion(admin.ModelAdmin):
 
 admin.site.register(Asignacion, AdminAsignacion)
 admin.site.register(Devolucion, AdminDevolucion)
-admin.site.register(Material_Asignado, AdminMaterial_Asignado)
+# admin.site.register(Material_Asignado, AdminMaterial_Asignado)
+admin.site.register(Recepccion)

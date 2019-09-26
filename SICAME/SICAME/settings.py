@@ -39,9 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'easy_pdf',
     'ckeditor',
-    'core',
+    'core.apps.CoreConfig',
     'inventario',
-    'registration',
+    'registration.apps.RegistrationConfig',
     'catalogo',
     'movimientos',
 ]
