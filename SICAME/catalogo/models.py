@@ -115,7 +115,7 @@ class Material(BaseObjeto):
         else:
             None
         return format_html(
-            '<span style="color: #000; text-shadow: 0px 0px 2px yellow;">' +
+            '<span style="color: #000;">' +
             str(total) + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     stock.short_description = 'Ingresado'
@@ -131,6 +131,12 @@ class Material(BaseObjeto):
             for detalle in Material_Detalle.objects.filter(
                         id_material=self.id, id_ingreso=ingreso):
                         total = total + detalle.cantidad
+        # Ahora Importamos las devoluciones para actulizar el disponible
+        from movimientos.models import Devolucion, Material_Devuelto
+        for devolucion in Devolucion.objects.filter(estado=True):
+            for detalle in Material_Devuelto.objects.filter(
+                        id_material=self.id, id_devolucion=devolucion):
+                total = total - detalle.transformados - detalle.desechados
         total = total - self.asignado_int()
         return total
 
@@ -145,6 +151,13 @@ class Material(BaseObjeto):
             for detalle in Material_Detalle.objects.filter(
                         id_material=self.id, id_ingreso=ingreso):
                         total = total + detalle.cantidad
+        # Ahora Importamos las devoluciones para actulizar el disponible
+        from movimientos.models import Devolucion, Material_Devuelto
+        for devolucion in Devolucion.objects.filter(estado=True):
+            for detalle in Material_Devuelto.objects.filter(
+                        id_material=self.id, id_devolucion=devolucion):
+                total = total - detalle.transformados - detalle.desechados
+
         # Ahora restamos el total asignado para no qeudarnos sin disponibles
         total = total - self.asignado_int()
         color1 = None
@@ -154,10 +167,10 @@ class Material(BaseObjeto):
             color1 = '#D7142B'
             color2 = '#FF7800'
         else:
-            if total <= 25:
+            if total <= 50:
                 color1 = '#D7142B'
                 color2 = "#FF7800"
-            elif total <= 50:
+            elif total <= 99:
                 color1 = '#FF7800'
                 color2 = 'yellow'
             else:
@@ -175,22 +188,32 @@ class Material(BaseObjeto):
     def asignado_int(self):
         total = 0
         from movimientos.models import Asignacion, Material_Asignado
+        from movimientos.models import Devolucion, Material_Devuelto
 
         for asignacion in Asignacion.objects.filter(estado=True):
             for detalle in Material_Asignado.objects.filter(
                         id_material=self.id, id_asignacion=asignacion):
                         total = total + detalle.cantidad
+        for devolucion in Devolucion.objects.filter(estado=True):
+            for detalle in Material_Devuelto.objects.filter(
+                        id_material=self.id, id_devolucion=devolucion):
+                total = total - detalle.total_sum()
         return total
 
     # Metodo que devolvera el stock de materiales Asignados
     def asignado(self):
         total = 0
         from movimientos.models import Asignacion, Material_Asignado
+        from movimientos.models import Devolucion, Material_Devuelto
 
         for asignacion in Asignacion.objects.filter(estado=True):
             for detalle in Material_Asignado.objects.filter(
                         id_material=self.id, id_asignacion=asignacion):
                         total = total + detalle.cantidad
+        for devolucion in Devolucion.objects.filter(estado=True):
+            for detalle in Material_Devuelto.objects.filter(
+                        id_material=self.id, id_devolucion=devolucion):
+                total = total - detalle.total_sum()
         if total == 0:
             total = '--'
         else:
@@ -204,6 +227,11 @@ class Material(BaseObjeto):
     # Metodo que devolvera el stock de materiales Transformados
     def transformado(self):
         total = 0
+        from movimientos.models import Devolucion, Material_Devuelto
+        for devolucion in Devolucion.objects.filter(estado=True):
+            for detalle in Material_Devuelto.objects.filter(
+                        id_material=self.id, id_devolucion=devolucion):
+                total = total + detalle.transformados
         if total == 0:
             total = '--'
         else:
@@ -216,6 +244,11 @@ class Material(BaseObjeto):
 
     def consumido(self):
         total = 0
+        from movimientos.models import Devolucion, Material_Devuelto
+        for devolucion in Devolucion.objects.filter(estado=True):
+            for detalle in Material_Devuelto.objects.filter(
+                        id_material=self.id, id_devolucion=devolucion):
+                total = total + detalle.desechados
         if total == 0:
             total = '--'
         else:
@@ -224,30 +257,43 @@ class Material(BaseObjeto):
                 '<span style="color: #000; text-shadow: 0px 0px 1px #919191;">' +
                 str(total) + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
-    consumido.short_description = 'Consumido'
+    consumido.short_description = 'De Baja'
 
-    # Metodo que devolvera el monto en quetzales del material en Bodega
     def monto_bodega(self):
         total = 0
-        try:
-            # Importamos las librerias de Inventario
-            from inventario.models import Material_Detalle
+        sub = 0
+        # Buscamos traer el total de consumidos
+        consumido = 0
+        from movimientos.models import Devolucion, Material_Devuelto
+        for devolucion in Devolucion.objects.filter(estado=True):
+            for detalle in Material_Devuelto.objects.filter(
+                        id_material=self.id, id_devolucion=devolucion):
+                    consumido = consumido + detalle.desechados
+        # traemos el total ingresado a bodega
+        bodega = 0
+        from inventario.models import Material_Detalle
+        for detalle in Material_Detalle.objects.filter(
+                id_material=self.id):
+                bodega = bodega + detalle.cantidad
+        # Realizamos la resta del subtotal
+        sub = bodega - consumido
+        # Traemos el ultimo detalle de ingreso segun el material
+        from inventario.models import Material_Detalle
+        ultimo = Material_Detalle.objects.filter(
+            id_material=self.id).last()
+        # Recoremos los materiales para comparar con el ultimo
+        for material in Material_Detalle.objects.all():
+            if material == ultimo:
+                total = sub * material.valor_promedio_ponderado()
+        # Validamos que total no sea 0 para mostrar unicamente los 3 guines
+        color = '#000'
+        if total == 0:
+            color = '#6B0000'
+            total = '---'
 
-            for detalle in Material_Detalle.objects.filter(
-                    id_material=self.id):
-                total = total + detalle.monto
-            return format_html(
-                '<span style="color: #265787; font-weight: bold; font-size: 14px;">' +
-                'Q. ' + str(total) + '</span>')
-        except Exception:
-            return format_html(
-                '<span style="color: #616669; font-weight: bold; font-size: 14px; text-shadow: 0px 0px 2px yellow;">' +
+        return format_html(
+                '<span style="color: '+ color +'; font-weight: bold;">Q. '  +
                 str(total) + '</span>')
-        else:
-            return format_html(
-                '<span style="color: #616669; font-weight: bold; font-size: 14px; text-shadow: 0px 0px 2px yellow;">' +
-                str(total) + '</span>')
-    # Sirve para mostrar la descripcion del metodo en el ADMIN
     monto_bodega.short_description = 'Monto Total'
 
     def __str__(self):

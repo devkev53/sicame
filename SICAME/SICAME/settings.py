@@ -31,6 +31,9 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'dal',
+    'dal_select2',
+    'dal_queryset_sequence',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

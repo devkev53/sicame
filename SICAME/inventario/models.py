@@ -176,6 +176,13 @@ class Material_Detalle(Base_Detalle):
             if detalles.id_ingreso.fecha < self.id_ingreso.fecha:
                 # Si este es Menor hacemos la suma
                 cantidad_saldo = cantidad_saldo + detalles.cantidad
+        # Ahora creamos un QuerySet par verificar Devoluciones y que se resten
+        from movimientos.models import Devolucion, Material_Devuelto
+        for devolucion in Devolucion.objects.filter(estado=True):
+            for detalle in Material_Devuelto.objects.filter(
+                        id_material=self.id_material):
+                    if detalle.id_devolucion.fecha <= self.id_ingreso.fecha:
+                        cantidad_saldo = cantidad_saldo - detalle.desechados
         return cantidad_saldo
 
     def saldo_valores(self):
@@ -199,6 +206,7 @@ class Material_Detalle(Base_Detalle):
         promedio = 0.00
         promedio = self.saldo_valores() / self.saldo_cantidad()
         return promedio
+    valor_promedio_ponderado.short_description='P.P.P.'
 
     def estado(self):
         estado = self.id_ingreso.estado
@@ -211,3 +219,7 @@ class Material_Detalle(Base_Detalle):
 
     def __str__(self):
         return self.ref_m()
+
+    def save(self):
+        self.valor_promedio_ponderado()
+        super(Material_Detalle, self).save()

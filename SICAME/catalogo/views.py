@@ -3,6 +3,7 @@ from django.shortcuts import render
 from easy_pdf.views import PDFTemplateView
 from .models import Material
 from inventario.models import Ingreso, Material_Detalle
+from movimientos.models import Devolucion, Material_Devuelto
 
 # Create your views here.
 
@@ -11,9 +12,13 @@ class Ficha_Kardex_PDF(PDFTemplateView):
     template_name = 'Kardex_Material.html'
 
     def get_context_data(self, **kwargs):
+        dic_Kardex = {}
+
         ids = self.request.GET.get('id')
         material = Material.objects.get(id=ids)
         detalle = Material_Detalle.objects.filter(id_material=ids)
+        devolucion = Material_Devuelto.objects.filter(
+            id_material=ids)
 
         # obtener el ultimo detalle de ingreso
         ultimo = Material_Detalle.objects.filter(id_material=ids).last()
@@ -22,10 +27,15 @@ class Ficha_Kardex_PDF(PDFTemplateView):
             pagesize='Legal landscape',
             title='Kardex',
             detalle=detalle,
+            devolucion=devolucion,
             ultimo=ultimo,
             material=material,
             **kwargs
             )
+
+'''fecha=None, detalle=None, estado=None, valor_u=None,
+            e_cant=None, e_val=None, s_cant=None, s_val=None,
+            cant=None, val=None, prome=None'''
 
 
 class Listado_Material(PDFTemplateView):

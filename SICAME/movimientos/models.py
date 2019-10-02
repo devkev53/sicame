@@ -1,4 +1,9 @@
 from django.db import models
+# Exepciones
+from django.core.exceptions import ObjectDoesNotExist
+
+# Importamos el app de CK Editor para enriqueze la descripcion
+from ckeditor.fields import RichTextField
 
 # Importamos los Regex y ValidatorError para poder
 # validar el numero de telefono y que solo permita los
@@ -75,6 +80,12 @@ class Asignacion(models.Model):
         related_name='User_Send',
         verbose_name='Asignado a')
 
+    def devuelto(self):
+        devuelto = False
+        if Devolucion.objects.filter(asig_id=self.id_no).exists():
+            devuelto = True
+        return devuelto
+
     def set_referncia(self):
         self.id_no = self.id_no
         return self.id_no
@@ -88,10 +99,25 @@ class Asignacion(models.Model):
 
     def estado_color(self):
         if self.estado is True:
+            if Devolucion.objects.filter(asig_id=self.id_no).exists():
+                dev = Devolucion.objects.filter(asig_id=self.id_no).get()
+                if dev.estado is True:
+                    color1 = '#265787'
+                    color2 = "yellow"
+                    icono = 'icon-download8'
+                else:
+                    color1 = '#606060'
+                    color2 = "#265787"
+                    icono = 'icon-download8'
+            else:
+                color1 = '#009A19'
+                color2 = "#8AFF00"
+                icono = 'icon-check-square-o'
             return format_html(
-                '<span aling="center" class="icon-check-square-o" style="color: #009A19;' +
-                'font-weight: bold; font-size:22px; text-shadow: 0px 0px 2px #8AFF00;">' +
-                '</span>')
+                '<span aling="center" class="' + icono + '"' +
+                'style="color:' + color1 + '; font-weight: bold;' +
+                ' font-size:22px; text-shadow: 0px 0px 10px ' + color2 + ';' +
+                '"></span>')
         else:
             return format_html(
                 '<span aling="center" class="icon-share-square-o" style="color: #D17B00;' +
@@ -113,8 +139,8 @@ class Asignacion(models.Model):
         verbose_name_plural = "Asignaciones"
 
     def __str__(self):
-        return '%s, Fecha: %s, Modulo: %s' % (
-            self.id_no, self.fecha, self.module)
+        return '%s, Fecha: %s, Modulo: %s, Asignado: %s ' % (
+            self.id_no, self.fecha, self.module, self.assigned_to)
 
     def save(self):
         self.set_referncia()
@@ -135,6 +161,12 @@ class Material_Asignado(models.Model):
     id_material = models.ForeignKey(
         Material, on_delete=models.CASCADE,
         verbose_name='Material')
+
+    def dev(self):
+        dev = False
+        if self.id_asignacion.devuelto() is True:
+            dev = True
+        return dev
 
     def img(self):
         img = self.id_material.img.url
@@ -212,7 +244,7 @@ class Devolucion(models.Model):
         Asignacion, on_delete=models.CASCADE,
         verbose_name='Ref. Asignacion',
         help_text='La devolucion debe conicidir con una Asignacion asi'
-        'como los elementos deben cuadrar')
+        'como los elementos deben cuadrar', blank=False, null=False, default=1)
     estado = models.BooleanField('Estado', default=False)
 
     create_by = models.ForeignKey(
@@ -227,15 +259,21 @@ class Devolucion(models.Model):
         help_text='Se asignara automaticamente a un '
         ' usuario encargado de bodega',)
 
+    comentario = RichTextField(
+        'Comentario', default='S/C',
+        help_text='Ingrese un comentario de porque la devolucion,'
+        'y como fue que se utilizaron los materiales o equipos'
+        'para enriquecer la informacion agregada')
+
     def set_referncia(self):
         self.id_no = self.id_no
         return self.id_no
 
     def monto_total(self):
         total = 0
-        for material in Material_Asignado.objects.filter(
-                id_asignacion=self.id_no):
-            total = total+material.monto
+        for material in Material_Devuelto.objects.filter(
+                id_devolucion=self.id_no):
+            total = total+material.monto()
         return total
 
     def estado_color(self):
@@ -251,14 +289,14 @@ class Devolucion(models.Model):
                 '</span>')
     estado_color.short_description = 'Estado'
 
-    def detalle(self):
+    def detalle_dev(self):
         ''' Llama al un template que sera drenderizado como un pdf'''
         return mark_safe(
-            u'<a class="print" href="/Detalle/?id=%s"'
+            u'<a class="print" href="/Detalle_dev/?id=%s"'
             'target="_blank">'
             '<span class="icon-printer6" align="center"></span></a>'
             % self.id_no)
-    detalle.short_description = 'Detalle'
+    detalle_dev.short_description = 'Detalle'
 
     class Meta:
         verbose_name = "Devolucion"
@@ -268,9 +306,16 @@ class Devolucion(models.Model):
         return 'Creado por: %s, Asigando a: %s' % (
             self.create_by, self.assigned_to)
 
+    def validation(self):
+        pass
+
     def save(self):
         self.set_referncia()
         super(Devolucion, self).save()
+
+    def clean(self, **kwargs):
+        super(Devolucion, self).clean()
+        self.validation()
 
 
 class Material_Devuelto(models.Model):
@@ -280,47 +325,128 @@ class Material_Devuelto(models.Model):
     buenos = models.PositiveIntegerField(
         'Sin Utilizar', default=0,
         help_text='Material que no se utilizo')
-    usados = models.PositiveIntegerField(
-        'Utilizados', default=0,
-        help_text='Material que se utilizo y se puede seguir usando')
-    consumidos = models.PositiveIntegerField(
-        'Consumidos', default=0,
-        help_text='Material que fue consumido en total'
-        ' y no es posible reutilizar')
-
-    def tota_xd(self):
-        suma = self.buenos + self.usados + self.consumidos
-        return suma
-
+    transformados = models.PositiveIntegerField(
+        'Trasformados o utilizados', default=0,
+        help_text='Material que se utilizo para'
+        ' practica o se convirtio en modelo didactico')
+    desechados = models.PositiveIntegerField(
+        'Desechados', default=0,
+        help_text='Material que en practica fue dechado')
     total = models.PositiveIntegerField(
         'Total', default=0)
 
+    def monto(self):
+        total = self.total_sum() * self.valor_por_unidad()
+        return total
+
+    def total_sum(self):
+        self.total = self.buenos + self.transformados + self.desechados
+        return self.total
+
     id_material = models.ForeignKey(
         Material, on_delete=models.CASCADE,
-        verbose_name='Material')
+        verbose_name='Material', blank=False, null=False)
 
-    def validation(self):
-        asig_mat = Material_Asignado.objects.filter(
-            id_asignacion=self.id_devolucion.asig_id,
-            id_material=self.id_material).get()
-        if asig_mat.cantidad != self.total:
+    def saldo_desechados(self):
+        sub = 0
+        from inventario.models import Material_Detalle
+        for ingreso_material in Material_Detalle.objects.filter(
+                id_material=self.id_material):
+            if ingreso_material.id_ingreso.fecha < self.id_devolucion.fecha:
+                sub = (
+                    self.desechados *
+                    ingreso_material.valor_promedio_ponderado())
+        return sub
+
+    def valor_por_unidad(self):
+        sub = 0
+        from inventario.models import Material_Detalle
+        for ingreso_material in Material_Detalle.objects.filter(
+                id_material=self.id_material):
+            if ingreso_material.id_ingreso.fecha < self.id_devolucion.fecha:
+                sub = (
+                    ingreso_material.valor_promedio_ponderado())
+        return sub
+
+    def saldo_cantidad(self):
+        ''' --- Metodo que sumara las cantidades ingresados en los
+        detalles segun la fecha de ingreso de menor a mayor --- '''
+        cantidad_saldo = 0
+        # Creamos un query ordenado por fechas de los objetos
+        # que tienen realcion con el material en cuestion
+        detalles = Material_Detalle.objects.filter(
+                    id_material=self.id_material).order_by(
+                    'id_ingreso__fecha')
+        # Recorremos el query par ir sumando
+        for detalles in detalles:
+            # Evaluamos si el primer dato es menor a la fecha acutal
+            if detalles.id_ingreso.fecha < self.id_devolucion.fecha:
+                # Si este es Menor hacemos la suma
+                cantidad_saldo = cantidad_saldo + detalles.cantidad
+        # Ahora creamos un QuerySet par verificar Devoluciones y que se resten
+        from movimientos.models import Devolucion, Material_Devuelto
+        for devolucion in Devolucion.objects.filter(estado=True):
+            for detalle in Material_Devuelto.objects.filter(
+                        id_material=self.id_material):
+                    if detalle.id_devolucion.fecha <= self.id_devolucion.fecha:
+                        cantidad_saldo = cantidad_saldo - detalle.desechados
+        return cantidad_saldo
+
+    def saldo_valores(self):
+        ''' --- Metodo que sumara los valores ingresados en los
+        detalles segun la fecha de ingreso de menor a mayor --- '''
+        monto_saldo = 0
+        # Creamos un query ordenado por fechas de los objetos
+        # que tienen realcion con el material en cuestion
+        detalles = Material_Detalle.objects.filter(
+                    id_material=self.id_material).order_by(
+                    'id_ingreso__fecha')
+        # Recorremos el query par ir sumando
+        for detalles in detalles:
+            # Evaluamos si el primer dato es menor a la fecha acutal
+            if detalles.id_ingreso.fecha < self.id_devolucion.fecha:
+                # Si este es Menor hacemos la suma
+                monto_saldo = monto_saldo + detalles.monto
+        monto_saldo = monto_saldo - (self.valor_por_unidad()*self.desechados)
+        return monto_saldo
+
+    def validation_material(self):
+        try:
+            asig_mat = Material_Asignado.objects.filter(
+                id_asignacion=self.id_devolucion.asig_id,
+                id_material=self.id_material).get()
+            if asig_mat.cantidad != self.total_sum():
+                raise ValidationError(
+                    'Se debe cuadrar la cantidad toal de materiales'
+                    ' con la cantidad que fue entregada en la Asignacion')
+        except ObjectDoesNotExist:
             raise ValidationError(
-                'Se debe cuadrar la cantidad toal de materiales'
-                ' con la cantidad que fue entregada en la Asignacion')
+                    'Verifique la Asignacion seleccionada ya que no '
+                    'existe este Material en la misma, o en su defecto '
+                    'verifique que se este regresando la totalidad de '
+                    'Materiales Asignacion Selecciondad = ' +
+                    str(self.id_devolucion.asig_id))
+
+    def vpp(self):
+        total = 0
+        total = (self.saldo_valores() / self.saldo_cantidad())
+        return total
 
     class Meta:
         verbose_name = "Material Devuelto"
         verbose_name_plural = "Materiales Devueltos"
 
     def __str__(self):
-        return self.id_devolucion()
+        return '%s' % (self.id_devolucion)
+
+    def save(self):
+        self.total_sum()
+        super(Material_Devuelto, self).save()
 
     def clean(self, **kwargs):
         super(Material_Devuelto, self).clean()
-        self.validation()
-
-    def save(self):
-        super(Devolucion, self).save()
+        self.total_sum()
+        self.validation_material()
 
 
 class Recepccion(Devolucion):
@@ -331,4 +457,5 @@ class Recepccion(Devolucion):
         verbose_name_plural = "Recepcciones"
 
     def __str__(self):
-        pass
+        return 'Creado por: %s, Asigando a: %s' % (
+            self.create_by, self.assigned_to)

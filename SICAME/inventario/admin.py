@@ -29,7 +29,7 @@ class AdminMaterial_Detalle(admin.ModelAdmin):
         }),)
     list_display = [
         'ref_m', 'fecha_ingreso', 'id_material', 'cantidad', 'por_unidad',
-        'ubicacion']
+        'ubicacion', 'valor_promedio_ponderado']
     search_fields = ['id_material', 'ref_m']
     list_filter = ['id_ingreso__fecha', 'id_ingreso__referencia']
 

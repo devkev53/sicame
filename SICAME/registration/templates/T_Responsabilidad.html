@@ -41,7 +41,7 @@
 					<h2>Verfifique si no cuenta con asignaciones por aceptar: pendientes=
 						<span style="color:red; text-decoration:none;"><b>{{pendientes}}</b></span></h3>
 				</center>
-		<table style="align:center; margin: 0 auto;" align="right">
+		<!--table style="align:center; margin: 0 auto;" align="right">
 			<tr>
 				<th style="width:50px;">Cargos:</th>
 				<th style="background-color:#FFCACA; width:30px; border:1px solid #000;"></th>
@@ -49,8 +49,10 @@
 				<th style="background-color:#D0FFCA; width:30px; border:1px solid #000;"></th>
 				<th style="width:100px;">Transformaciones:</th>
 				<th style="background-color:#265787; width:30px; border:1px solid #000;"></th>
+				<th style="width:75px;">De Baja:</th>
+				<th style="background-color:#4B4B4B; width:30px; border:1px solid #000;"></th>
 			</tr>
-		</table>
+		</table-->
 	</div>
 	<br>
 	<table class="detalle">
@@ -68,6 +70,7 @@
 		</thead>
 		<tbody>
 			{% for algo in algo%}
+			{% if algo.dev == False %}
 				<tr class="ingresos">
 					<td>{{algo.id_asig}}</td>
 					<td>{{algo.fecha}}</td>
@@ -77,6 +80,7 @@
 					<td>Q. {{algo.p_ubidad_ppp|floatformat:2}}</td>
 					<td>Q. {{algo.monto|floatformat:2}}</td>
 				</tr>
+			{% endif %}	
 			{% endfor %}
 			<tr class="total">
 				<td colspan="6" align="center" style="font-size:18px; font-weight:bold;">Total</td>

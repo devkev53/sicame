@@ -1,0 +1,174 @@
+{% extends "easy_pdf/base.html" %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+{% block content %}
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Ingreso | SICAME </title>
+    <link rel="stylesheet" href="{% static "core/css/Bootstrap/estilos-intecap.css" %}">
+    <link rel="stylesheet" href="{% static "core/css/fuentes.css" %}">
+    <link rel="stylesheet" href="{% static "core/css/Bootstrap/Bootstrap.min.css" %}">
+    <link href="{% static "core/fonts/font-kp/fonts/style.css" %}" rel="stylesheet" type="text/css">
+    <div>
+    	<h3 align="right">{{devolucion.id_no}}</h3>
+    	<img src="../core/static/core/img/logo-intecap.png" height="75">
+    </div>
+    <div class="title">
+    	<h1 class="title">Devolucion a Bodega</h1>
+    </div>
+    <table class="ingreso-detail">
+    	<thead>
+    		<tr>
+    			<th>Creado por: {{devolucion.create_by}}</th>
+    			<th>Fecha: {{devolucion.fecha}}</th>
+    			<th>Hora: {{devolucion.hora}}</th>
+    		</tr>
+    			<th>Asignado a: {{devolucion.assigned_to}}</th>
+    			<th>Para el Modulo de: {{devolucion.module}}</th>
+    			<th>Estado: 
+    				{% if devolucion.estado == True %}
+    					<span style="color:#265787; text-decoration:none">
+    						Aceptado
+    					</span>
+    				{% else %}
+    					<span style="color:#F18E00; text-decoration:none">
+    						Pendinete de Aceptar
+    					</span>
+    				{% endif %}
+    			</th>
+    		</tr>
+    	</thead>
+    </table>
+		<hr>	
+</head>
+<body>
+	<div class="subtitle">
+		<h2 align="center">Detalle:</h2>
+	</div>
+	<table class="detalle">
+		<thead>
+			<tr>
+				<th>No.</th>
+				<th style="width: 600px;">DESCRIPCION</th>
+				<th style="width: 120px;">CANTIDAD</th>
+				<th>PRECIO UNIDAD</th>
+				<th>MONTO</th>
+				<th>UBICACION</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for detalle in detalle %}
+				<tr>
+					<td align="center"><img src="{{detalle.img}}" alt="" width="50px" align="center"></td>
+					<td>{{detalle.id_material.nombre}}</td>
+					<td align="center">{{detalle.cantidad}}</td>
+					<td align="right">Q. {{detalle.p_ubidad_ppp|floatformat:2 }}</td>
+					<td align="right">Q. {{detalle.monto}}</td>
+					<td>{{detalle.ubicacion}}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	<br>	
+	<p class="nota"><center>Si esta de acuerdo firme acepte la devolucion y firme de recibido este documento el cual servira como comprobante.</center></p>
+	<br>
+	<br>
+	<br>
+	<br>
+	<br>
+	<center>
+			<p class="firma">_______________________________________</p>
+			<p class="firma2">       {{devolucion.assigned_to}}     </p>
+			<p class="aceptacion">Acepto con conformidad que el equipo aqui descrito</p>
+			<p class="aceptacion">es devuelto a bodega con, exactamente como se refleja</p>
+			<p class="aceptacion">en este documento</p>
+	</center>
+	<br>	
+	<p align="left">{{devolucion.id_no}}</p>
+</body>
+<footer>
+	<div class="footer">
+		<center><img class="sicame-img" src="../core/static/core/img/Logo SICAME1.png" height="65" alt=""></center>
+	</div>
+</footer>
+</html>
+<style>
+	@page {
+	            size: legal; margin: 1cm;
+	}
+	.aceptacion{
+		font-size: 8px;
+		padding-top: -13px;
+	}
+	.firma{
+		font-size: 14px;
+		padding-top: -20px;
+	}
+	.firma2{
+		font-size: 14px;
+		padding-top: -20px;
+		padding-bottom: -10px;
+	}
+	span.nodispo{
+		color: red;
+	}
+	span.dispo{
+		color: green;
+	}
+	.disponible{
+		font-weight: bold;
+	}
+	span{
+		text-decoration: underline;
+	}
+	.detalle tr:nth-child(even) {
+    background-color: #eee;
+	}
+	.detalle tr:nth-child(odd) {
+    background-color: #000;
+	}
+	.detalle{
+		border: 1px solid #ddd;
+		padding-left: 3px;
+		padding-right: 3px;
+	}
+	th , td{
+		padding-top: 4px;
+		margin-left: 4px;
+		margin-right: 4px;
+	}
+	.ingreso-detail{
+		font-size: 10px;
+		text-align: left;
+	}
+	div.footer{
+		border-top: 1px solid #000;
+	}
+	div.title{
+		border-bottom: 1px solid #000;
+	}
+	h1.title{
+		font-style: bold;
+		font-size: 22px;
+		text-align: center;
+	}
+	h3.articulo{
+		font-size: 14px;
+	}
+	footer{
+		position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 100px;
+        color: white;
+        text-align: center;
+	}
+	table tr .encabezado th{
+		color: #fff;
+		background-color: #2B2B2B;
+	}
+</style>
+{% endblock content %}

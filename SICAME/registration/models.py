@@ -105,6 +105,11 @@ class Perfil(models.Model):
         for asignacion in Asignacion.objects.filter(
                 assigned_to=self.id, estado=True):
             total = total + asignacion.monto_total()
+        # Importamos el total de las devoluciones por perfil
+        from movimientos.models import Devolucion
+        for devolucion in Devolucion.objects.filter(
+                create_by=self.id, estado=True):
+            total = total - devolucion.monto_total()
         return format_html(
                 '<span style="color: #265787; font-weight: bold;' +
                 'text-shadow: 0px 0px 2px #A1E8FD;">' +
@@ -124,10 +129,16 @@ class Perfil(models.Model):
     def Total_asignado(self):
         total = 0
         total1 = 0
+        # importamos el total de las asignaciones por perfil
         from movimientos.models import Asignacion
         for asignacion in Asignacion.objects.filter(
                 assigned_to=self.id, estado=True):
             total1 = total1 + asignacion.monto_total()
+        # Importamos el total de las devoluciones por perfil
+        from movimientos.models import Devolucion
+        for devolucion in Devolucion.objects.filter(
+                create_by=self.id, estado=True):
+            total1 = total1 - devolucion.monto_total()
         total = total + total1
         return format_html(
                 '<span style="color: #02AD02; font-weight: bold; text-decoration:underline;' +
@@ -139,10 +150,16 @@ class Perfil(models.Model):
     def Total_asig(self):
         total = 0
         total1 = 0
+        # importamos el total de las asignaciones por perfil
         from movimientos.models import Asignacion
         for asignacion in Asignacion.objects.filter(
                 assigned_to=self.id, estado=True):
             total1 = total1 + asignacion.monto_total()
+        # Importamos el total de las devoluciones por perfil
+        from movimientos.models import Devolucion
+        for devolucion in Devolucion.objects.filter(
+                create_by=self.id, estado=True):
+            total1 = total1 - devolucion.monto_total()
         total = total + total1
         return total
     # Sirve para mostrar la descripcion del metodo en el ADMIN
