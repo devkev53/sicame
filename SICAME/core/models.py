@@ -20,7 +20,7 @@ class Categoria(models.Model):
         verbose_name_plural = "Categorias"
 
     def __str__(self):
-        return self.nombre
+        return '%s' % (self.nombre)
 
 
 # Creacion del Modelo Catalogo Marcas
@@ -28,8 +28,9 @@ class Marca(models.Model):
     nombre = models.CharField('Nombre', max_length=100)
 
     class Meta:
+        ordering = ['nombre']
         verbose_name = "Marca"
         verbose_name_plural = "Marcas"
 
     def __str__(self):
-        return self.nombre
+        return '%s' % (self.nombre)

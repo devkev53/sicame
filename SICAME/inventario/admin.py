@@ -6,7 +6,8 @@ from .models import *
 
 class Material_DetalleInline(admin.TabularInline):
     model = Material_Detalle
-    extra = 1
+    extra = 0
+    min_num = 0
     raw_id_fields = ('id_material',)
     #  Crea un campo de busqueda y debe poseer un search_fields
     #  en el modelo inicial para poder referenciar por esos campos
@@ -16,6 +17,31 @@ class Material_DetalleInline(admin.TabularInline):
             'fields': (('id_material', 'cantidad', 'monto', 'ubicacion'), (
                 ))
         }),)
+
+
+class Equipo_IngresoInline(admin.StackedInline):
+    model = Equipo_Ingreso
+    extra = 0
+    min_num = 0
+    raw_id_fields = ('id_equipo',)
+    #  Crea un campo de busqueda y debe poseer un search_fields
+    #  en el modelo inicial para poder referenciar por esos campos
+    autocomplete_fields = ['id_equipo']
+    fieldsets = (
+        (None, {
+            'fields': ((
+                'ibe', 'id_equipo',), (
+                'id_Marca', 'modelo', 'serie',), (
+                'monto', 'ubicacion'), (
+                ))
+        }),)
+
+
+class Admin_Equipo_Ingreso(admin.ModelAdmin):
+    list_display = ['ibe', 'id_equipo', 'id_Marca', 'modelo', 'serie', 'monto']
+    search_fields = ['id_material', 'ref_m']
+    autocomplete_fields = ['id_equipo', 'id_Marca']
+    list_filter = ['id_equipo', 'id_Marca']
 
 
 class AdminMaterial_Detalle(admin.ModelAdmin):
@@ -35,11 +61,12 @@ class AdminMaterial_Detalle(admin.ModelAdmin):
 
 
 class AdminIngreso(admin.ModelAdmin):
-    inlines = [Material_DetalleInline]
+    inlines = [Material_DetalleInline, Equipo_IngresoInline]
     readonly_fields = ['create_by', 'fecha', 'hora']
     fieldsets = (
         (None, {
-            'fields': (('create_by', 'fecha', 'hora', 'referencia', 'descripcion'), (
+            'fields': ((
+                'create_by', 'fecha', 'hora', 'referencia', 'descripcion'), (
                 ))
         }),)
     list_display = [
@@ -92,3 +119,4 @@ class AdminIngreso(admin.ModelAdmin):
 
 admin.site.register(Ingreso, AdminIngreso)
 admin.site.register(Material_Detalle, AdminMaterial_Detalle)
+admin.site.register(Equipo_Ingreso, Admin_Equipo_Ingreso)

@@ -1,5 +1,14 @@
 from django.db import models
 
+# Importamos la clase Marca de Core
+from core.models import Marca
+
+# Importamos los Regex y ValidatorError para poder
+from django.core.validators import RegexValidator
+
+# Importamos la exepcion
+from django.core.exceptions import ObjectDoesNotExist
+
 from django.shortcuts import redirect
 
 # Importamos para realizar un signal
@@ -7,8 +16,10 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 # Importaciones para trabajar con Signals
+from django import dispatch
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.db.models.signals import pre_save
 
 # Importacion que nos permite maquetar o formatear
 # con HTML una variable o texto para poder mostrar en el admin*'''
@@ -22,7 +33,7 @@ from registration.models import Perfil
 from django.contrib.auth.models import User
 
 # Importamos el MODELS para trabajar con el PERFIL * '''
-from catalogo.models import Material
+from catalogo.models import Material, Equipo
 
 # Importamos la exepcion para mostrar el mensage de erro de validacion
 from django.core.exceptions import ValidationError
@@ -87,8 +98,8 @@ class Ingreso(models.Model):
 
     def save(self):
         print('Se creo un nuevo ingreso')
+        self.boleta()
         super(Ingreso, self).save()
-        return redirect('ingerso_pdf', self.boleta())
 
 
 # @receiver(post_save, sender=Ingreso)
@@ -121,7 +132,7 @@ class Base_Detalle(models.Model):
     def por_unidad(self):
         try:
             pu = self.monto/self.cantidad
-            return pu
+            return ("%.2f" % pu)
         except:
             return None
     # Agrega una descripcion al metodo para mostrar en el Admin
@@ -134,6 +145,9 @@ class Base_Detalle(models.Model):
         return fecha
     # Agrega una descripcion al metodo para mostrar en el Admin
     fecha_ingreso.short_description = 'Fecha Ingreso'
+
+    def monto_point(self):
+        return ("%.2f" % self.monto)
 
     class Meta:
         abstract = True
@@ -206,7 +220,7 @@ class Material_Detalle(Base_Detalle):
         promedio = 0.00
         promedio = self.saldo_valores() / self.saldo_cantidad()
         return promedio
-    valor_promedio_ponderado.short_description='P.P.P.'
+    valor_promedio_ponderado.short_description = 'P.P.P.'
 
     def estado(self):
         estado = self.id_ingreso.estado
@@ -223,3 +237,100 @@ class Material_Detalle(Base_Detalle):
     def save(self):
         self.valor_promedio_ponderado()
         super(Material_Detalle, self).save()
+
+
+# Creamos el modelo de ingreso de equipo este debe ser un,
+# Este sera distinto al material ya que cada equipo tiene un id
+class Equipo_Ingreso(models.Model):
+    id_equipo = models.ForeignKey(
+        Equipo, on_delete=models.CASCADE,
+        verbose_name='Equipo')
+    id_ingreso = models.ForeignKey(
+        Ingreso, on_delete=models.CASCADE,
+        verbose_name='Ingreso')
+    ibe = models.CharField(
+        'No. de Inventario IBE', max_length=15,
+        help_text='El no de Inventario IBE debe'
+        ' seguir el siguiente formato X-XXX-XXXXX',
+        validators=[
+            RegexValidator(
+                regex=r'^[I][/-][0-9]{3}[/-][0-9]{5}$',
+                message='El Formato debe coincidir',
+            ),
+        ])
+    monto = models.DecimalField(
+        'Precio Unidad', max_digits=12, decimal_places=1)
+    ubicacion = models.CharField(
+        'Ubicacion', max_length=75,
+        help_text='Debo de corregir y anclar bien la ubicacion')
+    ref_ingreso = models.CharField(
+        'Ref.', max_length=75,
+        help_text='Referencia segun el ingreso', editable=False)
+    id_Marca = models.ForeignKey(
+        Marca, on_delete=models.CASCADE,
+        verbose_name='Marca')
+    modelo = models.CharField(
+        'Modelo', max_length=25,
+        blank=True)
+    serie = models.CharField(
+        'Serie', max_length=25,
+        blank=True)
+
+    def monto_point(self):
+        return ("%.2f" % self.monto)
+
+    def estado(self):
+        estado = self.id_ingreso.estado
+        return estado
+
+    def ref_m(self):
+        ingreso = Ingreso.objects.filter(id=self.id_ingreso.id).get()
+        ref = 'No-%s-%s-E' % (ingreso.referencia, self.id)
+        self.ref_ingreso = ref
+        return ref
+
+    class Meta:
+        verbose_name = "Detalle de Equipo"
+        verbose_name_plural = "Detalle de Equipos"
+
+    def __str__(self):
+        return self.ibe
+
+    def save(self):
+        super(Equipo_Ingreso, self).save()
+
+    def clean(self, **kwargs):
+        super(Equipo_Ingreso, self).clean()
+
+
+'''@receiver(post_save, sender=Equipo_Ingreso)
+def ensure_profile_exits(sender, instance, **kwargs):
+    detalle = Equipo_Ingreso.objects.filter(id=instance.id)
+    ibe = None
+    if kwargs.get('created', True):
+        contador = 0
+        for equipo in Equipo_Ingreso.objects.all():
+            if equipo.categ == instance.categ:
+                contador = contador + 1
+            if equipo.id == instance.id:
+                ibe = equipo.ibe
+        if contador > 9:
+            cadena = '000%s' % (str(contador))
+            print('Se creo un nuevo objeto su id es: ' + str(contador))
+            print('Su cadena es: ' + cadena)
+            detalle.update(orden=cadena, ibe=(ibe+cadena))
+        elif contador > 99:
+            cadena = '00%s' % (str(contador))
+            print('Se creo un nuevo objeto su id es: ' + str(contador))
+            print('Su cadena es: ' + cadena)
+            detalle.update(orden=cadena, ibe=(ibe+cadena))
+        elif contador > 990:
+            cadena = '0%s' % (str(contador))
+            print('Se creo un nuevo objeto su id es: ' + str(contador))
+            print('Su cadena es: ' + cadena)
+            detalle.update(orden=cadena, ibe=(ibe+cadena))
+        elif contador < 9:
+            cadena = '0000%s' % (str(contador))
+            print('Se creo un nuevo objeto su id es: ' + str(contador))
+            print('Su cadena es: ' + cadena)
+            detalle.update(orden=cadena, ibe=(ibe+cadena))'''

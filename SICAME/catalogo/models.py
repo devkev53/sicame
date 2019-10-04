@@ -33,7 +33,8 @@ class BaseObjeto(models.Model):
     nombre = models.CharField('Nombre', max_length=100)
     descripcion = RichTextField('Descripcion', default='S/D')
     id_Marca = models.ForeignKey(
-        Marca, verbose_name='Marca', on_delete=models.CASCADE)
+        Marca, verbose_name='Marca', on_delete=models.CASCADE,
+        blank=True)
     id_Categoria = models.ForeignKey(
         Categoria, verbose_name='Categoria', on_delete=models.CASCADE)
     img = models.ImageField(
@@ -60,8 +61,8 @@ class Material(BaseObjeto):
 
     class Meta:
         ordering = ['nombre']
-        verbose_name = "Material"
-        verbose_name_plural = "Materiales"
+        verbose_name = "Material o Insumo"
+        verbose_name_plural = "Materiales o Insumos"
 
     # Permitira mostrar el Link de descarga del detalle del Ingreso
     def ficha(self):
@@ -292,9 +293,140 @@ class Material(BaseObjeto):
             total = '---'
 
         return format_html(
-                '<span style="color: '+ color +'; font-weight: bold;">Q. '  +
+                '<span style="color: ' + color + '; font-weight: bold;">Q. ' +
                 str(total) + '</span>')
     monto_bodega.short_description = 'Monto Total'
 
     def __str__(self):
         return '%s, Marca: %s' % (self.nombre, self.id_Marca)
+
+
+class Equipo(BaseObjeto):
+
+    # Metodo que mostara la img thubnail si no la encutra mostara otra
+    def image_thub(self):
+        if self.img_thubmnail:
+            return mark_safe(
+                '<img src="{url}" width="{width}" height={height} />'.format(
+                    url=self.img_thubmnail.url,
+                    width=50,
+                    height=50,
+                ))
+        else:
+            return mark_safe(
+                '<img src="{url}" width="{width}" height={height} />'.format(
+                    url='/../static/core/img/no-img.jpg',
+                    width=50,
+                    height=50,
+                ))
+    # Sirve para mostrar la descripcion del metodo en el ADMIN
+    image_thub.short_description = 'Imagen'
+
+    def stock(self):
+        total = 0
+        # Importamos las librerias de Inventario
+        from inventario.models import Equipo_Ingreso
+
+        for detalle in Equipo_Ingreso.objects.filter(
+                id_equipo=self.id):
+                total = total + 1
+        if total == 0:
+            total = '--'
+        else:
+            None
+        return format_html(
+            '<span style="color: #000;">' +
+            str(total) + '</span>')
+    # Sirve para mostrar la descripcion del metodo en el ADMIN
+    stock.short_description = 'Ingresado'
+
+    def disponible(self):
+        total = 0
+        # Importamos las librerias de Inventario
+        from inventario.models import Equipo_Ingreso, Ingreso
+
+        for ingreso in Ingreso.objects.filter(estado=True):
+            for detalle in Equipo_Ingreso.objects.filter(
+                        id_equipo=self.id, id_ingreso=ingreso):
+                        total = total + 1
+        return total
+
+    def disponible_color(self):
+        total = int(self.disponible())
+        if total == 0:
+            total = '--'
+            color1 = '#D7142B'
+            color2 = '#FF7800'
+        else:
+            if total <= 10:
+                color1 = '#D7142B'
+                color2 = "#FF7800"
+            elif total <= 20:
+                color1 = '#FF7800'
+                color2 = 'yellow'
+            else:
+                color1 = '#009A19'
+                color2 = '#8AFF00'
+        total = (total)
+        return format_html(
+                    '<span style="color:' + color1 + '; font-weight: bold;' +
+                    ' text-shadow: 0px 0px 2px ' + color2 + ';">' +
+                    str(total) + '</span>')
+    disponible_color.short_description = 'Disponible'
+
+    def asiganado(self):
+        total = 0
+        return total
+
+    def asignado_color(self):
+        total = self.asiganado()
+        return total
+    asignado_color.short_description = 'Asignado'
+
+    def de_baja(self):
+        total = 0
+        return total
+
+    def de_baja_color(self):
+        total = self.de_baja()
+        return total
+    de_baja_color.short_description = 'Por dar de Baja'
+
+    def monto_bodega(self):
+        total = 0.00
+        # Importamos las librerias de Inventario
+        from inventario.models import Equipo_Ingreso
+
+        for detalle in Equipo_Ingreso.objects.filter(
+                id_equipo=self.id):
+                total = total + float(detalle.monto)
+        return ("%.2f" % total)
+
+    def monto_bodega_color(self):
+        color = '#000'
+        total = float(self.monto_bodega())
+        if total == 0.00:
+            color = '#6B0000'
+            total = '---'
+        total = str(total)
+        return format_html(
+                '<span style="color: ' + color + '; font-weight: bold;">Q. ' +
+                total + '</span>')
+    monto_bodega.short_description = 'Monto Total'
+
+    def info(self):
+        ''' Llama al un template que sera drenderizado como un pdf'''
+        return mark_safe(
+            u'<a class="print" href="/Tarjeta_Kardex_PDF/?id=%s"'
+            'target="_blank">'
+            '<span class="icon-printer6" align="center"></span></a>'
+            % self.id)
+    info.short_description = 'T Kardex'
+
+    class Meta:
+        ordering = ['nombre']
+        verbose_name = "Equipo Didactico"
+        verbose_name_plural = "Equipos Didacticos"
+
+    def __str__(self):
+        return self.nombre

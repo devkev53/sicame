@@ -3,5 +3,10 @@ from .models import *
 
 # Register your models here.
 
-admin.site.register(Marca)
+
+class Admin_Marca(admin.ModelAdmin):
+    search_fields = ['nombre']
+    ordering = ['nombre']
+
+admin.site.register(Marca, Admin_Marca)
 admin.site.register(Categoria)

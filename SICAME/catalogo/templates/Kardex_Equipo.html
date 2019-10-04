@@ -1,0 +1,206 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Intecap | SICAME </title>
+    <link rel="stylesheet" href="{% static "core/css/Bootstrap/estilos-intecap.css" %}">
+    <link rel="stylesheet" href="{% static "core/css/fuentes.css" %}">
+    <link rel="stylesheet" href="{% static "core/css/Bootstrap/Bootstrap.min.css" %}">
+    <link href="{% static "core/fonts/font-kp/fonts/style.css" %}" rel="stylesheet" type="text/css">
+</head>
+<style>
+	@page {
+	            size: legal landscape; margin: 2cm;
+	}
+	h1.title{
+		font-style: bold;
+		font-size: 22px;
+		text-align: center;
+	}
+	h3.articulo{
+		font-size: 14px;
+	}
+	strong.nombre{
+		text-decoration: underline;
+	}
+	footer{
+		position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 100px;
+        color: white;
+        text-align: center;
+	}
+	.kardex{
+		border: 1px solid #ddd;
+		border-style: solid;
+	}
+	th{
+		padding-top: 4px;
+		margin-left: 4px;
+		margin-right: 4px;
+		font-size: 14px;
+	}
+	td{
+		padding-top: 4px;
+		margin-left: 4px;
+		margin-right: 4px;
+		font-size: 12px;
+	}
+	img.material-img{
+		display: inline;
+		width: 100px;
+	}
+	table tr .encabezado th{
+		color: #fff;
+		background-color: #2B2B2B;
+	}
+	table tr .sub-encabezado th{
+		color: #fff;
+		background-color: #505050;
+	}
+	.content-table {
+	  	border: 1px solid #424242;
+	}
+	.no-dispo td{
+		background-color: #FFBEBE;
+	}
+	.dev td{
+		background-color: #ECECEC;
+	}
+</style>
+<body>
+	<header class="header">
+		<div class="logos">
+				<img src="../core/static/core/img/logo-intecap.png" height="75">
+		</div>
+		<h1 class="title">Tarjeta Kardex de Materiales</h1>
+		<hr class="mute">
+		<center>
+			<table>
+				<tr>
+					<th rowspan="2" style="width:200px;">
+						<img class="material-img" src={{material.img.url}} alt="" width="">
+					</th>
+					<th style="width:250px;">Articulo</th>
+					<th style="width:250px;">Marca</th>
+					<th style="width:400px;">Descripcion</th>
+				</tr>
+				<tbody>
+					<tr>
+						<th style="padding-bottom: 30px;">{{material.nombre}}</th>
+						<th style="padding-bottom: 30px;">{{material.id_Marca}}</th>
+						<th style="padding-bottom: 30px;">{{material.descripcion|safe}}</th>
+					</tr>
+					<tr>
+						<th colspan="4" align="center">
+							Metodo de valor de Inventario Utilizado: <strong>Valor Promedio Ponderado</strong>
+						</th>
+					</tr>
+				</tbody>
+			</table>
+		</center>
+		<hr>	
+		<br>
+	</header>
+	<body>
+		<table class="kardex">
+		  <tr class="encabezado">
+		    <th rowspan="2" style="width: 250px;">FECHA</th>
+		    <th rowspan="2" style="width: 125px;">HORA</th>
+		    <th rowspan="2" style="width: 175px">DETALLE</th>
+		    <th rowspan="2" style="width: 175px">ESTADO</th>
+		    <th rowspan="2">VALOR UNIDAD</th>
+		    <th colspan="2">ENTRADAS</th>
+		    <th colspan="2">SALIDAS</th>
+		    <th colspan="2">SALDO</th>
+		    <th rowspan="2">PROMEDIO</th>
+		  </tr>
+		  <tr class="sub-encabezado">
+		  	<th>CANTIDAD</th>
+		  	<th>VALORES</th>
+		  	<th>CANTIDAD</th>
+		  	<th>VALORES</th>
+		  	<th>CANTIDAD</th>
+		  	<th>VALORES</th>
+		  </tr>
+		  {% for detalle in detalle  %}
+		  <tr class="content-table {% if detalle.estado == False %} no-dispo {% endif %}">
+		  	<td align="center">{{detalle.id_ingreso.fecha}}</td>
+		  	<td align="center">{{detalle.id_ingreso.hora}}</td>
+		  	<td align="left">{{detalle.id_ingreso.ref}}</td>
+		  	<td align="left">
+		  		{% if detalle.estado == True %}
+		  			DISPONIBLE
+		  		{% else %}
+		  			NO DISPONIBLE
+		  		{% endif %}</td>
+		  	<td align="center">{{detalle.por_unidad}}</td>
+		  	<td align="center">{{detalle.cantidad}}</td>
+		  	<td align="center">{{detalle.monto}}</td>
+		  	<td align="center">---</td>
+		  	<td align="center">---</td>
+		  	<td align="center">{{detalle.saldo_cantidad}}</td>
+		  	<td align="center">{{detalle.saldo_valores|floatformat:2 }}</td>
+		  	<td align="center">{{detalle.valor_promedio_ponderado|floatformat:2 }}</td>
+		  </tr>
+		  {% endfor %}
+		   {% for devolucion in devolucion  %}
+		  	<tr class="content-table dev">
+			  	<td align="center">{{devolucion.id_devolucion.fecha}}</td>
+			  	<td align="center">{{devolucion.id_devolucion.hora}}</td>
+			  	<td align="left">{{devolucion.id_devolucion.set_referncia}}</td>
+			  	<td align="left">
+			  		{% if devolucion.id_devolucion.estado == True %}
+			  			ACEPTADA
+			  		{% else %}
+			  			NO ACEPTADA
+			  		{% endif %}</td>
+			  	<td align="center">{{devolucion.valor_por_unidad}}</td>
+			  	<td align="center">---</td>
+			  	<td align="center">---</td>
+			  	<td align="center">{{devolucion.desechados}}</td>
+			  	<td align="center">{{devolucion.saldo_desechados}}</td>
+			  	<td align="center">{{devolucion.saldo_cantidad}}</td>
+			  	<td align="center">{{devolucion.saldo_valores|floatformat:2 }}</td>
+			  	<td align="center">{{devolucion.vpp|floatformat:2 }}</td>
+			  </tr>
+		  {% endfor %}
+		</table>
+		<p align="center" style="font-size:12px;">El metodo de valoracion de esta tarjeta <b>Kardex</b> es el de <i style="text-decoration: underline;">Valor Promedio Ponderado</i>..!</p>
+		<h2 align="right">RESUMEN:</h2>
+		<table class="kardex" align="right">
+			<tr style="color: #fff;">
+				<th style="background-color: #4B4A4A; width: 100px">INGRESADO</th>
+				<th style="background-color: #4B4A4A; width: 90px">ASIGNADO</th>
+				<th style="background-color: #4B4A4A; width: 128px">TRANSFORMADO</th>
+				<th style="background-color: #4B4A4A; width: 100px">DISPONIBLE</th>
+				<th style="background-color: #4B4A4A; width: 80px">DE BAJA</th>
+				<th style="background-color: #4B4A4A; width: 115px">VR PROMEDIO</th>
+				<th style="background-color: #4B4A4A; width: 100px">VR TOTAL</th>
+			</tr>
+			<tbody>
+				<tr class="content-table">
+					<th style="background-color: #C2FF91;">{{material.stock}}</th>
+					<th style="background-color: #C2FF91;">{{material.asignado}}</th>
+					<th style="background-color: #C2FF91;">{{material.transformado}}</th>
+					<th style="background-color: #C2FF91;">{{material.disponible_int}}</th>
+					<th style="background-color: #C2FF91;">{{material.consumido}}</th>
+					<th style="background-color: #C2FF91;">{{ultimo.valor_promedio_ponderado|floatformat:2 }}</th>
+					<th style="background-color: #C2FF91;">{{ultimo.saldo_valores|floatformat:2 }}</th>
+				</tr>
+			</tbody>
+		</table>
+		{% for n in dic_Kardex  %}
+			{{n|make_list}}
+		{% endfor %}
+	</body>
+	<footer>
+		<br>	
+		<center><img class="sicame-img" src="../core/static/core/img/Logo SICAME1.png" height="65" alt=""></center>
+	</footer>
+</body>
+</html>

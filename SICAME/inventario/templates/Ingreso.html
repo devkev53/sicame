@@ -46,10 +46,16 @@
 		<h2 align="center">Detalle:</h2>
 	</div>
 	<table class="detalle">
+		{% if detalle %}
 		<thead>
-			<tr>
-				<th>No.</th>
-				<th style="width: 600px;">DESCRIPCION</th>
+			<tr class="title">
+				<th colspan="6" style="font-weight:bold; align: center;" align="center">
+					MATERIALES
+				</th>
+			</tr>
+			<tr class="sub-title">
+				<th style="width: 230px;">No.</th>
+				<th style="width: 500px;">DESCRIPCION</th>
 				<th style="width: 120px;">CANTIDAD</th>
 				<th>PRECIO UNIDAD</th>
 				<th>MONTO</th>
@@ -58,15 +64,53 @@
 		</thead>
 		<tbody>
 			{% for detalle in detalle %}
-				<tr>
+				<tr class="{% if detalle.estado == False %} No_Disponible {% else %} Dispo {% endif %}">
 					<td>{{detalle.ref_m}}</td>
 					<td>{{detalle.id_material.nombre}}</td>
 					<td align="center">{{detalle.cantidad}}</td>
 					<td align="right">Q. {{detalle.por_unidad}}</td>
-					<td align="right">Q. {{detalle.monto}}</td>
+					<td align="right">Q. {{detalle.monto_point}}</td>
 					<td>{{detalle.ubicacion}}</td>
 				</tr>
 			{% endfor %}
+		{% endif %}
+		{% if equipo %}
+		</tbody>
+	</table>
+	<table class="detalle">
+		<thead>
+			<tr class="title">
+				<th colspan="6" style="font-weight:bold; align: center;" align="center">
+					EQUIPOS
+				</th>
+			</tr>
+			<tr class="sub-title">
+				<th style="width: 230px;">No.</th>
+				<th>No. de IBE</th>
+				<th style="width: 500px;">DESCRIPCION</th>
+				<th style="width: 120px;">MARCA</th>
+				<th>MONTO</th>
+				<th>UBICACION</th>
+			</tr>
+		</thead>
+		<tbody>			
+			{% for equipo in equipo  %}
+				<tr class="{% if equipo.estado == False %} No_Disponible {% else %} Dispo{% endif %}">
+					<td>{{equipo.ref_m}}</td>
+					<td align="center">{{equipo.ibe}}</td>
+					<td>{{equipo.id_equipo.nombre}}</td>
+					<td align="center">{{equipo.id_equipo.id_Marca}}</td>
+					<td align="right">Q. {{equipo.monto_point}}</td>
+					<td>{{equipo.ubicacion}}</td>
+				</tr>
+			{% endfor %}
+		{% endif %}
+		<tr class="total">
+				<th colspan="4" style="font-weight:bold; align: center;" align="center">
+					MONTO TOTAL INGRESADO
+				</th>
+				<th colspan="2">Q. {{total}}</th>
+			</tr>
 		</tbody>
 	</table>
 	<br>	
@@ -84,6 +128,23 @@
 <style>
 	@page {
 	            size: legal; margin: 1cm;
+	}
+	.total th{
+		background-color: #5B5B5B;
+		color: #fff;
+	}
+	.title th{
+		background-color: #808080;
+		color: #fff;
+	}
+	.sub-title th{
+		background-color: #BCBCBC;
+	}
+	.No_Disponible td{
+		background-color: #F4F4F4;
+	}
+	.Dispo td{
+		background-color: #CBFFDF;	
 	}
 	span.nodispo{
 		color: red;

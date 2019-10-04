@@ -22,4 +22,23 @@ class AdminMaterial(admin.ModelAdmin):
     listado_pdf.short_description = 'Imprimir Listado de Material'
 
 
+class AdminEquipo(admin.ModelAdmin):
+    fieldsets = (
+        (None, {
+            'fields': ((
+                'nombre', 'id_Marca', 'id_Categoria', 'img'), (
+                'descripcion'))
+        }),)
+    list_display = [
+        'nombre', 'image_thub', 'stock',
+        'disponible_color', 'asignado_color', 'de_baja_color',
+        'monto_bodega_color', 'info']
+    list_filter = ['id_Categoria']
+    search_fields = ['nombre']
+    list_display_links = ('nombre', 'image_thub',)
+    list_per_page = 10
+    actions = ['listado_pdf']
+
+
 admin.site.register(Material, AdminMaterial)
+admin.site.register(Equipo, AdminEquipo)
