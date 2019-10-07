@@ -64,6 +64,7 @@ class Ingreso(models.Model):
     descripcion = models.CharField(
         'Descripcion', default='S/D', max_length=100,
         help_text='Descripcion del Ingreso o la Referencia de INgreso')
+    is_baja = models.BooleanField(default=False)
 
     # asingado = models.ForeignKey(
     #     Perfil, on_delete=models.CASCADE,
@@ -220,6 +221,12 @@ class Material_Detalle(Base_Detalle):
         promedio = 0.00
         promedio = self.saldo_valores() / self.saldo_cantidad()
         return promedio
+    valor_promedio_ponderado.short_description = 'P.P.P.'
+
+    def valor_promedio_ponderado_str(self):
+        promedio = 0.00
+        promedio = self.saldo_valores() / self.saldo_cantidad()
+        return ("%.2f" % promedio)
     valor_promedio_ponderado.short_description = 'P.P.P.'
 
     def estado(self):

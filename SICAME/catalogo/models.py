@@ -286,7 +286,11 @@ class Material(BaseObjeto):
         for material in Material_Detalle.objects.all():
             if material == ultimo:
                 total = sub * material.valor_promedio_ponderado()
+        return ("%.2f" % total)
         # Validamos que total no sea 0 para mostrar unicamente los 3 guines
+
+    def monto_bodega_color(self):
+        total = self.monto_bodega()
         color = '#000'
         if total == 0:
             color = '#6B0000'
