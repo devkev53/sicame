@@ -18,6 +18,7 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+# Se importa el include para poder agregar los conjuntos de urls
 from django.urls import path, include
 from django.conf.urls import url
 
@@ -27,6 +28,7 @@ from catalogo.views import Ficha_Kardex_PDF
 urlpatterns = [
     path('', admin.site.urls),
     # Url's Para los PDF en Admin
+    # Se crea el path para agregar los urls al sistema
     path('', include('catalogo.urls')),
     path('', include('inventario.urls')),
     path('', include('registration.urls')),

@@ -23,7 +23,11 @@ from django.utils.safestring import mark_safe
 # Metodo para eliminar una fotografia si ya existe
 # en la base de datos y evitar llenar el especio '''
 def custom_upload_to(instance, filename):
+    '''Este metodo elimina de nuestra base de datos una imagen
+    de una instancia se esta ya tenia una imagen previa''' 
+    # Obtiene la imagen antigua de la instancia en cuestion
     old_instance = Material.objects.get(pk=instance.pk)
+    # Borra la imagen de la que se ha seleccionado
     old_instance.foto.delete()
     return 'Catalogo/Material' + filename
 
@@ -67,6 +71,8 @@ class Material(BaseObjeto):
     # Permitira mostrar el Link de descarga del detalle del Ingreso
     def ficha(self):
         ''' Llama al un template que sera drenderizado como un pdf'''
+        # Retorna un enlace en donde se podra visualizar la informacion
+        # del material en formato PDF
         return mark_safe(
             u'<a class="print" href="/Ficha_Kardex_PDF/?id=%s"'
             'target="_blank">'
@@ -85,20 +91,20 @@ class Material(BaseObjeto):
 
     # Metodo que mostara la img thubnail si no la encutra mostara otra
     def image_thub(self):
+        ''' Retornara una imagen para ser mostrada en al admin del material
+        en el catalogo del mismo, si no la encuetra coloca otra por default'''
+        # Valida si se le subio imagen al material
         if self.img_thubmnail:
+            # Y lo retorna en la lista de materiales
             return mark_safe(
                 '<img src="{url}" width="{width}" height={height} />'.format(
-                    url=self.img_thubmnail.url,
-                    width=50,
-                    height=50,
-                ))
+                    url=self.img_thubmnail.url, width=50, height=50, ))
+        # Si no encuentra mostrar una imagen generica
         else:
+            # Y lo retorna en la lista de materiales
             return mark_safe(
                 '<img src="{url}" width="{width}" height={height} />'.format(
-                    url='/../static/core/img/no-img.jpg',
-                    width=50,
-                    height=50,
-                ))
+                    url='/../static/core/img/no-img.jpg', width=50, height=50,))
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     image_thub.short_description = 'Imagen'
 
@@ -111,6 +117,12 @@ class Material(BaseObjeto):
         for detalle in Material_Detalle.objects.filter(
                 id_material=self.id):
                 total = total + detalle.cantidad
+        return total
+    # Sirve para mostrar la descripcion del metodo en el ADMIN
+    stock.short_description = 'Ingresado_Color'
+
+    def stock_color(self):
+        total = self.stock()
         if total == 0:
             total = '--'
         else:
@@ -119,7 +131,7 @@ class Material(BaseObjeto):
             '<span style="color: #000;">' +
             str(total) + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
-    stock.short_description = 'Ingresado'
+    stock_color.short_description = 'Ingresado'
 
     # Metodo que devolvera el stock de materiales Disponibles
     def disponible_int(self):
@@ -187,18 +199,36 @@ class Material(BaseObjeto):
 
     # Metodo que devolvera el stock de materiales Asignados
     def asignado_int(self):
+        '''Regresa la cantidad que se encuentra asignada independientemente
+        de a quien este asignado, solamente es una suma para reflejar un dato'''
+        # Se crea una variable total inicializada en 0
         total = 0
+        # Se importan los modelos de Asignacion y Material_Asignado
         from movimientos.models import Asignacion, Material_Asignado
+        # Se importan los modelos de Devolucion Y Material_Devuelto
         from movimientos.models import Devolucion, Material_Devuelto
 
+        # Se recorren las asignaciones en donde el estado sea aceptado
         for asignacion in Asignacion.objects.filter(estado=True):
+            # Se recorren los materiales asignados haciendo una validacion
+            # que estos pertenezcan a la instancia y que sena parte de
+            # la asignacion
             for detalle in Material_Asignado.objects.filter(
                         id_material=self.id, id_asignacion=asignacion):
+                        # Si los datos coinciden total sera igual a el mas
+                        # el dato en el campo cantidad de Material_Asignado
                         total = total + detalle.cantidad
+        # Se recorren las Devoluciones en donde el estado sea aceptado
         for devolucion in Devolucion.objects.filter(estado=True):
+            # Se recorren los materiales devueltos haciendo una validacion
+            # que estos pertenezcan a la instancia y que sena parte de
+            # la devolucion
             for detalle in Material_Devuelto.objects.filter(
                         id_material=self.id, id_devolucion=devolucion):
+                # Si los datos coinciden total sera igual a el menos
+                # el dato en el campo cantidad de Material_Devuelto
                 total = total - detalle.total_sum()
+        # Para terminar retorna el total
         return total
 
     # Metodo que devolvera el stock de materiales Asignados
@@ -227,59 +257,99 @@ class Material(BaseObjeto):
 
     # Metodo que devolvera el stock de materiales Transformados
     def transformado(self):
+        '''Este metodo muestra el total de materiales transformados
+        es una salida para el mismo sin darle de baja ya que paso a ser parte
+        de otro equipo o bien se encuentra formando parte de un modelo'''
+        # Se crea una variable total inicializada en 0
         total = 0
+        # se importan los modelos de Devolucion y Material_Devuelto
         from movimientos.models import Devolucion, Material_Devuelto
+
+        # Se recorren las Devoluciones en donde el estado sea aceptado
         for devolucion in Devolucion.objects.filter(estado=True):
+            # Se recorren los materiales devueltos haciendo una validacion
+            # que estos pertenezcan a la instancia y que sena parte de
+            # la devolucion
             for detalle in Material_Devuelto.objects.filter(
                         id_material=self.id, id_devolucion=devolucion):
+                # Si los datos coinciden total sera igual a el mas
+                # el dato en el campo transformados de Material_Devuelto
                 total = total + detalle.transformados
+        # Evalua si total es igual a cero (0)
         if total == 0:
+            # Si es igual a cero sustituye el 0 por dos guiones medios
             total = '--'
+        # De lo contrario si no es igual
         else:
-            pass
+            # No realizara nada
+            None
+        # Regresa un texto en formateado en html y se pasa total como variable
         return format_html(
-                '<span style="color: #520078; text-shadow: 0px 0px 2px yellow;">' +
-                str(total) + '</span>')
-    # Sirve para mostrar la descripcion del metodo en el ADMIN
+            '<span style="color: #000;">' +
+            str(total) + '</span>')
+    # Sirve para mostrar la descripción del método en el ADMIN
+
     transformado.short_description = 'Transformado'
 
+    # Metodo que retorna los materiales consumidos o usados
     def consumido(self):
+        '''Retornara los materiales que fueron utilizados para practicas o
+        para otros modelos didacticos formando en praticas siendo
+        parte aun del inventairo'''
+        # Se crea una variable total inicializada en 0
         total = 0
+        # se importan los modelos de Devolucion y Material_Devuelto
         from movimientos.models import Devolucion, Material_Devuelto
+
+        # Se recorren las Devoluciones en donde el estado sea aceptado
         for devolucion in Devolucion.objects.filter(estado=True):
+            # Se recorren los materiales devueltos haciendo una validacion
+            # que estos pertenezcan a la instancia y que sena parte de
+            # la devolucion
             for detalle in Material_Devuelto.objects.filter(
                         id_material=self.id, id_devolucion=devolucion):
+                # Si los datos coinciden total sera igual a el mas
+                # el dato en el campo desechos de Material_Devuelto
                 total = total + detalle.desechados
-        if total == 0:
-            total = '--'
-        else:
-            pass
-        return format_html(
-                '<span style="color: #000; text-shadow: 0px 0px 1px #919191;">' +
-                str(total) + '</span>')
+        return total
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     consumido.short_description = 'De Baja'
 
+    def consumido_color(self):
+        total = self.consumido()
+        # Evalua si total es igual a cero (0)
+        if total == 0:
+            # Si es igual a cero sustituye el 0 por dos guiones medios
+            total = '--'
+        # De lo contrario si no es igual
+        else:
+            # No realizara nada
+            None
+        # Regresa un texto en formateado en html y se pasa total como variable
+        return format_html(
+                '<span style="color: #000; text-shadow: 0px 0px 1px #919191;">' +
+                str(total) + '</span>')
+
+    # Metodo que retorna el monto total en bodega
     def monto_bodega(self):
+        '''Devuelve el monto de materiales en bodega mostrandose asi
+        en listado de que forma nuestro catalogo, tomara los datos
+        de dos metodos que ya fueron utilizados con anterioridad
+        para aprovechar la reautilzacion del codigo'''
+        # Se crea una variable total inicializada en 0
         total = 0
+        # Se crea una variable par el subtotal inicializada en 0
         sub = 0
         # Buscamos traer el total de consumidos
-        consumido = 0
-        from movimientos.models import Devolucion, Material_Devuelto
-        for devolucion in Devolucion.objects.filter(estado=True):
-            for detalle in Material_Devuelto.objects.filter(
-                        id_material=self.id, id_devolucion=devolucion):
-                    consumido = consumido + detalle.desechados
-        # traemos el total ingresado a bodega
-        bodega = 0
-        from inventario.models import Material_Detalle
-        for detalle in Material_Detalle.objects.filter(
-                id_material=self.id):
-                bodega = bodega + detalle.cantidad
+        # creamos una variable de consumidos y traemos el metodo
+        consumido = self.consumido()
+        # traemos el total ingresado a bodega por el metodo stock
+        bodega = self.stock()
         # Realizamos la resta del subtotal
         sub = bodega - consumido
-        # Traemos el ultimo detalle de ingreso segun el material
+        # Traemos modelo importandolo
         from inventario.models import Material_Detalle
+        # Traemos el ultimo detalle de ingreso segun el material
         ultimo = Material_Detalle.objects.filter(
             id_material=self.id).last()
         # Recoremos los materiales para comparar con el ultimo
@@ -301,7 +371,12 @@ class Material(BaseObjeto):
                 str(total) + '</span>')
     monto_bodega.short_description = 'Monto Total'
 
+    # Metodo que devuelve la representacion de la instancia
     def __str__(self):
+        '''Este metodo retorna el nombre y la marca se utilza un
+        formateo de texto en donde se coloca "%s"para luego ser
+        sustituido por un campo o variable'''
+        # retorna al terminar el metodo
         return '%s, Marca: %s' % (self.nombre, self.id_Marca)
 
 
@@ -326,33 +401,55 @@ class Equipo(BaseObjeto):
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     image_thub.short_description = 'Imagen'
 
+    # Metodo Stock Mostrara la cantidad ingresada
     def stock(self):
+        ''''Este metodo servira para llevar un control de cuantos
+        materiales o equipos han sido ingresados, esto no define que esten
+        disponibles, sin embargo es fundamental para saber el monto'''
+        # Se crea una variable total inicializada a 0
         total = 0
         # Importamos las librerias de Inventario
         from inventario.models import Equipo_Ingreso
-
+        # Recorremos los detalles de Equipos Ingresados
+        # Filtrando que los equipos sean igual a la instancia
         for detalle in Equipo_Ingreso.objects.filter(
                 id_equipo=self.id):
+                # Por cada equipo que se encuentre igual a la instancia total aumenta en 1
                 total = total + 1
+        # Evalua si total es igual a cero (0)
         if total == 0:
+            # Si es igual cambia el valor a dos guiones medios, para no mostrar un 0
             total = '--'
+        # De lo contrario si no es igual
         else:
+            # No realizara nada
             None
+        # Metodo que regresa un texto en formateado en html y se pasa total como variable
         return format_html(
             '<span style="color: #000;">' +
             str(total) + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     stock.short_description = 'Ingresado'
 
+    # Evaula cuantos Equipos o Materiales estan disponibles
     def disponible(self):
+        '''Por medio de un recorrido y comparacion se evalua
+        cuantos equipos o materiales se encuentran disponibles'''
+        # Se crea una variable total inicializada a 0
         total = 0
         # Importamos las librerias de Inventario
         from inventario.models import Equipo_Ingreso, Ingreso
-
+        # Se recorre para saber que ingresos estan dispobles
+        # comprobandose por el campo estado de ingreso
         for ingreso in Ingreso.objects.filter(estado=True):
+            # Se recorren los equipos de cada ingreso en donde 
+            # el equipo conisida con el ingreso y con la instancia
             for detalle in Equipo_Ingreso.objects.filter(
                         id_equipo=self.id, id_ingreso=ingreso):
+                        # por cada equipo que cumpla con el requisito
+                        # total aumenta en uno
                         total = total + 1
+        # Se regresa la variable total ya con el nuevo nuemro
         return total
 
     def disponible_color(self):

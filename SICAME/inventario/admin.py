@@ -3,15 +3,21 @@ from .models import *
 
 # Register your models here.
 
-
+# Creacion de Clase de tipo admin.TabularInline
 class Material_DetalleInline(admin.TabularInline):
+    # Modelo el cual se mostrara en linea
     model = Material_Detalle
+    # Instancias extras a crear
     extra = 0
+    # Instancias Minimas a crear
     min_num = 0
+    # Campo de busqueda por id o identificador
     raw_id_fields = ('id_material',)
-    #  Crea un campo de busqueda y debe poseer un search_fields
-    #  en el modelo inicial para poder referenciar por esos campos
+    # Campo de busqueda por buscador 
+    '''Crea un campo de busqueda y debe poseer un search_fields
+    en el modelo inicial para poder referenciar por esos campos'''
     autocomplete_fields = ['id_material']
+    # Permite ordenar los campos del formualario del modelo
     fieldsets = (
         (None, {
             'fields': (('id_material', 'cantidad', 'monto', 'ubicacion'), (
@@ -61,6 +67,7 @@ class AdminMaterial_Detalle(admin.ModelAdmin):
 
 
 class AdminIngreso(admin.ModelAdmin):
+    # Agrega las clases en linea que se desean visualizar
     inlines = [Material_DetalleInline, Equipo_IngresoInline]
     readonly_fields = ['create_by', 'fecha', 'hora']
     fieldsets = (

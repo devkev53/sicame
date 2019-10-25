@@ -29,7 +29,8 @@ from django.contrib.auth.models import User
 from inventario.models import Material_Detalle
 
 # Importamos el MODELS para trabajar con el PERFIL * '''
-from catalogo.models import Material
+from catalogo.models import Material, Equipo
+from inventario.models import Equipo_Ingreso
 
 # Importamos la libreria para random
 import random
@@ -145,6 +146,27 @@ class Asignacion(models.Model):
     def save(self):
         self.set_referncia()
         super(Asignacion, self).save()
+
+
+class Equipo_Asignado(models.Model):
+    id_asignacion = models.ForeignKey(
+        Asignacion, on_delete=models.CASCADE,
+        verbose_name='Ingreso')
+    id_equipo = models.ForeignKey(
+        Equipo_Ingreso, on_delete=models.CASCADE,
+        verbose_name='Equipo')
+
+    def id_asig(self):
+        asignacion = Asignacion.objects.filter(
+            id_no=self.id_asignacion.id_no).get()
+        return '%s-M%s' % (asignacion.id_no, self.id)
+
+    class Meta:
+        verbose_name = "Equipo_Asignado"
+        verbose_name_plural = "Equipo_Asignados"
+
+    def __str__(self):
+        return self.id_asig()
 
 
 class Material_Asignado(models.Model):
@@ -321,7 +343,7 @@ class Devolucion(models.Model):
 class Material_Devuelto(models.Model):
     id_devolucion = models.ForeignKey(
         Devolucion, on_delete=models.CASCADE,
-        verbose_name='Ingreso')
+        verbose_name='Devolucion')
     buenos = models.PositiveIntegerField(
         'Sin Utilizar', default=0,
         help_text='Material que no se utilizo')
@@ -443,10 +465,44 @@ class Material_Devuelto(models.Model):
         self.total_sum()
         super(Material_Devuelto, self).save()
 
+    # Llamamos el memtodo clean para sobrescribir el mismo
     def clean(self, **kwargs):
+        '''Obtiene los campos de formulario para ser evaluados
+        o bien modificados, segun las isntrucciones que se asignen'''
+        # Obtiene los datos del formualrio de la clase antes de guardar
         super(Material_Devuelto, self).clean()
+        # Modifica el campo total
         self.total_sum()
+        # Valida que se cuente con material para asignar
         self.validation_material()
+
+
+ESTADOS_DEL_EQUIPO = [
+    ('Bno.', 'Bueno'),
+    ('Mlo.', 'Malo'),
+    ('Rlr.', 'Con Daño'),
+]
+
+
+class Equipo_Devuelto(models.Model):
+    id_devolucion = models.ForeignKey(
+        Devolucion, on_delete=models.CASCADE,
+        verbose_name='Devolucion')
+    id_equipo = models.ForeignKey(
+        Equipo_Ingreso, on_delete=models.CASCADE,
+        verbose_name='Equipo')
+    estado = models.CharField(
+        max_length=4,
+        choices=ESTADOS_DEL_EQUIPO,
+        default='Bueno',)
+    comentarios = models.TextField('Comentarios')
+
+    class Meta:
+        verbose_name = "Equipo Devuelto"
+        verbose_name_plural = "Equipos Devueltos"
+
+    def __str__(self):
+        return '%s' % (self.id_devolucion)
 
 
 class Recepccion(Devolucion):

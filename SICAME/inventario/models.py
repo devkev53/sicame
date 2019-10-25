@@ -131,18 +131,28 @@ class Base_Detalle(models.Model):
 
     # Metodo que mostrara los precios por unidad
     def por_unidad(self):
+        '''Este metodo se encarga de realizar una division
+        sobre la el monto y la cantidad para obtener el valor
+        unitario de cada material'''
         try:
+            '''ntentamos obtener el monto y la cantidad
+            y realizamos la revision''' 
             pu = self.monto/self.cantidad
             return ("%.2f" % pu)
         except:
+            # De lo contario no regresamos nada
             return None
     # Agrega una descripcion al metodo para mostrar en el Admin
     por_unidad.short_description = 'Precio Unidad'
 
     # Metodo que mostrara los precios por unidad
     def fecha_ingreso(self):
+        '''Metodo que recoje la fecha de ingreso del modelo Ingreos'''
+        # Obtenemos el modelo ingreso referente al detalle
         ingreso = Ingreso.objects.filter(id=self.id_ingreso.id).get()
+        # Creamos la variable de fecha con el dato del Ingreso
         fecha = ingreso.fecha
+        # Devolvemos la fecha para mostrarla en detalle
         return fecha
     # Agrega una descripcion al metodo para mostrar en el Admin
     fecha_ingreso.short_description = 'Fecha Ingreso'
@@ -217,9 +227,14 @@ class Material_Detalle(Base_Detalle):
                 monto_saldo = monto_saldo + detalles.monto
         return monto_saldo
 
+    # Metodo para calcular el valor promedio ponderado
     def valor_promedio_ponderado(self):
-        promedio = 0.00
+        '''Este metodo permitira traer el valor promedio ponderado
+        servira para llamar el ulimo detalle de maetrial y utilizrlo
+        en el Kardex'''
+        # Se crea una variable y se realiza la division para obtener eldato
         promedio = self.saldo_valores() / self.saldo_cantidad()
+        # Se retorna el valor que se obtiene
         return promedio
     valor_promedio_ponderado.short_description = 'P.P.P.'
 
@@ -227,10 +242,15 @@ class Material_Detalle(Base_Detalle):
         promedio = 0.00
         promedio = self.saldo_valores() / self.saldo_cantidad()
         return ("%.2f" % promedio)
-    valor_promedio_ponderado.short_description = 'P.P.P.'
+    valor_promedio_ponderado_str.short_description = 'P.P.P.'
 
+    # Definicion de variable estado
     def estado(self):
+        '''Metodo que recoje la fecha de ingreso del modelo Ingreos'''
+        # Obtenemos el modelo ingreso referente al detalle
+        # Creamos la variable de estado con el dato del Ingreso
         estado = self.id_ingreso.estado
+        # Devolvemos el estado para mostrarla en detalle
         return estado
 
     class Meta:
@@ -241,8 +261,13 @@ class Material_Detalle(Base_Detalle):
     def __str__(self):
         return self.ref_m()
 
+    # Llamamos al metodo save para sobreescribirlo
     def save(self):
+        '''Modificaion del metodo save predeterminado
+        de los modelos de django'''
+        # Se ejecuta este metodo antes de guardar la instancia
         self.valor_promedio_ponderado()
+        # Modifica la Instancia actual antes de guardar en la base de datos
         super(Material_Detalle, self).save()
 
 

@@ -24,13 +24,27 @@ class Material_AsignadoInline(admin.TabularInline):
         }),)
 
 
+class Equipo_Asignado_Inline(admin.TabularInline):
+    model = Equipo_Asignado
+    extra = 1
+    raw_id_fields = ('id_equipo',)
+    #  Crea un campo de busqueda y debe poseer un search_fields
+    #  en el modelo inicial para poder referenciar por esos campos
+    autocomplete_fields = ['id_equipo']
+    fieldsets = (
+        (None, {
+            'fields': (('id_equipo'), (
+                ))
+        }),)
+
+
 class AdminMaterial_Asignado(admin.ModelAdmin):
     list_display = ['id_asig', 'id_material', 'cantidad', 'monto']
     list_filter = ['id_asignacion__fecha', 'id_asignacion__estado']
 
 
 class AdminAsignacion(admin.ModelAdmin):
-    inlines = [Material_AsignadoInline, ]
+    inlines = [Material_AsignadoInline, Equipo_Asignado_Inline]
     readonly_fields = ['create_by', 'id_no', 'fecha', 'hora']
     fieldsets = (
         (None, {
@@ -122,8 +136,24 @@ class Material_DevueltoInline(admin.StackedInline):
         }),)
 
 
+class Equipo_Devuelto_Inline(admin.StackedInline):
+    model = Equipo_Devuelto
+    extra = 0
+    min_num = 1
+    raw_id_fields = ('id_equipo',)
+    #  Crea un campo de busqueda y debe poseer un search_fields
+    #  en el modelo inicial para poder referenciar por esos campos
+    autocomplete_fields = ['id_equipo']
+    fieldsets = (
+        (None, {
+            'fields': ((
+                'id_equipo', 'estado', 'comentarios',), (
+                ))
+        }),)
+
+
 class AdminDevolucion(admin.ModelAdmin):
-    inlines = [Material_DevueltoInline, ]
+    inlines = [Material_DevueltoInline, Equipo_Devuelto_Inline]
     readonly_fields = ['create_by', 'id_no', 'fecha', 'hora', 'assigned_to']
     fieldsets = (
         (None, {
@@ -175,7 +205,7 @@ class AdminDevolucion(admin.ModelAdmin):
 
 
 class AdminRecepccion(admin.ModelAdmin):
-    inlines = [Material_DevueltoInline, ]
+    inlines = [Material_DevueltoInline, Equipo_Devuelto_Inline]
     readonly_fields = ['create_by', 'id_no', 'fecha', 'hora', 'assigned_to']
     fieldsets = (
         (None, {
