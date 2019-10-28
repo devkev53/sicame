@@ -1,0 +1,175 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block coltype %}colMS{% endblock %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+
+{% if app_list %}
+    {% for app in app_list %}
+        <div class="app-{{ app.app_label }} module">
+        <table>
+        <caption>
+            <a href="{{ app.app_url }}" class="section" title="{% blocktrans with name=app.name %}Models in the {{ name }} application{% endblocktrans %}">{{ app.name }}</a>
+        </caption>
+        {% for model in app.models %}
+            <tr class="model-{{ model.object_name|lower }}">
+            {% if model.admin_url %}
+                <th scope="row"><a href="{{ model.admin_url }}">{{ model.name }}</a></th>
+            {% else %}
+                <th scope="row">{{ model.name }}</th>
+            {% endif %}
+
+            {% if model.add_url %}
+                <td><a href="{{ model.add_url }}" class="addlink">{% trans 'Add' %}</a></td>
+            {% else %}
+                <td>&nbsp;</td>
+            {% endif %}
+
+            {% if model.admin_url %}
+                {% if model.view_only %}
+                <td><a href="{{ model.admin_url }}" class="viewlink">{% trans 'View' %}</a></td>
+                {% else %}
+                <td><a href="{{ model.admin_url }}" class="changelink">{% trans 'Change' %}</a></td>
+                {% endif %}
+            {% else %}
+                <td>&nbsp;</td>
+            {% endif %}
+            </tr>
+        {% endfor %}
+        </table>
+        </div>
+    {% endfor %}
+{% else %}
+    <p>{% trans "You don't have permission to view or edit anything." %}</p>
+{% endif %}
+</div>
+{% endblock %}
+
+{% block sidebar %}
+<div id="content-related">
+    <div class="contenedor">
+        <div class="contenedor2">
+            <span class="icon-info-with-circle icon icon2"></span>
+            <span class="text text2">Impresion de Informes</span>
+        </div>
+            <div class="contenedorboton">
+                <a href="{% url 'catalogo-PDF' %}" target="_blank">
+                    <span class="icon-open-book icon"></span>
+                    <span class="text" style="aling:center;">Imprimir Catalogo</span>
+                    <span class="icon-print2 text" style="font-size:40px; padding-right:10px;"></span>
+                </a>
+            </div>
+            <div class="contenedorboton">
+                <a href="{% url "informe 2" %}" target="blank">
+                    <span class="icon-notebook-list1 icon"></span>
+                    <span class="text">Imprimir Ingresos y Egresos</span>
+                    <span class="icon-print2 text" style="font-size:40px; padding-right:10px;"></span>
+                </a>
+            </div>
+            <div class="contenedorboton">
+                <a href="">
+                    <span class="icon-compare_arrows icon"></span>
+                    <span class="text">Imprimr Asignaciones y Devoluciones</span>
+                    <span class="icon-print2 text" style="font-size:40px; padding-right:10px;"></span>
+                </a>
+            </div>
+    </div>
+    <!-- Verificamos si es super Usuario para mostrar las Acciones -->
+    {% if request.user.is_superuser %}
+    <div class="module" id="recent-actions-module">
+        <h2>{% trans 'Recent actions' %}</h2>
+        <h3>{% trans 'My actions' %}</h3>
+            {% load log %}
+            {% get_admin_log 10 as admin_log for_user user %}
+            {% if not admin_log %}
+            <p>{% trans 'None available' %}</p>
+            {% else %}
+            <ul class="actionlist">
+            {% for entry in admin_log %}
+            <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
+                {% if entry.is_deletion or not entry.get_admin_url %}
+                    {{ entry.object_repr }}
+                {% else %}
+                    <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                {% endif %}
+                <br>
+                {% if entry.content_type %}
+                    <span class="mini quiet">{% filter capfirst %}{{ entry.content_type }}{% endfilter %}</span>
+                {% else %}
+                    <span class="mini quiet">{% trans 'Unknown content' %}</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+    </div>
+    {% else %}
+    {%endif%}
+</div>
+{% endblock %}
+{% block extrastyle %}
+    {{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/dashboard.css" %}">
+    <style>
+    .icon2{
+        padding: 5px;
+    }
+    .contenedorboton a{
+        color:#265787;
+        text-decoration: none;
+    }
+    .contenedorboton a:hover{
+        color: #000;
+        text-decoration: none;
+    }
+    .contenedorboton a:active{
+        color: #000;
+        text-decoration: none;
+    }
+    .contenedorboton{
+        padding-top: 5px;
+        padding-left: 15px;
+    }
+    .text{
+        font-weight: bold;
+        padding-left: 10px;
+        display: table-cell; 
+        vertical-align: middle;
+    }
+    .icon{
+        padding-left: 10px;
+        font-size: 50px;
+        display: table-cell; 
+        vertical-align: middle;
+    }
+     .contenedor{
+        width: 100%;
+        border-bottom: 1px #000 solid;
+        border-left: 1px #000 solid;
+        border-right: 1px #000 solid;
+        border-radius: 15px;
+        padding-right: 8px;
+        margin-bottom: 10px;
+    }
+    .contenedor2{
+        width: 100%;
+        border: 5px #265787 solid;
+        border-radius: 15px;
+        box-shadow: 3px 3px 3px #616669;
+    }
+    .text2{
+        font-family: 'Russo One', sans-serif;
+        font-weight: normal;
+    }
+    .contenedor h2{
+        font-family: 'Russo One', sans-serif;
+        font-weight: normal;
+        text-align: center;
+    }
+    </style>
+{% endblock%}

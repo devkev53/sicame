@@ -48,6 +48,11 @@ class Admin_Equipo_Ingreso(admin.ModelAdmin):
     search_fields = ['id_material', 'ref_m']
     autocomplete_fields = ['id_equipo', 'id_Marca']
     list_filter = ['id_equipo', 'id_Marca']
+    actions = ['list_equipo']
+
+    def list_equipo(self, request, queryset):
+        return redirect('/PDF_Equipos')
+    list_equipo.short_description = 'Imprimir Listado'
 
 
 class AdminMaterial_Detalle(admin.ModelAdmin):
@@ -64,6 +69,11 @@ class AdminMaterial_Detalle(admin.ModelAdmin):
         'ubicacion', 'valor_promedio_ponderado_str']
     search_fields = ['id_material', 'ref_m']
     list_filter = ['id_ingreso__fecha', 'id_ingreso__referencia']
+    actions = ['list_material']
+
+    def list_material(self, request, queryset):
+        return redirect('/PDF_Materiales')
+    list_material.short_description = 'Imprimir Listado'
 
 
 class AdminIngreso(admin.ModelAdmin):
@@ -82,13 +92,17 @@ class AdminIngreso(admin.ModelAdmin):
     search_fields = ['referencia']
     list_filter = ['create_by', 'fecha']
     list_display_links = ('ref', )
-    actions = ['disponible_update']
+    actions = ['disponible_update', 'list_ingreso']
     # Nos permite editar cualquier campo de la instancia desde
     # la vsta con el listado de instanacias creadas
     list_editable = []
     # Cuando editamos una instancia ya creada remplaza el
     # Guardar por un guardar como nuevo si este esta en True
     save_as = False
+
+    def list_ingreso(self, request, queryset):
+        return redirect('/PDF_Ingresos')
+    list_ingreso.short_description = 'Imprimir Listado'
 
     def disponible_update(self, request, queryset):
         for row in queryset.filter(estado=False):

@@ -16,4 +16,9 @@ urlpatterns = [
     url(r"^Ficha_Kardex_PDF/(?P<id>)", Ficha_Kardex_PDF.as_view()),
     # path de la tarjeta kardex
     url(r"^Tarjeta_Kardex_PDF/(?P<id>)", Tarjeta_Kardex_Equipo_PDF.as_view()),
+    # path para la impresion de listado de equipos
+    url(r"^Listado_Equipos_PDF/", Listado_Equipos.as_view()),
+    # path para la impresion de listado de materiales
+    url(r"^Listado_Materiales_PDF/", Listado_Materiales.as_view(),
+        name='list_materiales'),
 ]

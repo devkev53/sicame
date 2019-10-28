@@ -90,6 +90,14 @@ class Ingreso(models.Model):
     # Agrega una descripcion al metodo para mostrar en el Admin
     ref.short_description = 'Referencia'
 
+    def monto_ingreso(self):
+        monto = 0
+        for material in Material_Detalle.objects.filter(id_ingreso=self.id):
+            monto = monto + material.monto
+        for equipo in Equipo_Ingreso.objects.filter(id_ingreso=self.id):
+            monto = monto + equipo.monto
+        return monto
+
     class Meta:
         verbose_name = "Ingreso"
         verbose_name_plural = "Ingresos"

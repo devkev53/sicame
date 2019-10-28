@@ -70,9 +70,11 @@
         {% endblock %}
         {% block nav-global %}{% endblock %}
     </div>
+    <!-- Aqui Termina el Problema-->
     <!-- END Header -->
     {% block breadcrumbs %}
     <div class="breadcrumbs">
+    <!--Sera Este enlace..?-->
     <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
     {% if title %} &rsaquo; {{ title }}{% endif %}
     </div>

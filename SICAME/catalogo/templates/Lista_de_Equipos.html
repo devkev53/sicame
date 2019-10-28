@@ -1,0 +1,116 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Intecap | SICAME </title>
+    <link rel="stylesheet" href="{% static "core/css/Bootstrap/estilos-intecap.css" %}">
+    <link rel="stylesheet" href="{% static "core/css/fuentes.css" %}">
+    <link rel="stylesheet" href="{% static "core/css/Bootstrap/Bootstrap.min.css" %}">
+    <link href="{% static "core/fonts/font-kp/fonts/style.css" %}" rel="stylesheet" type="text/css">
+</head>
+<style>
+	@page {
+	            size: legal landscape; margin: 2cm;
+	}
+	h1.title{
+		font-style: bold;
+		font-size: 22px;
+		text-align: center;
+	}
+	h3.articulo{
+		font-size: 14px;
+	}
+	strong.nombre{
+		text-decoration: underline;
+	}
+	footer{
+		position: absolute;
+        left: 0;
+        bottom: 0;
+        height: 100px;
+        color: white;
+        text-align: center;
+	}
+	.kardex{
+		border: 1px solid #ddd;
+		border-style: solid;
+	}
+	th{
+		padding-top: 4px;
+		margin-left: 4px;
+		margin-right: 4px;
+		font-size: 14px;
+	}
+	td{
+		padding-top: 4px;
+		margin-left: 4px;
+		margin-right: 4px;
+		font-size: 12px;
+	}
+	img.material-img{
+		display: inline;
+		width: 100px;
+	}
+	table tr .encabezado th{
+		color: #fff;
+		background-color: #2B2B2B;
+	}
+	table tr .sub-encabezado th{
+		color: #fff;
+		background-color: #505050;
+	}
+	.content-table {
+	  	border: 1px solid #424242;
+	}
+	.no-dispo td{
+		background-color: #FFBEBE;
+	}
+	.dev td{
+		background-color: #ECECEC;
+	}
+</style>
+<body>
+	<header class="header">
+		<div class="logos">
+				<img src="../core/static/core/img/logo-intecap.png" height="75">
+		</div>
+		<p>Impreso el {% now "SHORT_DATETIME_FORMAT" %}</p>
+		<h1 class="title">Listado de Equipos Didacticos en Catalogo</h1>
+		<hr class="mute">
+		<br>
+	</header>
+	<body>
+		<table class="kardex">
+		  <tr class="encabezado">
+		    <th colspan="2" width="500px">NOMBRE</th>
+		    <th style="width: 175px">INGRESADO</th>
+		    <th style="width: 175px">DISPONIBLE</th>
+		    <th>TOTAL ASIGNADO</th>
+		    <th>DE BAJA</th>
+		    <th>VALOR EN BODEGA</th>
+		  </tr>
+		  {% for equipo in equipo  %}
+		  	<tr>
+		  		<td align="center">{{equipo.image_thub}}</td>
+		  		<td align="center">{{equipo.nombre}}</td>
+		  		<td align="center">{{equipo.stock}}</td>
+		  		<td align="center">{{equipo.disponible}}</td>
+		  		<td align="center">{{equipo.asignado_color}}</td>
+		  		<td align="center">{{equipo.de_baja}}</td>
+		  		<td align="center">{{equipo.monto_bodega}}</td>
+		  	</tr>
+		  {% endfor %}
+		</table>
+		{% for n in dic_Kardex  %}
+			{{n|make_list}}
+		{% endfor %}
+	</body>
+	<footer>
+		<br>	
+		<center><img class="sicame-img" src="../core/static/core/img/Logo SICAME1.png" height="65" alt=""></center>
+	</footer>
+</body>
+</html>

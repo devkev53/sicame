@@ -35,3 +35,45 @@ class Ingreso_PDF(PDFTemplateView):
             equipo=equipo,
             **kwargs
             )
+
+
+class Listado_Ingresos(PDFTemplateView):
+    template_name = 'Lista_de_Ingresos.html'
+
+    def get_context_data(self, **kwargs):
+        equipo = Ingreso.objects.all()
+
+        return super(Listado_Ingresos, self).get_context_data(
+            pagesize='Legal landscape',
+            title='Ingreso',
+            equipo=equipo,
+            **kwargs
+            )
+
+
+class Listado_Detalle_Materiales(PDFTemplateView):
+    template_name = 'Lista_de_Detalle_Materiales.html'
+
+    def get_context_data(self, **kwargs):
+        equipo = Material.objects.all()
+
+        return super(Listado_Detalle_Materiales, self).get_context_data(
+            pagesize='Legal landscape',
+            title='Ingreso',
+            equipo=equipo,
+            **kwargs
+            )
+
+
+class Listado_Detalle_Equipos(PDFTemplateView):
+    template_name = 'Lista_de_Detalle_Equipos.html'
+
+    def get_context_data(self, **kwargs):
+        equipo = Material.objects.all()
+
+        return super(Listado_Detalle_Equipos, self).get_context_data(
+            pagesize='Legal landscape',
+            title='Ingreso',
+            equipo=equipo,
+            **kwargs
+            )

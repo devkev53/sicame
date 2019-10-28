@@ -1,0 +1,155 @@
+	{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Intecap | SICAME </title>
+    <link rel="stylesheet" href="{% static "core/css/Bootstrap/estilos-intecap.css" %}">
+    <link rel="stylesheet" href="{% static "core/css/fuentes.css" %}">
+    <link rel="stylesheet" href="core/">
+    <link rel="stylesheet" href="../core/static/core/css/fuentes.css">
+    <link rel="stylesheet" href="{% static "core/css/Bootstrap/Bootstrap.min.css" %}">
+    <link href="{% static "core/fonts/font-kp/fonts/style.css" %}" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="../core/static/core/fonts/font-kp/fonts/style.css" type="text/css">
+</head>
+<body>
+	<header class="header">
+		<div class="logos">
+				<img src="../core/static/core/img/logo-intecap.png" height="75">
+		</div>
+		<p>Impreso el {% now "SHORT_DATETIME_FORMAT" %}</p>
+		<h1 class="title">Ingreso y Egresos en SICAME</h1>
+		<hr>
+		<div class="sub-encabezado">
+			<h2 align="center">Informe de Ingresos y Egresos de Inventario a Sistema SICAME</h2>
+		</div>
+		<table class="table-encabezado">
+				<tr>
+					<td>Impreso por:</td>
+					<td align="right" width="70px" style="font-weight:bold;">Ingresos</td>
+					<td class="in" width="50px" style="font-weight:bold;">Verde</td>
+				</tr>
+				<tr>
+					<td>Fecha y hora de impresion: {{tod}}</td>
+					<td align="right" style="font-weight:bold;">Egresos</td>
+					<td class="out" width="50px" style="font-weight:bold;">Rojo</td>
+				</tr>
+			</table>
+		<hr>
+	</header>
+	<body>
+		<table class="ingresos" align="center">
+					<header>
+						<tr class="encabezado">
+							<th colspan="6" align="center"><h1>INGRESOS y EGRESOS</h1></td>
+						</tr>
+						<tr class="encabezado">
+							<th width="170px">REFERENCIA</th>
+							<th width="170px">CREADO POR</th>
+							<th width="170px">FECHA</th>
+							<th width="170px">HORA</th>
+							<th width="170px">ESTADO</th>
+							<th width="170px">MONTO</th>
+						</tr>
+					</header>
+					<tbody>
+						{% for datos in datos  %}
+							<tr class=
+								"{% if datos.is == 'in' %}
+										in
+								{% else %}
+										out
+								{% endif %}">
+								<td align="center">{{datos.ref}}</td>
+								<td align="center">{{datos.creado}}</td>
+								<td align="left">{{datos.fecha}}</td>
+								<td align="center">{{datos.hora}}</td>
+								<td align="center">
+									{% if datos.estado == True %}
+										<img src="../core/static/core/img/check.png" height="25px">
+									{% else %}
+										<img src="../core/static/core/img/uncheck.png" height="25px">
+									{% endif %}
+								</td>
+								<td align="left" style="padding-left:5px;">Q. {{datos.monto}}</td>
+							</tr>
+						{% endfor %}
+					</tbody>
+					<tfoot>
+						<tr class="encabezado">
+							<th colspan="5">TOTAL</th>
+							<th>Q. {{total}}</th>
+						</tr>
+					</tfoot>
+		</table>
+	</body>
+	<footer>
+		<br>	
+		<center><img class="sicame-img" src="../core/static/core/img/Logo SICAME1.png" height="65" alt=""></center>
+	</footer>
+</body>
+<style>
+	@page {
+	    size: legal landscape; margin: 1cm;
+	}
+	footer, header{
+		display: float;
+	}
+	h3{
+		font-weight: normal;
+	}
+	.table-encabezado{
+		padding-top: -10px;
+		margin-top: -10px;
+	}
+	td, th{
+		padding-top: 5px;
+		padding-left: 5px;
+		padding-right: 5px;
+	}
+	th{
+		font-size: 10px;
+		font-weight: bold;
+	}
+	h2{
+		padding-bottom: -20px;
+	}
+	div .sub-encabezado{
+		padding-bottom: -10px;
+	}
+	h1.title{
+		font-style: bold;
+		font-size: 22px;
+		text-align: center;
+		padding-bottom: -30px;
+	}
+	.contenedor{
+		width: 	100%;
+
+	}
+	.ingresos{
+		border: 1px solid #424242;
+		width: 40%;
+		float: left;
+	}
+	.egresos{
+		display: inline-table;
+		float: right;
+		width: 40%;
+	}
+	.in td, .in{
+		background-color: #F6FFAE;
+		border: 1px solid #424242;
+	}
+	.out td, .out{
+		background-color: #F9DBFF;
+		border: 1px solid #424242;
+	}
+	.encabezado th{
+		background-color: #5B5B5B;
+		color: white;
+	}
+</style>
+</html>

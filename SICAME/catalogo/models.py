@@ -329,6 +329,8 @@ class Material(BaseObjeto):
         return format_html(
                 '<span style="color: #000; text-shadow: 0px 0px 1px #919191;">' +
                 str(total) + '</span>')
+    # Sirve para mostrar la descripcion del metodo en el ADMIN
+    consumido_color.short_description = 'De Baja'
 
     # Metodo que retorna el monto total en bodega
     def monto_bodega(self):
@@ -369,7 +371,7 @@ class Material(BaseObjeto):
         return format_html(
                 '<span style="color: ' + color + '; font-weight: bold;">Q. ' +
                 str(total) + '</span>')
-    monto_bodega.short_description = 'Monto Total'
+    monto_bodega_color.short_description = 'Monto Total'
 
     # Metodo que devuelve la representacion de la instancia
     def __str__(self):

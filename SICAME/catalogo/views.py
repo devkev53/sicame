@@ -60,14 +60,29 @@ class Tarjeta_Kardex_Equipo_PDF(PDFTemplateView):
             cant=None, val=None, prome=None'''
 
 
-class Listado_Material(PDFTemplateView):
-    template_name = 'Kardex_Material.html'
+class Listado_Equipos(PDFTemplateView):
+    template_name = 'Lista_de_Equipos.html'
 
     def get_context_data(self, **kwargs):
-        material = Material.objects.all()
+        equipo = Equipo.objects.all()
 
-        return super(Ficha_Kardex_PDF, self).get_context_data(
+        return super(Listado_Equipos, self).get_context_data(
             pagesize='Legal landscape',
-            material=material,
+            title='Ingreso',
+            equipo=equipo,
+            **kwargs
+            )
+
+
+class Listado_Materiales(PDFTemplateView):
+    template_name = 'Lista_de_Materiales.html'
+
+    def get_context_data(self, **kwargs):
+        equipo = Material.objects.all()
+
+        return super(Listado_Materiales, self).get_context_data(
+            pagesize='Legal landscape',
+            title='Ingreso',
+            equipo=equipo,
             **kwargs
             )

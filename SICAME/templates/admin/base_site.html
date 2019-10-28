@@ -7,9 +7,10 @@
 
 {% block branding %}
 <h1 id="site-name">
+    <!--O es este el encale maldito-->
     <a href="{% url 'admin:index' %}">
         <img class="intecap-img" src={% static "core/img/logo-intecap.png" %} height="75" alt="">
-        
+    </a>
         <!--img class="intecap-img" src={% static "core/img/no-img.jpg" %} height="75" alt=""-->
 </h1>
 {% endblock %}
@@ -189,7 +190,7 @@
             background: #fff;
             border: 1px solid #fff;
         }
-        #content-related{
+        #recent-actions-module{
             border-top-left-radius: 17px;
             border-top-right-radius: 17px;
             border-bottom-left-radius: 17px;
@@ -264,6 +265,10 @@
             border-bottom-right-radius: 15px;
             padding-left: 15px;
             box-shadow: 3px 3px 1px #616669;
+        }
+        #id_password{
+            padding-bottom: 5px;
+            margin-bottom: 10px;
         }
         a:link, a:visited {
             color: black;

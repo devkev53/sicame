@@ -29,6 +29,7 @@ urlpatterns = [
     path('', admin.site.urls),
     # Url's Para los PDF en Admin
     # Se crea el path para agregar los urls al sistema
+    path('', include('core.urls')),
     path('', include('catalogo.urls')),
     path('', include('inventario.urls')),
     path('', include('registration.urls')),

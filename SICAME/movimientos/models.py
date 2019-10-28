@@ -291,6 +291,18 @@ class Devolucion(models.Model):
         self.id_no = self.id_no
         return self.id_no
 
+    def monto_desecho(self):
+        total = 0
+        for material in Material_Devuelto.objects.filter(
+                id_devolucion=self.id_no):
+            total = total+material.saldo_desechados()
+        return total
+        for equipo in Equipo_Devuelto.objects.filter(
+                id_devolucion=self.id_no):
+            if equipo.estado == 'Mlo.':
+                total = total + equipo.id_equipo.monto
+        return total
+
     def monto_total(self):
         total = 0
         for material in Material_Devuelto.objects.filter(
@@ -330,6 +342,18 @@ class Devolucion(models.Model):
 
     def validation(self):
         pass
+
+    def if_out(self):
+        valor = False
+        for material in Material_Devuelto.objects.filter(
+                    id_devolucion=self.id_no):
+            if material.desechados > 0:
+                valor = True
+        for equipo in Equipo_Devuelto.objects.filter(
+                    id_devolucion=self.id_no):
+            if equipo.estado == 'Mlo.':
+                valor = True
+        return valor
 
     def save(self):
         self.set_referncia()
