@@ -53,7 +53,7 @@ class AdminAsignacion(admin.ModelAdmin):
         }),)
     list_display = [
         'id_no', 'create_by', 'fecha',
-        'hora', 'assigned_to', 'estado_color', 'monto_total', 'detalle']
+        'hora', 'asignado', 'estado_color', 'monto_total', 'detalle']
     search_fields = ['id_no']
     list_filter = ['create_by', 'fecha']
     list_display_links = ('id_no', )

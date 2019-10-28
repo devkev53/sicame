@@ -81,6 +81,12 @@ class Asignacion(models.Model):
         related_name='User_Send',
         verbose_name='Asignado a')
 
+    def asignado(self):
+        name = self.assigned_to
+        return format_html(
+                '<span aling="center" style="font-weight: bold;">' +
+                str(name) + '</span>')
+
     def devuelto(self):
         devuelto = False
         if Devolucion.objects.filter(asig_id=self.id_no).exists():

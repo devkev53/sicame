@@ -19,6 +19,11 @@
 		font-style: bold;
 		font-size: 22px;
 		text-align: center;
+		margin-bottom: -40px;
+		padding-bottom: -20px;
+	}
+	h2, p{
+		padding-bottom: -20px;
 	}
 	h3.articulo{
 		font-size: 14px;
@@ -27,12 +32,6 @@
 		text-decoration: underline;
 	}
 	footer{
-		position: absolute;
-        left: 0;
-        bottom: 0;
-        height: 100px;
-        color: white;
-        text-align: center;
 	}
 	.kardex{
 		border: 1px solid #ddd;
@@ -68,6 +67,9 @@
 	.no-dispo td{
 		background-color: #FFBEBE;
 	}
+	.in td{
+		background-color: #D7DEDF;
+	}
 	.dev td{
 		background-color: #ECECEC;
 	}
@@ -80,7 +82,7 @@
 		<h1 class="title">Tarjeta Kardex de Materiales</h1>
 		<hr class="mute">
 		<center>
-			<table>
+			<table class="" align="center">
 				<tr>
 					<th rowspan="2" style="width:200px;">
 						<img class="material-img" src={{material.img.url}} alt="" width="">
@@ -93,7 +95,7 @@
 					<tr>
 						<th style="padding-bottom: 30px;">{{material.nombre}}</th>
 						<th style="padding-bottom: 30px;">{{material.id_Marca}}</th>
-						<th style="padding-bottom: 30px;">{{material.descripcion|safe}}</th>
+						<th style="padding-bottom: 70px;">{{material.descripcion|safe}}</th>
 					</tr>
 					<tr>
 						<th colspan="4" align="center">
@@ -109,9 +111,9 @@
 	<body>
 		<table class="kardex">
 		  <tr class="encabezado">
+		  	<th rowspan="2" style="width: 175px">REFERENCIA</th>
 		    <th rowspan="2" style="width: 250px;">FECHA</th>
 		    <th rowspan="2" style="width: 125px;">HORA</th>
-		    <th rowspan="2" style="width: 175px">DETALLE</th>
 		    <th rowspan="2" style="width: 175px">ESTADO</th>
 		    <th rowspan="2">VALOR UNIDAD</th>
 		    <th colspan="2">ENTRADAS</th>
@@ -127,47 +129,42 @@
 		  	<th>CANTIDAD</th>
 		  	<th>VALORES</th>
 		  </tr>
-		  {% for detalle in detalle  %}
-		  <tr class="content-table {% if detalle.estado == False %} no-dispo {% endif %}">
-		  	<td align="center">{{detalle.id_ingreso.fecha}}</td>
-		  	<td align="center">{{detalle.id_ingreso.hora}}</td>
-		  	<td align="left">{{detalle.id_ingreso.ref}}</td>
+		  {% for lista in lista  %}
+		  <tr class="content-table {% if lista.is == 'out' %} no-dispo {% else %} in {% endif %}">
+		  	<td align="left" style="font-weight: bold;">{{lista.ref}}</td>
+		  	<td align="center">{{lista.fecha}}</td>
+		  	<td align="center">{{lista.hora}}</td>
 		  	<td align="left">
-		  		{% if detalle.estado == True %}
-		  			DISPONIBLE
-		  		{% else %}
-		  			NO DISPONIBLE
-		  		{% endif %}</td>
-		  	<td align="center">{{detalle.por_unidad}}</td>
-		  	<td align="center">{{detalle.cantidad}}</td>
-		  	<td align="center">{{detalle.monto}}</td>
-		  	<td align="center">---</td>
-		  	<td align="center">---</td>
-		  	<td align="center">{{detalle.saldo_cantidad}}</td>
-		  	<td align="center">{{detalle.saldo_valores|floatformat:2 }}</td>
-		  	<td align="center">{{detalle.valor_promedio_ponderado|floatformat:2 }}</td>
-		  </tr>
-		  {% endfor %}
-		   {% for devolucion in devolucion  %}
-		  	<tr class="content-table dev">
-			  	<td align="center">{{devolucion.id_devolucion.fecha}}</td>
-			  	<td align="center">{{devolucion.id_devolucion.hora}}</td>
-			  	<td align="left">{{devolucion.id_devolucion.set_referncia}}</td>
-			  	<td align="left">
-			  		{% if devolucion.id_devolucion.estado == True %}
-			  			ACEPTADA
+		  		{% if lista.is == 'in' %}
+			  		{% if lista.estado == True %}
+			  			<span style="color:green; font-weight: bold;">DISPONIBLE</span>
 			  		{% else %}
-			  			NO ACEPTADA
+			  			<span style="color:red; font-weight: bold;">NO DISPONIBLE</span>
 			  		{% endif %}</td>
-			  	<td align="center">{{devolucion.valor_por_unidad}}</td>
-			  	<td align="center">---</td>
-			  	<td align="center">---</td>
-			  	<td align="center">{{devolucion.desechados}}</td>
-			  	<td align="center">{{devolucion.saldo_desechados}}</td>
-			  	<td align="center">{{devolucion.saldo_cantidad}}</td>
-			  	<td align="center">{{devolucion.saldo_valores|floatformat:2 }}</td>
-			  	<td align="center">{{devolucion.vpp|floatformat:2 }}</td>
-			  </tr>
+			  	{% else %}
+			  		<span style="color:blue; font-weight: bold;">ACEPTADO</span>
+			  	{% endif %}
+		  	<td align="center">Q. {{lista.valor_u|floatformat:2}}</td>
+		  	<td align="center">{{lista.in_cant}}</td>
+		  	<td align="center">
+		  		{% if lista.in_val == '---' %}
+		  			---
+		  		{% else %}
+		  			Q. {{lista.in_val|floatformat:2}}
+		  		{% endif %}
+		  	</td>
+		  	<td align="center">{{lista.out_cant}}</td>
+		  	<td align="center">
+		  		{% if lista.out_val == '---' %}
+		  			---
+		  		{% else %}
+		  			Q. {{lista.out_val|floatformat:2}}
+		  		{% endif %}
+		  	</td>
+		  	<td align="center" style="font-weight: bold;">{{lista.saldo_cant}}</td>
+		  	<td align="center" style="font-weight: bold;">Q. {{lista.saldo_val|floatformat:2 }}</td>
+		  	<td align="center" style="font-weight: bold;">Q. {{lista.promedio|floatformat:2 }}</td>
+		  </tr>
 		  {% endfor %}
 		</table>
 		<p align="center" style="font-size:12px;">El metodo de valoracion de esta tarjeta <b>Kardex</b> es el de <i style="text-decoration: underline;">Valor Promedio Ponderado</i>..!</p>
@@ -175,28 +172,36 @@
 		<table class="kardex" align="right">
 			<tr style="color: #fff;">
 				<th style="background-color: #4B4A4A; width: 100px">INGRESADO</th>
-				<th style="background-color: #4B4A4A; width: 90px">ASIGNADO</th>
-				<th style="background-color: #4B4A4A; width: 128px">TRANSFORMADO</th>
+				<th style="background-color: #4B4A4A; width: 100px">ASIGNADO</th>
+				<th style="background-color: #4B4A4A; width: 150px">TRANSFORMADO</th>
 				<th style="background-color: #4B4A4A; width: 100px">DISPONIBLE</th>
 				<th style="background-color: #4B4A4A; width: 80px">DE BAJA</th>
+			</tr>
+			<tbody>
+				<tr class="content-table">
+					<th style="background-color: #C2FF91;">{{material.stock}}</th>
+					<th style="background-color: #C2FF91;">{{material.asignado_int}}</th>
+					<th style="background-color: #C2FF91;">{{material.transformado}}</th>
+					<th style="background-color: #C2FF91;">{{material.disponible_int}}</th>
+					<th style="background-color: #C2FF91;">{{material.consumido}}</th>
+				</tr>
+			</tbody>	
+			</table>
+			<br>	
+			<table class="kardex" align="right">	
+			<tr style="color: #fff;">
+				<th style="background-color: #4B4A4A; width: 150px">CANTIDAD</th>
 				<th style="background-color: #4B4A4A; width: 115px">VR PROMEDIO</th>
 				<th style="background-color: #4B4A4A; width: 100px">VR TOTAL</th>
 			</tr>
 			<tbody>
 				<tr class="content-table">
-					<th style="background-color: #C2FF91;">{{material.stock}}</th>
-					<th style="background-color: #C2FF91;">{{material.asignado}}</th>
-					<th style="background-color: #C2FF91;">{{material.transformado}}</th>
-					<th style="background-color: #C2FF91;">{{material.disponible_int}}</th>
-					<th style="background-color: #C2FF91;">{{material.consumido}}</th>
-					<th style="background-color: #C2FF91;">{{ultimo.valor_promedio_ponderado|floatformat:2 }}</th>
-					<th style="background-color: #C2FF91;">{{ultimo.saldo_valores|floatformat:2 }}</th>
+					<th style="background-color: #C2FF91;">{{cantidad.saldo_cant}}</th>
+					<th style="background-color: #C2FF91;">Q. {{cantidad.promedio|floatformat:2 }}</th>
+					<th style="background-color: #C2FF91;">Q. {{cantidad.saldo_val|floatformat:2 }}</th>
 				</tr>
 			</tbody>
 		</table>
-		{% for n in dic_Kardex  %}
-			{{n|make_list}}
-		{% endfor %}
 	</body>
 	<footer>
 		<br>	
