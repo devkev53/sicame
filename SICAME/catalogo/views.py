@@ -85,12 +85,34 @@ class Tarjeta_Kardex_Equipo_PDF(PDFTemplateView):
         detalle = Equipo_Ingreso.objects.filter(id_equipo=ids)
 
         # obtener el ultimo detalle de ingreso
-        ultimo = Material_Detalle.objects.filter(id_material=ids).last()
+        ultimo = Equipo_Ingreso.objects.filter(id_equipo=ids).last()
+
+        lista = []
+        for ingreso in Equipo_Ingreso.objects.filter(id_equipo=ids):
+            datos = {}
+            datos['is'] = 'in'
+            datos['ref'] = ingreso.id_ingreso.ref()
+            datos['fecha'] = ingreso.id_ingreso.fecha
+            datos['hora'] = ingreso.id_ingreso.hora
+            datos['estado'] = ingreso.estado
+            datos['valor_u'] = ingreso.monto_point()
+            datos['in_cant'] = '1'
+            datos['in_val'] = ingreso.monto_point()
+            datos['out_cant'] = '---'
+            datos['out_val'] = '---'
+            datos['promedio'] = 'Un Dato'
+            if not lista:
+                datos['total'] = ingreso.monto_point()
+            else:
+                datos['total'] = (
+                    ingreso.monto_point() + lista[-0].get('total'))
+            lista.append(datos)
 
         return super(Tarjeta_Kardex_Equipo_PDF, self).get_context_data(
             pagesize='Legal landscape',
             title='Kardex',
             detalle=detalle,
+            lista=lista,
             ultimo=ultimo,
             material=material,
             **kwargs

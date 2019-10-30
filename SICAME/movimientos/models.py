@@ -30,7 +30,7 @@ from inventario.models import Material_Detalle
 
 # Importamos el MODELS para trabajar con el PERFIL * '''
 from catalogo.models import Material, Equipo
-from inventario.models import Equipo_Ingreso
+from inventario.models import Equipo_Ingreso, Equipo_for_asig
 
 # Importamos la libreria para random
 import random
@@ -102,9 +102,25 @@ class Asignacion(models.Model):
         for material in Material_Asignado.objects.filter(
                 id_asignacion=self.id_no):
             total = total+material.monto
+        for equipo in Equipo_Asignado.objects.filter(
+                id_asignacion=self.id_no):
+            total = total+equipo.monto()
         return total
 
+    def estado_asig_dev(self):
+        dev_estado = ''
+        if self.estado is True:
+            if Devolucion.objects.filter(asig_id=self.id_no).exists():
+                dev = Devolucion.objects.filter(asig_id=self.id_no).get()
+                if dev.estado is True:
+                    dev_estado = 'Dev_ok'
+                else:
+                    dev_estado = 'Dev_pend'
+        return dev_estado
+
     def estado_color(self):
+        dev_estado = ''
+        rotate = 'none'
         if self.estado is True:
             if Devolucion.objects.filter(asig_id=self.id_no).exists():
                 dev = Devolucion.objects.filter(asig_id=self.id_no).get()
@@ -112,24 +128,33 @@ class Asignacion(models.Model):
                     color1 = '#265787'
                     color2 = "yellow"
                     icono = 'icon-download8'
+                    dev_estado = 'Dev_ok'
                 else:
-                    color1 = '#606060'
-                    color2 = "#265787"
-                    icono = 'icon-download8'
+                    color1 = '#000'
+                    color2 = "yellow"
+                    icono = 'icon-back'
+                    rotate = 'rotateY(180deg)'
+                    dev_estado = 'Dev_pend'
             else:
                 color1 = '#009A19'
                 color2 = "#8AFF00"
                 icono = 'icon-check-square-o'
             return format_html(
-                '<span aling="center" class="' + icono + '"' +
-                'style="color:' + color1 + '; font-weight: bold;' +
-                ' font-size:22px; text-shadow: 0px 0px 10px ' + color2 + ';' +
-                '"></span>')
+                '<span aling="center" class="' + icono + '"\
+                style="\
+                    color: ' + color1 + ';\
+                    font-weight: bold;\
+                    font-size:22px;\
+                    text-shadow: 0px 0px 10px ' + color2 + ';\
+                    transform:' + rotate + ';"></span>')
         else:
             return format_html(
-                '<span aling="center" class="icon-share-square-o" style="color: #D17B00;' +
-                'font-weight: bold; font-size:22px; text-shadow: 0px 0px 2px yellow;">' +
-                '</span>')
+                '<span aling="center" class="icon-share-square-o"\
+                style="color: #D17B00;\
+                font-weight: bold;\
+                font-size:22px;\
+                text-shadow: 0px 0px 10px yellow;>\
+                transform:' + rotate + ';"></span>')
     estado_color.short_description = 'Estado'
 
     def detalle(self):
@@ -142,6 +167,7 @@ class Asignacion(models.Model):
     detalle.short_description = 'Detalle'
 
     class Meta:
+        ordering = ['-fecha', '-hora']
         verbose_name = "Asignacion"
         verbose_name_plural = "Asignaciones"
 
@@ -159,13 +185,74 @@ class Equipo_Asignado(models.Model):
         Asignacion, on_delete=models.CASCADE,
         verbose_name='Ingreso')
     id_equipo = models.ForeignKey(
-        Equipo_Ingreso, on_delete=models.CASCADE,
+        Equipo_for_asig, on_delete=models.CASCADE,
         verbose_name='Equipo')
+
+    def ubicacion(self):
+        equipo = Equipo_Ingreso.objects.filter(
+            id=self.id_equipo.id).get()
+        ubicacion = equipo.ubicacion
+        return ubicacion
+
+    def img(self):
+        equipo = Equipo.objects.filter(
+            id=self.id_equipo.id_equipo.id).get()
+        img = equipo.img
+        return img.url
+
+    def estado(self):
+        valor = self.id_asignacion.estado
+        return valor
 
     def id_asig(self):
         asignacion = Asignacion.objects.filter(
             id_no=self.id_asignacion.id_no).get()
         return '%s-M%s' % (asignacion.id_no, self.id)
+
+    def monto(self):
+        total = self.id_equipo.monto
+        return total
+
+    def verificar_para_asignar(self):
+
+        from inventario.models import Equipo_for_asig
+        lista = []
+        for ingresos in Equipo_for_asig.objects.filter(
+                id_equipo=self.id_equipo.id_equipo):
+            if ingresos.id_ingreso not in lista:
+                lista.append(ingresos)
+        count = len(lista)
+
+        if count > 1:
+            msg = ' ingresos pendientes de cambiar a \
+            disponible que contienen este equipo'
+        else:
+            msg = ' ingreso pendiente de cambiar a \
+            disponible que contienen este equipo'
+
+        equipo = Equipo.objects.filter(
+            id=self.id_equipo.id_equipo.id).get()
+        if equipo.disponible() >= 1:
+            for equipo in Equipo_Asignado.objects.all():
+                if self.id_equipo == equipo.id_equipo:
+                    for dev in Devolucion.objects.filter(
+                               asig_id=equipo.id_asignacion.id_no,
+                               estado=False):
+                        raise ValidationError(
+                                'Este equipo ya se encuentra asignado ' +
+                                'el No. de Asignacion es el: ' +
+                                str(equipo.id_asignacion.id_no) +
+                                ', seleccione otro con distinto IBE')
+                else:
+                    pass
+        else:
+            raise ValidationError(format_html(
+                '<span aling="center" class="icon-error"\
+                style="padding-right: 5px;"></span><span>'
+                'Verifique la cantida dispobible ' +
+                'el actual disponible es de: ' +
+                str(equipo.disponible()) + ', Actualemnte' +
+                ' tiene un total de ' + str(count) + msg + '</span>'))
 
     class Meta:
         verbose_name = "Equipo_Asignado"
@@ -173,6 +260,12 @@ class Equipo_Asignado(models.Model):
 
     def __str__(self):
         return self.id_asig()
+
+    ''' -- Modificamos el metodo CLEAN para evaluar si existe materia
+    dispobible y si es correcta la cantidad en la ubicacion a seleccionar--'''
+    def clean(self, **kwargs):
+        super(Equipo_Asignado, self).clean()
+        self.verificar_para_asignar()
 
 
 class Material_Asignado(models.Model):
@@ -241,20 +334,31 @@ class Material_Asignado(models.Model):
         self.monto_ppp()
         super(Material_Asignado, self).save()
 
+    def verificar_cantidad(self):
+        material = Material.objects.filter(id=self.id_material.id).get()
+
+        if self.cantidad < (
+            material.disponible_int() -
+                material.asignado_flotante()):
+            pass
+        else:
+            raise ValidationError(format_html(
+                '<span aling="center" class="icon-error"\
+                style="padding-right: 5px;"></span><span>\
+                No se cuenta con la cantidad seleccionada, ' +
+                'la cantidad actuald disponible es de: ' +
+                str(
+                    material.disponible_int() -
+                    material.asignado_flotante()) +
+                '. Existe un asignado ' +
+                'pendiente de aceptar de: ' +
+                str(material.asignado_flotante()) + '</span>'))
+
     ''' -- Modificamos el metodo CLEAN para evaluar si existe materia
     dispobible y si es correcta la cantidad en la ubicacion a seleccionar--'''
     def clean(self, **kwargs):
         super(Material_Asignado, self).clean()
-
-        material = Material.objects.filter(id=self.id_material.id).get()
-
-        if self.cantidad < material.disponible_int():
-            pass
-        else:
-            raise ValidationError(
-                        'No se cuenta con la cantidad seleccionada, ' +
-                        'la cantidad actuald disponible es de: ' +
-                        str(material.disponible_int()))
+        self.verificar_cantidad()
 
 
 class Devolucion(models.Model):
@@ -314,6 +418,9 @@ class Devolucion(models.Model):
         for material in Material_Devuelto.objects.filter(
                 id_devolucion=self.id_no):
             total = total+material.monto()
+        for equipo in Equipo_Devuelto.objects.filter(
+                id_devolucion=self.id_no):
+            total = total+equipo.monto()
         return total
 
     def estado_color(self):
@@ -339,6 +446,7 @@ class Devolucion(models.Model):
     detalle_dev.short_description = 'Detalle'
 
     class Meta:
+        ordering = ['-fecha', '-hora']
         verbose_name = "Devolucion"
         verbose_name_plural = "Devoluciones"
 
@@ -386,6 +494,7 @@ class Material_Devuelto(models.Model):
         help_text='Material que en practica fue dechado')
     total = models.PositiveIntegerField(
         'Total', default=0)
+
 
     def monto(self):
         total = self.total_sum() * self.valor_por_unidad()
@@ -519,13 +628,44 @@ class Equipo_Devuelto(models.Model):
         Devolucion, on_delete=models.CASCADE,
         verbose_name='Devolucion')
     id_equipo = models.ForeignKey(
-        Equipo_Ingreso, on_delete=models.CASCADE,
+        Equipo_for_asig, on_delete=models.CASCADE,
         verbose_name='Equipo')
     estado = models.CharField(
         max_length=4,
         choices=ESTADOS_DEL_EQUIPO,
         default='Bueno',)
     comentarios = models.TextField('Comentarios')
+
+    def img(self):
+        equipo = Equipo.objects.filter(
+            id=self.id_equipo.id_equipo.id).get()
+        img = equipo.img
+        return img.url
+
+    def estado_dev(self):
+        valor = self.id_devolucion.estado
+        return valor
+
+    def validation_material(self):
+        try:
+            asig_mat = Material_Asignado.objects.filter(
+                id_asignacion=self.id_devolucion.asig_id,
+                id_material=self.id_material).get()
+            if asig_mat.cantidad != self.total_sum():
+                raise ValidationError(
+                    'Se debe cuadrar la cantidad toal de materiales'
+                    ' con la cantidad que fue entregada en la Asignacion')
+        except ObjectDoesNotExist:
+            raise ValidationError(
+                    'Verifique la Asignacion seleccionada ya que no '
+                    'existe este Material en la misma, o en su defecto '
+                    'verifique que se este regresando la totalidad de '
+                    'Materiales Asignacion Selecciondad = ' +
+                    str(self.id_devolucion.asig_id))
+
+    def monto(self):
+        total = self.id_equipo.monto
+        return total
 
     class Meta:
         verbose_name = "Equipo Devuelto"

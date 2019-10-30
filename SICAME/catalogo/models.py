@@ -198,6 +198,30 @@ class Material(BaseObjeto):
     disponible.short_description = 'Disponible'
 
     # Metodo que devolvera el stock de materiales Asignados
+    def asignado_flotante(self):
+        '''Regresa la cantidad que se encuentra asignada independientemente
+        de a quien este asignado, solamente es una suma para reflejar
+        un dato'''
+        # Se crea una variable total inicializada en 0
+        total = 0
+        # Se importan los modelos de Asignacion y Material_Asignado
+        from movimientos.models import Asignacion, Material_Asignado
+
+        # Se recorren las asignaciones en donde el estado sea aceptado
+        for asignacion in Asignacion.objects.filter(estado=False):
+            # Se recorren los materiales asignados haciendo una validacion
+            # que estos pertenezcan a la instancia y que sena parte de
+            # la asignacion
+            for detalle in Material_Asignado.objects.filter(
+                        id_material=self.id, id_asignacion=asignacion):
+                        # Si los datos coinciden total sera igual a el mas
+                        # el dato en el campo cantidad de Material_Asignado
+                        total = total + detalle.cantidad
+        
+        # Para terminar retorna el total
+        return total
+
+    # Metodo que devolvera el stock de materiales Asignados
     def asignado_int(self):
         '''Regresa la cantidad que se encuentra asignada independientemente
         de a quien este asignado, solamente es una suma para reflejar un dato'''
@@ -444,13 +468,15 @@ class Equipo(BaseObjeto):
         # Se recorre para saber que ingresos estan dispobles
         # comprobandose por el campo estado de ingreso
         for ingreso in Ingreso.objects.filter(estado=True):
-            # Se recorren los equipos de cada ingreso en donde 
+            # Se recorren los equipos de cada ingreso en donde
             # el equipo conisida con el ingreso y con la instancia
             for detalle in Equipo_Ingreso.objects.filter(
                         id_equipo=self.id, id_ingreso=ingreso):
                         # por cada equipo que cumpla con el requisito
                         # total aumenta en uno
                         total = total + 1
+        total = (total - (self.asignado_int() + self.asignado_flotante() +
+            self.de_baja()))
         # Se regresa la variable total ya con el nuevo nuemro
         return total
 
@@ -477,17 +503,92 @@ class Equipo(BaseObjeto):
                     str(total) + '</span>')
     disponible_color.short_description = 'Disponible'
 
-    def asiganado(self):
+    def asignado_flotante(self):
+        '''Regresa la cantidad que se encuentra asignada independientemente
+        de a quien este asignado, solamente es una suma para
+        reflejar un dato'''
+        # Se crea una variable total inicializada en 0
         total = 0
+        # Se importan los modelos de Asignacion y Material_Asignado
+        # Se importan los modelos de Asignacion y Material_Asignado
+        from movimientos.models import Equipo_Asignado
+        # Se recorren los materiales asignados haciendo una validacion
+        # que estos pertenezcan a la instancia y que sena parte de
+        # la asignacion
+        for detalle in Equipo_Asignado.objects.all():
+            if detalle.estado() is False:
+                if detalle.id_equipo.id_equipo.id == self.id:
+                    total = total + 1
+            else:
+                None
+        # Para terminar retorna el total
+        return total
+
+    def asignado_int(self):
+        '''Regresa la cantidad que se encuentra asignada independientemente
+        de a quien este asignado, solamente es una suma para
+        reflejar un dato'''
+        # Llamamos a Equipo Ingreso
+        total = 0
+        # Se importan los modelos de Asignacion y Material_Asignado
+        from movimientos.models import Equipo_Asignado
+        # Se recorren los materiales asignados haciendo una validacion
+        # que estos pertenezcan a la instancia y que sena parte de
+        # la asignacion
+        for detalle in Equipo_Asignado.objects.all():
+            if detalle.estado() is True:
+                if detalle.id_equipo.id_equipo.id == self.id:
+                    total = total + 1
+            else:
+                None
+        total = total - (
+            self.de_baja() + self.dev())
+        '''# Se recorren las Devoluciones en donde el estado sea aceptado
+                                for devolucion in Devolucion.objects.filter(estado=True):
+                                    # Se recorren los materiales devueltos haciendo una validacion
+                                    # que estos pertenezcan a la instancia y que sena parte de
+                                    # la devolucion
+                                    for detalle in Material_Devuelto.objects.filter(
+                                                id_material=self.id, id_devolucion=devolucion):
+                                        # Si los datos coinciden total sera igual a el menos
+                                        # el dato en el campo cantidad de Material_Devuelto
+                                        total = total - detalle.total_sum()'''
+        # Para terminar retorna el total
         return total
 
     def asignado_color(self):
-        total = self.asiganado()
-        return total
+        total = self.asignado_int()
+        return format_html(
+                '<span style="color: #265787; text-shadow: 0px 0px 2px #A1E8FD;">' +
+                str(total) + '</span>')
     asignado_color.short_description = 'Asignado'
+
+    def dev(self):
+        total = 0
+        # Se importan los modelos de Asignacion y Material_Asignado
+        from movimientos.models import Equipo_Devuelto
+        # Se recorren los materiales asignados haciendo una validacion
+        # que estos pertenezcan a la instancia y que sena parte de
+        # la asignacion
+        for detalle in Equipo_Devuelto.objects.all():
+            if detalle.estado_dev() is True:
+                if detalle.estado != 'Mlo.':
+                    if detalle.id_equipo.id_equipo.id == self.id:
+                        total = total + 1
+        return total
 
     def de_baja(self):
         total = 0
+        # Se importan los modelos de Asignacion y Material_Asignado
+        from movimientos.models import Equipo_Devuelto
+        # Se recorren los materiales asignados haciendo una validacion
+        # que estos pertenezcan a la instancia y que sena parte de
+        # la asignacion
+        for detalle in Equipo_Devuelto.objects.all():
+            if detalle.estado_dev() is True:
+                if detalle.estado == 'Mlo.':
+                    if detalle.id_equipo.id_equipo.id == self.id:
+                        total = total + 1
         return total
 
     def de_baja_color(self):
@@ -515,7 +616,7 @@ class Equipo(BaseObjeto):
         return format_html(
                 '<span style="color: ' + color + '; font-weight: bold;">Q. ' +
                 total + '</span>')
-    monto_bodega.short_description = 'Monto Total'
+    monto_bodega_color.short_description = 'Monto Total'
 
     def info(self):
         ''' Llama al un template que sera drenderizado como un pdf'''

@@ -77,26 +77,24 @@
 		<div class="logos">
 				<img src="../core/static/core/img/logo-intecap.png" height="75">
 		</div>
-		<h1 class="title">Tarjeta Kardex de Materiales</h1>
+		<h1 class="title" style="padding-bottom:-25px;">Tarjeta Kardex de Materiales</h1>
 		<hr class="mute">
 		<center>
-			<table>
+			<table align="center">
 				<tr>
 					<th rowspan="2" style="width:200px;">
 						<img class="material-img" src={{material.img.url}} alt="" width="">
 					</th>
 					<th style="width:250px;">Articulo</th>
-					<th style="width:250px;">Marca</th>
 					<th style="width:400px;">Descripcion</th>
 				</tr>
 				<tbody>
 					<tr>
 						<th style="padding-bottom: 30px;">{{material.nombre}}</th>
-						<th style="padding-bottom: 30px;">{{material.id_Marca}}</th>
 						<th style="padding-bottom: 30px;">{{material.descripcion|safe}}</th>
 					</tr>
 					<tr>
-						<th colspan="4" align="center">
+						<th colspan="3" align="center">
 							Metodo de valor de Inventario Utilizado: <strong>Valor Promedio Ponderado</strong>
 						</th>
 					</tr>
@@ -104,7 +102,6 @@
 			</table>
 		</center>
 		<hr>	
-		<br>
 	</header>
 	<body>
 		<table class="kardex">
@@ -116,58 +113,32 @@
 		    <th rowspan="2">VALOR UNIDAD</th>
 		    <th colspan="2">ENTRADAS</th>
 		    <th colspan="2">SALIDAS</th>
-		    <th colspan="2">SALDO</th>
-		    <th rowspan="2">PROMEDIO</th>
+		    <th rowspan="2">TOTAL</th>
 		  </tr>
 		  <tr class="sub-encabezado">
 		  	<th>CANTIDAD</th>
 		  	<th>VALORES</th>
 		  	<th>CANTIDAD</th>
 		  	<th>VALORES</th>
-		  	<th>CANTIDAD</th>
-		  	<th>VALORES</th>
 		  </tr>
-		  {% for detalle in detalle  %}
-		  <tr class="content-table {% if detalle.estado == False %} no-dispo {% endif %}">
-		  	<td align="center">{{detalle.id_ingreso.fecha}}</td>
-		  	<td align="center">{{detalle.id_ingreso.hora}}</td>
-		  	<td align="left">{{detalle.id_ingreso.ref}}</td>
+		  {% for lista in lista  %}
+		  <tr class="content-table {% if lista.estado == False %} no-dispo {% endif %}">
+		  	<td align="center">{{lista.fecha}}</td>
+		  	<td align="center">{{lista.hora}}</td>
+		  	<td align="left">{{lista.ref}}</td>
 		  	<td align="left">
-		  		{% if detalle.estado == True %}
+		  		{% if lista.estado == True %}
 		  			DISPONIBLE
 		  		{% else %}
 		  			NO DISPONIBLE
 		  		{% endif %}</td>
-		  	<td align="center">{{detalle.por_unidad}}</td>
-		  	<td align="center">{{detalle.cantidad}}</td>
-		  	<td align="center">{{detalle.monto}}</td>
-		  	<td align="center">---</td>
-		  	<td align="center">---</td>
-		  	<td align="center">{{detalle.saldo_cantidad}}</td>
-		  	<td align="center">{{detalle.saldo_valores|floatformat:2 }}</td>
-		  	<td align="center">{{detalle.valor_promedio_ponderado|floatformat:2 }}</td>
+		  	<td align="center">{{lista.valor_u}}</td>
+		  	<td align="center">{{lista.in_cant}}</td>
+		  	<td align="center">{{lista.in_val}}</td>
+		  	<td align="center">{{lista.out_cant}}</td>
+		  	<td align="center">{{lista.out_val}}</td>
+		  	<td align="center">{{lista.total|floatformat:2 }}</td>
 		  </tr>
-		  {% endfor %}
-		   {% for devolucion in devolucion  %}
-		  	<tr class="content-table dev">
-			  	<td align="center">{{devolucion.id_devolucion.fecha}}</td>
-			  	<td align="center">{{devolucion.id_devolucion.hora}}</td>
-			  	<td align="left">{{devolucion.id_devolucion.set_referncia}}</td>
-			  	<td align="left">
-			  		{% if devolucion.id_devolucion.estado == True %}
-			  			ACEPTADA
-			  		{% else %}
-			  			NO ACEPTADA
-			  		{% endif %}</td>
-			  	<td align="center">{{devolucion.valor_por_unidad}}</td>
-			  	<td align="center">---</td>
-			  	<td align="center">---</td>
-			  	<td align="center">{{devolucion.desechados}}</td>
-			  	<td align="center">{{devolucion.saldo_desechados}}</td>
-			  	<td align="center">{{devolucion.saldo_cantidad}}</td>
-			  	<td align="center">{{devolucion.saldo_valores|floatformat:2 }}</td>
-			  	<td align="center">{{devolucion.vpp|floatformat:2 }}</td>
-			  </tr>
 		  {% endfor %}
 		</table>
 		<p align="center" style="font-size:12px;">El metodo de valoracion de esta tarjeta <b>Kardex</b> es el de <i style="text-decoration: underline;">Valor Promedio Ponderado</i>..!</p>

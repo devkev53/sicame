@@ -31,7 +31,13 @@
     			<th>Estado: 
     				{% if asignacion.estado == True %}
     					<span style="color:#265787; text-decoration:none">
-    						Aceptado
+    						Asignacion Aceptada 
+    						{% if estado == 'Dev_ok' %}
+    							y Devolucion Aceptada
+    						{% elif estado == ''%}
+    						{% else %}
+    							y Devolucion Relaizada
+    						{% endif %}
     					</span>
     				{% else %}
     					<span style="color:#F18E00; text-decoration:none">
@@ -48,10 +54,14 @@
 	<div class="subtitle">
 		<h2 align="center">Detalle:</h2>
 	</div>
-	<table class="detalle">
+	{% if nm > 0 %}
+	<table class="detalle material">
 		<thead>
-			<tr>
-				<th>No.</th>
+			<tr class="titulo">
+				<th colspan="6"><h1>ASIGNACION DE MATERIALES</h1></th>
+			</tr>
+			<tr class="encabezado">
+				<th>IMAGEN</th>
 				<th style="width: 600px;">DESCRIPCION</th>
 				<th style="width: 120px;">CANTIDAD</th>
 				<th>PRECIO UNIDAD</th>
@@ -72,6 +82,33 @@
 			{% endfor %}
 		</tbody>
 	</table>
+	<hr>
+	{% endif %}
+	{% if ne > 0 %}
+	<table class="detalle">
+		<thead>
+			<tr class="titulo">
+				<th colspan="4"><h1>ASIGNACION DE EQUIPO</h1></th>
+			</tr>
+			<tr class="encabezado">
+				<th>IMAGEN.</th>
+				<th style="width: 600px;">DESCRIPCION</th>
+				<th>PRECIO</th>
+				<th>UBICACION</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for equipo in equipo %}
+				<tr>
+					<td align="center"><img src="{{equipo.img}}" alt="" width="50px" align="center"></td>
+					<td>{{equipo.id_equipo}}</td>
+					<td align="right">Q. {{equipo.monto}}</td>
+					<td>{{equipo.ubicacion}}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% endif %}
 	<br>	
 	<p class="nota"><center>Si esta de acuerdo firme acepte la asignacion y firme de recibido este documento el cual servira como comprobante.</center></p>
 	<br>
@@ -98,6 +135,14 @@
 <style>
 	@page {
 	            size: legal; margin: 1cm;
+	}
+	.titulo th{
+		background-color: #161616;
+		color: #fff;
+	}
+	.encabezado th{
+		background-color: #B3B3B3;
+		color: #265787;
 	}
 	.aceptacion{
 		font-size: 8px;
@@ -131,7 +176,7 @@
     background-color: #000;
 	}
 	.detalle{
-		border: 1px solid #ddd;
+		border: 1px solid #313131;
 		padding-left: 3px;
 		padding-right: 3px;
 	}
@@ -165,10 +210,6 @@
         height: 100px;
         color: white;
         text-align: center;
-	}
-	table tr .encabezado th{
-		color: #fff;
-		background-color: #2B2B2B;
 	}
 </style>
 {% endblock content %}

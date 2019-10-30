@@ -17,7 +17,7 @@
     	<img src="../core/static/core/img/logo-intecap.png" height="75">
     </div>
     <div class="title">
-    	<h1 class="title">Devolucion a Bodega</h1>
+    	<h1 class="title">DEVOLUCION A BODEGA</h1>
     </div>
     <table class="ingreso-detail">
     	<thead>
@@ -27,7 +27,7 @@
     			<th>Hora: {{devolucion.hora}}</th>
     		</tr>
     			<th>Asignado a: {{devolucion.assigned_to}}</th>
-    			<th>Para el Modulo de: {{devolucion.module}}</th>
+    			<th></th>
     			<th>Estado: 
     				{% if devolucion.estado == True %}
     					<span style="color:#265787; text-decoration:none">
@@ -48,30 +48,81 @@
 	<div class="subtitle">
 		<h2 align="center">Detalle:</h2>
 	</div>
+	{% if nm > 0 %}
 	<table class="detalle">
 		<thead>
+			<tr class="titulo">
+				<th colspan="7"><h1>DEVOLUCION DE MATERIAL</h1></th>
+			</tr>
 			<tr>
-				<th>No.</th>
-				<th style="width: 600px;">DESCRIPCION</th>
-				<th style="width: 120px;">CANTIDAD</th>
+				<th>IMAGEN</th>
+				<th style="width:400px;">DESCRIPCION</th>
+				<th>EN BUEN ESTADO</th>
+				<th style="width:200px;">TRANSFORMADO</th>
+				<th>DE BAJA</th>
 				<th>PRECIO UNIDAD</th>
 				<th>MONTO</th>
-				<th>UBICACION</th>
 			</tr>
 		</thead>
 		<tbody>
 			{% for detalle in detalle %}
 				<tr>
-					<td align="center"><img src="{{detalle.img}}" alt="" width="50px" align="center"></td>
+					<td align="center"><img src="{{detalle.id_material.img.url}}" alt="" width="50px" align="center"></td>
 					<td>{{detalle.id_material.nombre}}</td>
-					<td align="center">{{detalle.cantidad}}</td>
-					<td align="right">Q. {{detalle.p_ubidad_ppp|floatformat:2 }}</td>
+					<td align="center">{{detalle.buenos}}</td>
+					<td align="center">{{detalle.transformados}}</td>
+					<td align="center">{{detalle.desechados}}</td>
+					<td align="right">Q. {{detalle.valor_por_unidad|floatformat:2 }}</td>
 					<td align="right">Q. {{detalle.monto}}</td>
-					<td>{{detalle.ubicacion}}</td>
 				</tr>
 			{% endfor %}
 		</tbody>
 	</table>
+	{% endif %}
+	{% if ne > 0 %}
+	<table class="detalle">
+		<thead>
+			<tr class="titulo">
+				<th colspan="5"><h1>DEVOLUCION DE EQUIPO</h1></th>
+			</tr>
+			<tr>
+				<th>IMAGEN</th>
+				<th style="width:400px;">DESCRIPCION</th>
+				<th>ESTADO</th>
+				<th>COMENTARIOS</th>
+				<th>PRECIO</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for equipo in equipo %}
+				<tr>
+					<td align="center"><img src="{{equipo.img.url}}" alt="" width="50px" align="center"></td>
+					<td>{{equipo.id_equipo}}</td>
+					<td align="center">
+						{% if equipo.estado == 'Bno.' %}
+							<span style="color:green; font-weight: bold; text-decoration:none;">
+								En Buen Estado
+							</span>
+						{% elif equipo.estado == 'Rlr.' %}
+							<span style="color:#DC8100; font-weight: bold; text-decoration:none;">
+								Funcional
+							</span>
+						{% else %}
+							<span style="color:red; font-weight: bold; text-decoration:none;">
+								No es Funciona
+							</span>
+						{% endif %}
+					</td>
+					<td>{{equipo.comentarios}}</td>
+					<td align="right"  style="font-weight: bold;">
+						Q. {{equipo.id_equipo.monto|floatformat:2 }}
+					</td>
+					
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% endif %}
 	<br>	
 	<p class="nota"><center>Si esta de acuerdo firme acepte la devolucion y firme de recibido este documento el cual servira como comprobante.</center></p>
 	<br>
@@ -98,6 +149,10 @@
 <style>
 	@page {
 	            size: legal; margin: 1cm;
+	}
+	.titulo th{
+		background-color: #161616;
+		color: #fff;
 	}
 	.aceptacion{
 		font-size: 8px;

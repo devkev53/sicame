@@ -12,7 +12,7 @@ from django.utils.html import format_html
 
 class Material_AsignadoInline(admin.TabularInline):
     model = Material_Asignado
-    extra = 1
+    extra = 0
     raw_id_fields = ('id_material',)
     #  Crea un campo de busqueda y debe poseer un search_fields
     #  en el modelo inicial para poder referenciar por esos campos
@@ -26,7 +26,7 @@ class Material_AsignadoInline(admin.TabularInline):
 
 class Equipo_Asignado_Inline(admin.TabularInline):
     model = Equipo_Asignado
-    extra = 1
+    extra = 0
     raw_id_fields = ('id_equipo',)
     #  Crea un campo de busqueda y debe poseer un search_fields
     #  en el modelo inicial para poder referenciar por esos campos
@@ -55,7 +55,7 @@ class AdminAsignacion(admin.ModelAdmin):
         'id_no', 'create_by', 'fecha',
         'hora', 'asignado', 'estado_color', 'monto_total', 'detalle']
     search_fields = ['id_no']
-    list_filter = ['create_by', 'fecha']
+    list_filter = ['assigned_to', 'fecha']
     list_display_links = ('id_no', )
     actions = ['aceptar_asignacion']
 
@@ -107,7 +107,7 @@ class AdminAsignacion(admin.ModelAdmin):
                     '<span style="color: black; font-weight: bold;'
                     'text-shadow: 0px 0px 2px #FF0220;'
                     'text-transform: uppercase; font-size:22px;">'
-                    'Solamente pueden ser aceptadas por la persona'
+                    'Solamente pueden ser aceptadas por la persona '
                     'a quien se asigno</span>'))
     aceptar_asignacion.short_description = 'Aceptar Asignacion'
 
@@ -122,7 +122,6 @@ class AdminAsignacion(admin.ModelAdmin):
 class Material_DevueltoInline(admin.StackedInline):
     model = Material_Devuelto
     extra = 0
-    min_num = 1
     raw_id_fields = ('id_material',)
     #  Crea un campo de busqueda y debe poseer un search_fields
     #  en el modelo inicial para poder referenciar por esos campos
@@ -139,7 +138,6 @@ class Material_DevueltoInline(admin.StackedInline):
 class Equipo_Devuelto_Inline(admin.StackedInline):
     model = Equipo_Devuelto
     extra = 0
-    min_num = 1
     raw_id_fields = ('id_equipo',)
     #  Crea un campo de busqueda y debe poseer un search_fields
     #  en el modelo inicial para poder referenciar por esos campos

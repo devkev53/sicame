@@ -26,7 +26,7 @@ class Material_DetalleInline(admin.TabularInline):
 
 
 class Equipo_IngresoInline(admin.StackedInline):
-    model = Equipo_Ingreso
+    model = Equipo_for_asig
     extra = 0
     min_num = 0
     raw_id_fields = ('id_equipo',)
@@ -43,8 +43,20 @@ class Equipo_IngresoInline(admin.StackedInline):
         }),)
 
 
+class Admin_Equipo_for_asig(admin.ModelAdmin):
+    list_display = ['ref_m','ibe', 'id_equipo', 'id_Marca', 'modelo', 'serie', 'monto_color']
+    search_fields = ['id_material', 'ref_m']
+    autocomplete_fields = ['id_equipo', 'id_Marca']
+    list_filter = ['id_equipo', 'id_Marca']
+    actions = ['list_equipo']
+
+    def list_equipo(self, request, queryset):
+        return redirect('/PDF_Equipos')
+    list_equipo.short_description = 'Imprimir Listado'
+
+
 class Admin_Equipo_Ingreso(admin.ModelAdmin):
-    list_display = ['ibe', 'id_equipo', 'id_Marca', 'modelo', 'serie', 'monto']
+    list_display = ['ref_m','ibe', 'id_equipo', 'id_Marca', 'modelo', 'serie', 'monto_color']
     search_fields = ['id_material', 'ref_m']
     autocomplete_fields = ['id_equipo', 'id_Marca']
     list_filter = ['id_equipo', 'id_Marca']
@@ -88,7 +100,7 @@ class AdminIngreso(admin.ModelAdmin):
         }),)
     list_display = [
         'id', 'ref', 'create_by', 'fecha',
-        'hora', 'estado', 'boleta']
+        'hora', 'estado', 'monto_ingreso', 'boleta']
     search_fields = ['referencia']
     list_filter = ['create_by', 'fecha']
     list_display_links = ('ref', )
@@ -141,3 +153,4 @@ class AdminIngreso(admin.ModelAdmin):
 admin.site.register(Ingreso, AdminIngreso)
 admin.site.register(Material_Detalle, AdminMaterial_Detalle)
 admin.site.register(Equipo_Ingreso, Admin_Equipo_Ingreso)
+admin.site.register(Equipo_for_asig, Admin_Equipo_for_asig)

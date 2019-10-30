@@ -329,6 +329,37 @@ class Equipo_Ingreso(models.Model):
         self.ref_ingreso = ref
         return ref
 
+    def monto_color(self):
+        total = self.monto
+        total = ("%.2f" % total)
+        return format_html(
+                '<span style="font-weight: bold;">Q. ' +
+                total + '</span>')
+    monto_color.short_description = 'Precop'
+
+    def saldo_cantidad(self):
+        ''' --- Metodo que sumara las cantidades ingresados en los
+        detalles segun la fecha de ingreso de menor a mayor --- '''
+        cantidad_saldo = 1
+        # Creamos un query ordenado por fechas de los objetos
+        # que tienen realcion con el material en cuestion
+        detalles = Equipo_Ingreso.objects.filter(
+                    id_equipo=self.id_equipo).order_by(
+                    'id_ingreso__fecha')
+        # Recorremos el query par ir sumando
+        for detalles in detalles:
+            # Evaluamos si el primer dato es menor a la fecha acutal
+            if detalles.id_ingreso.fecha < self.id_ingreso.fecha:
+                # Si este es Menor hacemos la suma
+                cantidad_saldo = cantidad_saldo + 1
+        return cantidad_saldo
+
+    def saldo_valores(self):
+        ''' --- Metodo que sumara los valores ingresados en los
+        detalles segun la fecha de ingreso de menor a mayor --- '''
+        monto_saldo = self.monto
+        return monto_saldo
+
     class Meta:
         verbose_name = "Detalle de Equipo"
         verbose_name_plural = "Detalle de Equipos"
@@ -374,3 +405,14 @@ def ensure_profile_exits(sender, instance, **kwargs):
             print('Se creo un nuevo objeto su id es: ' + str(contador))
             print('Su cadena es: ' + cadena)
             detalle.update(orden=cadena, ibe=(ibe+cadena))'''
+
+
+class Equipo_for_asig(Equipo_Ingreso):
+
+    class Meta:
+        proxy = True
+        verbose_name = "Detalle de Equipo"
+        verbose_name_plural = "Detalle de Equipos"
+
+    def __str__(self):
+        return '%s %s' % (self.ibe, self.id_equipo)
