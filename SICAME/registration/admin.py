@@ -5,6 +5,13 @@ from .models import *
 
 
 class AdminPerfil(admin.ModelAdmin):
+    fieldsets = (
+        (None, {
+            'fields': ((
+                'user'), (
+                'foto', 'direccion'), (
+                'telefono', 'puesto'))
+        }),)
     list_display = [
         'image_thub', 'full_name',
         'material_asignado', 'equipo_asignado', 'total_asignado', 'tarjeta']
@@ -16,6 +23,14 @@ class AdminPerfil(admin.ModelAdmin):
 
 
 class AdminMi_Perfil(admin.ModelAdmin):
+    readonly_fields = ['user']
+    fieldsets = (
+        (None, {
+            'fields': ((
+                'user'), (
+                'foto', 'direccion'), (
+                'telefono', 'puesto'))
+        }),)
     list_display = [
         'image_thub', 'full_name',
         'material_asignado', 'equipo_asignado', 'total_asignado', 'tarjeta']

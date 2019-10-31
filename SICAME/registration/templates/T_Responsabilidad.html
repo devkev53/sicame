@@ -12,21 +12,32 @@
     <link href="{% static "core/fonts/font-kp/fonts/style.css" %}" rel="stylesheet" type="text/css">
     	<img src="../core/static/core/img/logo-intecap.png" height="75">
     	<h1 class="title">TARJETA DE RESPONSABILIDAD</h1>
-
-    	<table class="ingreso-detail" style="margin: 0 auto;" align="center">
+    	<table class="ingreso-detail" align="center">
     		<thead>
     			<tr>
+    				<th rowspan="2" width="200px"><img src="{{perfil.img_thubmnail.url}}" alt=""></th>
     				<th align="left" style="width: 400px;">
     					Responsable: <span><b>{{perfil.full_name}}</b></span>
     				</th>
     				<th align="left" style="width: 250px; color:black !important;">
-    					Monto Total: <span><b>{{perfil.Total_asig}}</b></span>
+    					Monto Total: <span><b>Q. {{perfil.total_int}}</b></span>
     				</th>
     				<th align="left" style="width: 250px;">
     					fecha: <span><b>{{today}}</b></span>
     				</th>
     				<th align="left" style="width: 250px;">
     					Asignaciones: <span><b>{{numero}}</b></span>
+    				</th>
+    			</tr>
+    			<tr>
+    				<th>Telefono: 
+    					<span><b>{{perfil.telefono}}</b></span>
+    				</th>
+    				<th>Direccion: 
+    					<span><b>{{perfil.direccion}}</b></span>
+    				</th>
+    				<th>Puesto: 
+    					<span><b>{{perfil.puesto}}</b></span>
     				</th>
     			</tr>
        		</thead>

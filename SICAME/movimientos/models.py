@@ -105,7 +105,7 @@ class Asignacion(models.Model):
         for equipo in Equipo_Asignado.objects.filter(
                 id_asignacion=self.id_no):
             total = total+equipo.monto()
-        return total
+        return ("Q. %.2f" % total)
 
     def estado_asig_dev(self):
         dev_estado = ''

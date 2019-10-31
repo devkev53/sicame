@@ -22,6 +22,52 @@ class Catalogo_PDF(PDFTemplateView):
             )
 
 
+class Movimientos_PDF(PDFTemplateView):
+    template_name = 'Movimientos.html'
+
+    def movi(self):
+        from movimientos.models import Asignacion, Devolucion
+        lista = []
+        for asignacion in Asignacion.objects.all():
+            if asignacion.devuelto() is False:
+                datos = {}
+                datos['is'] = 'asig'
+                datos['ref'] = asignacion.id_no
+                datos['fecha'] = asignacion.fecha
+                datos['hora'] = asignacion.hora
+                datos['create'] = asignacion.create_by
+                datos['to'] = asignacion.assigned_to
+                datos['estado'] = asignacion.estado
+                datos['monto'] = asignacion.monto_total()
+                # Adjunto el diccionario a la lista
+                lista.append(datos)
+        for devo in Devolucion.objects.all():
+            datos = {}
+            datos['is'] = 'devo'
+            datos['ref'] = devo.id_no
+            datos['fecha'] = devo.fecha
+            datos['hora'] = devo.hora
+            datos['create'] = devo.create_by
+            datos['to'] = devo.assigned_to
+            datos['estado'] = devo.estado
+            datos['monto'] = devo.monto_total()
+            # Adjunto el diccionario a la lista
+            lista.append(datos)
+        # Ordeno la Lista
+        lista = sorted(lista, key=lambda k: k['fecha'])
+        return lista
+
+    def get_context_data(self, **kwargs):
+        lista = self.movi()
+
+        return super(Movimientos_PDF, self).get_context_data(
+            pagesize='Legal landscape',
+            title='Ingreso',
+            lista=lista,
+            **kwargs
+            )
+
+
 class Ingresos_Egresos_PDF(PDFTemplateView):
     template_name = 'Ingresos_egresos.html'
 

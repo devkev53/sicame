@@ -17,4 +17,7 @@ urlpatterns = [
     # path para la impresion informe de Catalogo
     url(r"^Ingresos_Egresos_PDF/", Ingresos_Egresos_PDF.as_view(),
         name='informe 2'),
+    # path para la impresion de listado de materiales
+    url(r"^Listado_Movimientos_PDF/", Movimientos_PDF.as_view(),
+        name='list_movi'),
 ]
