@@ -96,7 +96,7 @@
 		<tbody>
 			{% for equipo in equipo %}
 				<tr>
-					<td align="center"><img src="{{equipo.img.url}}" alt="" width="50px" align="center"></td>
+					<td align="center"><img src="{{equipo.id_equipo.id_equipo.img.url}}" alt="" width="50px" align="center"></td>
 					<td>{{equipo.id_equipo}}</td>
 					<td align="center">
 						{% if equipo.estado == 'Bno.' %}

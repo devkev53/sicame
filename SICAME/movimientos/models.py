@@ -188,6 +188,22 @@ class Equipo_Asignado(models.Model):
         Equipo_for_asig, on_delete=models.CASCADE,
         verbose_name='Equipo')
 
+    def module(self):
+        asignacion = Asignacion.objects.filter(
+            id_no=self.id_asignacion.id_no).get()
+        return '%s' % (asignacion.module)
+
+    def fecha(self):
+        asignacion = Asignacion.objects.filter(
+            id_no=self.id_asignacion.id_no).get()
+        return '%s' % (asignacion.fecha)
+
+    def dev(self):
+        dev = False
+        if self.id_asignacion.devuelto() is True:
+            dev = True
+        return dev
+
     def ubicacion(self):
         equipo = Equipo_Ingreso.objects.filter(
             id=self.id_equipo.id).get()
@@ -304,15 +320,15 @@ class Material_Asignado(models.Model):
         return '%s' % (asignacion.module)
 
     def p_ubidad_ppp(self):
-        material = Material_Detalle.objects.filter(
-            id_material=self.id_material).last()
-        return material.valor_promedio_ponderado()
+        valor = self.monto_ppp() / self.cantidad
+        return valor
 
     def monto_ppp(self):
-        material = Material_Detalle.objects.filter(
-            id_material=self.id_material).last()
-        self.monto = self.cantidad * material.valor_promedio_ponderado()
-        return self.monto
+        total = 0
+        for material in Material_Asignado.objects.filter(
+                id_asignacion=self.id_asignacion):
+            total = total+material.monto
+        return total
 
     def id_asig(self):
         asignacion = Asignacion.objects.filter(

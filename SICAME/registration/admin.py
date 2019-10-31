@@ -7,7 +7,7 @@ from .models import *
 class AdminPerfil(admin.ModelAdmin):
     list_display = [
         'image_thub', 'full_name',
-        'material_asignado', 'equipo_asignado', 'Total_asignado', 'tarjeta']
+        'material_asignado', 'equipo_asignado', 'total_asignado', 'tarjeta']
     list_filter = []
     search_fields = [
         'nombre', 'user',
@@ -18,7 +18,7 @@ class AdminPerfil(admin.ModelAdmin):
 class AdminMi_Perfil(admin.ModelAdmin):
     list_display = [
         'image_thub', 'full_name',
-        'material_asignado', 'equipo_asignado', 'Total_asignado', 'tarjeta']
+        'material_asignado', 'equipo_asignado', 'total_asignado', 'tarjeta']
     list_filter = []
     search_fields = [
         'nombre', 'user',

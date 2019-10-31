@@ -36,10 +36,13 @@
 </head>
 <body>
 	<div class="subtitle">
-		<h2 align="center">DETALLE DE CARGOS Y DEVOLUCIONES:</h2>
+		<h2 align="center">DETALLE DE CARGOS:</h2>
 		<center>
-					<h2>Verfifique si no cuenta con asignaciones por aceptar: pendientes=
-						<span style="color:red; text-decoration:none;"><b>{{pendientes}}</b></span></h3>
+					<h2>Verfique si no cuenta con asignaciones por aceptar:
+						<span style="color:red; text-decoration:none;">
+						<b> Pendientes = 
+							<span style="font-size:20px; text-decoration:underline;">{{pendientes}}</span>
+						</b></span></h2>
 				</center>
 		<!--table style="align:center; margin: 0 auto;" align="right">
 			<tr>
@@ -56,8 +59,12 @@
 	</div>
 	<br>
 	<table class="detalle">
-			<center style="font-size:16px; font-weight:bold;">MATERIALES</center>
+		<!-- Inicia el Recorrido de Materiales -->
+		{% if nm > 0 %}
 		<thead>
+			<tr class="namehead">
+				<th colspan="7"><h1>MATERIALES</h1></th>
+			</tr>
 			<tr class="head">
 				<th>ID Asignacion</th>
 				<th>FECHA</th>
@@ -69,24 +76,65 @@
 			</tr>
 		</thead>
 		<tbody>
-			{% for algo in algo%}
-			{% if algo.dev == False %}
-				<tr class="ingresos">
-					<td>{{algo.id_asig}}</td>
-					<td>{{algo.fecha}}</td>
-					<td align="center">{{algo.id_material}}</td>
-					<td>{{algo.module}}</td>
-					<td align="right">{{algo.cantidad}}</td>
-					<td>Q. {{algo.p_ubidad_ppp|floatformat:2}}</td>
-					<td>Q. {{algo.monto|floatformat:2}}</td>
-				</tr>
-			{% endif %}	
+			{% for material in material%}
+				{% if material.dev == False %}
+					<tr class="ingresos">
+						<td>{{material.id_asig}}</td>
+						<td>{{material.fecha}}</td>
+						<td align="center">{{material.id_material}}</td>
+						<td>{{material.module}}</td>
+						<td align="right" style="padding-right:5px">
+							{{material.cantidad}}
+						</td>
+						<td align="right" style="padding-right:5px">
+							Q. {{material.p_ubidad_ppp|floatformat:2}}
+						</td>
+						<td align="right" style="padding-right:5px">
+							Q. {{material.monto|floatformat:2}}
+						</td>
+					</tr>
+				{% endif %}	
 			{% endfor %}
-			<tr class="total">
-				<td colspan="6" align="center" style="font-size:18px; font-weight:bold;">Total</td>
-				<td style="font-size:18px; font-weight:bold; color:#000 !important;">Q. {{perfil.Total_asig}}</td>
-			</tr>
 		</tbody>
+		{% endif %}
+		<!-- Inicia el Recorrido de Equipos -->
+		{% if ne > 0 %}
+			<thead>
+				<tr class="namehead">
+					<th colspan="7"><h1>EQUIPOS</h1></th>
+				</tr>
+				<tr class="head">
+					<th colspan="2">ID Asignacion</th>
+					<th>FECHA</th>
+					<th style="width: 600px;">MATERIAL</th>
+					<th colspan="2">MODULO</th>
+					<th>PRECIO</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% for equipo in equipo%}
+				{% if equipo.dev == False %}
+					<tr class="ingresos">
+						<td colspan="2">{{equipo.id_asig}}</td>
+						<td>{{equipo.fecha}}</td>
+						<td align="center">{{equipo.id_equipo}}</td>
+						<td colspan="2">{{equipo.module}}</td>
+						<td align="right" style="padding-right:5px">
+							Q. {{equipo.monto|floatformat:2}}
+						</td>
+					</tr>
+				{% endif %}	
+			{% endfor %}
+		</tbody>
+		{% endif %}
+		<tfoot>
+			<tr>
+				<td colspan="6" align="center" style="font-size:18px; font-weight:bold;">Total</td>
+				<td align="right" style="font-size:18px; font-weight:bold; padding-right:5px;">
+					Q. {{perfil.total_int}}
+				</td>
+			</tr>
+			</tfoot>
 	</table>
 	<hr>
 	<br>	
@@ -118,14 +166,8 @@
 	span{
 		text-transform: uppercase;
 	}
-	.detalle tr:nth-child(even) {
-    background-color: #eee;
-	}
-	.detalle tr:nth-child(odd) {
-    background-color: #000;
-	}
 	.detalle{
-		border: 1px solid #ddd;
+		border: 1px solid #000;
 	}
 	th , td{
 		padding-top: 4px;
@@ -164,6 +206,10 @@
 	table tr .encabezado th{
 		color: #fff;
 		background-color: #2B2B2B;
+	}
+	.namehead th{
+		color: #fff;
+		background-color: #111111;
 	}
 	.ingresos td{
 		border: 1px solid #000;

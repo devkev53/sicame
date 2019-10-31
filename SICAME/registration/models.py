@@ -99,71 +99,73 @@ class Perfil(models.Model):
     # Retorna una descripcion en el ADMIN del Metodo
     full_name.short_description = 'Nombre'
 
-    def material_asignado(self):
+    def material_int(self):
         total = 0
-        from movimientos.models import Asignacion
+        from movimientos.models import Material_Devuelto, Devolucion
+        from movimientos.models import Asignacion, Material_Asignado
         for asignacion in Asignacion.objects.filter(
                 assigned_to=self.id, estado=True):
-            total = total + asignacion.monto_total()
-        # Importamos el total de las devoluciones por perfil
-        from movimientos.models import Devolucion
-        for devolucion in Devolucion.objects.filter(
-                create_by=self.id, estado=True):
-            total = total - devolucion.monto_total()
+            for material in Material_Asignado.objects.filter(
+                    id_asignacion=asignacion):
+                total = total + material.monto
+            for devolucion in Devolucion.objects.filter(
+                        create_by=self.id, estado=True,
+                        asig_id=asignacion):
+                for material in Material_Asignado.objects.filter(
+                        id_asignacion=asignacion):
+                    total = total - material.monto
+        return total
+
+    def material_asignado(self):
+        total = self.material_int()
+        t = ("%.2f" % total)
         return format_html(
                 '<span style="color: #265787; font-weight: bold;' +
-                'text-shadow: 0px 0px 2px #A1E8FD;">' +
-                str(total) + '</span>')
+                'text-shadow: 0px 0px 2px #A1E8FD;">Q. ' +
+                t + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     material_asignado.short_description = 'Q. Material'
 
+    def equipo_int(self):
+        total = 0
+        from movimientos.models import Asignacion, Equipo_Asignado
+        for asignacion in Asignacion.objects.filter(
+                assigned_to=self.id, estado=True):
+            for equipo in Equipo_Asignado.objects.filter(
+                    id_asignacion=asignacion):
+                total = total + equipo.monto()
+        # Importamos el total de las devoluciones por perfil
+        from movimientos.models import Devolucion, Equipo_Devuelto
+        for devolucion in Devolucion.objects.filter(
+                create_by=self.id, estado=True):
+            for e_dev in Equipo_Devuelto.objects.filter(
+                    id_devolucion=devolucion):
+                total = total - e_dev.monto()
+        return total
+
     def equipo_asignado(self):
-        total = '0.00'
+        total = self.equipo_int()
+        t = ("%.2f" % total)
         return format_html(
                 '<span style="color: #000; font-weight: bold;' +
-                'text-shadow: 0px 0px 2px #616669;">' +
-                str(total) + '</span>')
+                'text-shadow: 0px 0px 2px #616669;">Q. ' +
+                t + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
     equipo_asignado.short_description = 'Q. Equipo'
 
-    def Total_asignado(self):
-        total = 0
-        total1 = 0
-        # importamos el total de las asignaciones por perfil
-        from movimientos.models import Asignacion
-        for asignacion in Asignacion.objects.filter(
-                assigned_to=self.id, estado=True):
-            total1 = total1 + asignacion.monto_total()
-        # Importamos el total de las devoluciones por perfil
-        from movimientos.models import Devolucion
-        for devolucion in Devolucion.objects.filter(
-                create_by=self.id, estado=True):
-            total1 = total1 - devolucion.monto_total()
-        total = total + total1
+    def total_asignado(self):
+        total = self.total_int()
+        t = ("%.2f" % total)
         return format_html(
                 '<span style="color: #02AD02; font-weight: bold; text-decoration:underline;' +
-                'text-shadow: 0px 0px 2px yellow;">' +
-                str(total) + '</span>')
+                'text-shadow: 0px 0px 2px yellow;">Q. ' +
+                t + '</span>')
     # Sirve para mostrar la descripcion del metodo en el ADMIN
-    Total_asignado.short_description = 'Monto Q. Total'
+    total_asignado.short_description = 'Monto Q. Total'
 
-    def Total_asig(self):
-        total = 0
-        total1 = 0
-        # importamos el total de las asignaciones por perfil
-        from movimientos.models import Asignacion
-        for asignacion in Asignacion.objects.filter(
-                assigned_to=self.id, estado=True):
-            total1 = total1 + asignacion.monto_total()
-        # Importamos el total de las devoluciones por perfil
-        from movimientos.models import Devolucion
-        for devolucion in Devolucion.objects.filter(
-                create_by=self.id, estado=True):
-            total1 = total1 - devolucion.monto_total()
-        total = total + total1
+    def total_int(self):
+        total = self.equipo_int() + self.material_int()
         return total
-    # Sirve para mostrar la descripcion del metodo en el ADMIN
-    Total_asig.short_description = 'Monto Q. Total'
 
     class Meta:
         verbose_name = "Perfile"

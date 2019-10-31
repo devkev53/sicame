@@ -84,9 +84,6 @@ class Tarjeta_Kardex_Equipo_PDF(PDFTemplateView):
         material = Equipo.objects.get(id=ids)
         detalle = Equipo_Ingreso.objects.filter(id_equipo=ids)
 
-        # obtener el ultimo detalle de ingreso
-        ultimo = Equipo_Ingreso.objects.filter(id_equipo=ids).last()
-
         lista = []
         for ingreso in Equipo_Ingreso.objects.filter(id_equipo=ids):
             datos = {}
@@ -102,19 +99,30 @@ class Tarjeta_Kardex_Equipo_PDF(PDFTemplateView):
             datos['out_val'] = '---'
             datos['promedio'] = 'Un Dato'
             if not lista:
-                datos['total'] = ingreso.monto_point()
+                datos['total'] = ingreso.monto
             else:
-                datos['total'] = (
-                    ingreso.monto_point() + lista[-0].get('total'))
+                datos['total'] = lista[-1].get('total') + ingreso.monto
             lista.append(datos)
+
+        # Se Creara una totalidad de equipos en mal estado
+        bajas = 0
+        for equipo in lista:
+            if equipo.get('estado') == 'Mlo.':
+                bajas = bajas + 1
+
+        # Se Recorrera la lista para hacer una suma de los montos
+        bajas = 0
+        for equipo in lista:
+            if equipo.get('estado') == 'Mlo.':
+                bajas = bajas + 1
 
         return super(Tarjeta_Kardex_Equipo_PDF, self).get_context_data(
             pagesize='Legal landscape',
             title='Kardex',
             detalle=detalle,
             lista=lista,
-            ultimo=ultimo,
             material=material,
+            bajas=bajas,
             **kwargs
             )
 

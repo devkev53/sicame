@@ -172,18 +172,18 @@ class AdminDevolucion(admin.ModelAdmin):
     list_display_links = ('id_no', )
     actions = ['disponible_update']
 
-    # Funcion para que la fk author seleccione al usuario logueado
-    # def get_form(self, request, *args, **kwargs):
-    #     form = super(AdminDevolucion, self).get_form(
-    #         request, *args, **kwargs)
-    #     users = User.objects.all()
-    #     admin = None
-    #     for user in users:
-    #         if user.groups.filter(name='Administradores'):
-    #             admin = user
-    #     perfil_admin = Perfil.objects.filter(user=admin).get()
-    #     form.base_fields['assigned_to'].initial = perfil_admin
-    #     return form
+    def get_queryset(self, request, *args, **kwargs):
+        ''' -- Funcion que se encarga de filtar el contenido
+        en de que usuario sea igual al usuario logeado -- '''
+        qs = super(AdminDevolucion, self).get_queryset(
+            request, *args, **kwargs)
+        log_perfil = Perfil.objects.filter(user=request.user).get()
+        if request.user.is_superuser:
+            return qs
+        if request.user.groups.filter(name='Administradores').exists():
+            return qs
+        else:
+            return qs.filter(create_by=log_perfil)
 
     # Funcion para que la fk author seleccione al usuario logueado
     def save_model(self, request, obj, form, change):
