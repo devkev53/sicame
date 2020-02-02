@@ -62,7 +62,7 @@ class Perfil(models.Model):
                 regex=r'^[0-9]*$',
                 message=('Ingrese solamente numeros'),
             ), val_tel], max_length=8, blank=True)
-    puesto = models.CharField('Puesto', max_length=25, blank=True)
+    is_instructor = models.BooleanField('Es Instructor', default=False)
 
     # Campo para crear una Thubmnail de la fotografia de perfil
     img_thubmnail = ImageSpecField(
@@ -135,12 +135,12 @@ class Perfil(models.Model):
                     id_asignacion=asignacion):
                 total = total + equipo.monto()
         # Importamos el total de las devoluciones por perfil
-        from movimientos.models import Devolucion, Equipo_Devuelto
-        for devolucion in Devolucion.objects.filter(
-                create_by=self.id, estado=True):
-            for e_dev in Equipo_Devuelto.objects.filter(
-                    id_devolucion=devolucion):
-                total = total - e_dev.monto()
+            from movimientos.models import Devolucion, Equipo_Devuelto
+            for devolucion in Devolucion.objects.filter(
+                    create_by=self.id, estado=True, asig_id=asignacion):
+                for e_dev in Equipo_Devuelto.objects.filter(
+                        id_devolucion=devolucion, estado='Bno.'):
+                    total = total - e_dev.monto()
         return total
 
     def equipo_asignado(self):

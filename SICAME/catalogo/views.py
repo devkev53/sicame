@@ -5,8 +5,6 @@ from .models import Material, Equipo
 from inventario.models import Ingreso, Material_Detalle, Equipo_Ingreso
 from movimientos.models import Devolucion, Material_Devuelto
 
-# Create your views here.
-
 
 class Ficha_Kardex_PDF(PDFTemplateView):
     template_name = 'Kardex_Material.html'

@@ -1,0 +1,224 @@
+/* -- Area del Encabezado --*/
+.bienvenido{
+    color: #265787;
+    font-family: 'Russo One', sans-serif;
+    text-shadow: 0px 0px 8px #C6E7FA;
+}
+.bienvenido .link-profile{
+    text-decoration: none;
+    color: #616669;
+    font-family: 'Russo One', sans-serif;
+    text-shadow: 0px 0px 8px #ACAFB1;
+}
+.bienvenido .link-profile:hover{
+    text-decoration: none;
+    color: #265787;
+    font-family: 'Russo One', sans-serif;
+    text-shadow: 0px 0px 8px #C6E7FA;
+}
+div.listado ul li a{
+    color: #616669;
+}
+div.listado ul li a.active{
+    color: #265787;
+    font-weight: bold;
+    text-shadow: 0px 0px 8px #A1E8FD;
+}
+.btn-toggle{
+    color: #265787;
+    font-size: 30px;
+}
+div.listado ul li a:hover{
+    color: #265787;
+    font-weight: bold;
+}
+div.listado ul li a.out:hover{
+    color: #A00000;
+    font-weight: bold;
+}
+.img-intecap{
+    margin-left: 50px;
+}
+.listado li{
+    width: 165px;
+    text-align-last: center;
+    text-transform: uppercase;
+}
+.listado li:hover{
+}
+
+/* -- Area del Pie --*/
+.foot-intecap{
+    background: #616669;
+    color: white;
+    box-shadow: 0px -5px 15px grey;
+}
+.foot-intecap span{
+    color: white;
+    font-size: 26px;
+    transition: 0.3s;
+}
+.linked:hover{
+    text-decoration: none;
+}
+.you:hover{
+    text-decoration: none;
+}
+.git:hover{
+    text-decoration: none;
+}
+.linked span:hover{
+    color: #0e76a8;
+    font-size: 34px;
+    text-decoration: none;
+    text-shadow: 0px 0px 8px white;
+}
+.you span:hover{
+    color: #c4302b;
+    font-size: 34px;
+    text-decoration: none;
+    text-shadow: 0px 0px 8px white;
+}
+.git span:hover{
+    color: #6e5494;
+    font-size: 34px;
+    text-decoration: none;
+    text-shadow: 0px 0px 8px white;
+}
+
+/* -- Cuerpo de la Pagina -- */
+.espacio{
+    margin-bottom: 80px;
+}
+.espacio2{
+    margin-bottom: 130px;
+}
+
+/* -- ADAPTACION EN DISPOSITIVOS DE PEQUENOS DE 900PX PARA ABAJO -- */
+
+@media only screen and (max-width: 990px) {
+    .listado li{
+        width: 165px;
+        text-align-last: left;
+        text-transform: uppercase;
+    }
+}
+
+.box-intecap{
+    border-style: solid;
+    border-radius: 20px;
+    padding: 10px;
+}
+
+/* -- LIST USER PAGE -- */
+tr td .intecap-b-edit{
+    background: #265787;
+    color: white;
+}
+tr td .intecap-b-edit:hover{
+    background: #038503;
+    color: white;
+}
+td a {
+    text-decoration: none;
+    color: black;
+}
+td a:hover{
+    text-decoration: none;
+    color: #616669;
+}
+td{
+    font-family: 'Russo One', sans-serif;
+}
+.title-intecap{
+    font-family: 'Russo One', sans-serif;
+}
+tr td .intecap-b{
+    background: #265787;
+    color: white;
+}
+tr td .intecap-b:hover{
+    background: #A00000;
+    color: white;
+}
+div .intecap-b{
+    background: #265787;
+    color: white;
+}
+.intecap-b span{
+    color: white;
+}
+div .intecap-b:hover{
+    background: #616669;
+    color: white;
+}
+.img-profile{
+    width: 75px;
+    height: 75px;
+}
+.img-profile:hover{
+
+}
+
+/* -- LIST USER PERFIL PAGE -- */
+.datos-personales{
+    font-family: 'Russo One', sans-serif;
+}
+.x-datos{
+    font-family: 'sans-serif';
+}
+.img-profile-detail{
+    width: 95%;
+    height: 350px;
+}
+
+/* -- INVENTARIOS PAGE -- */
+
+/* -- Inventario_base PAGE -- */
+div.listado2 ul li a{
+    color: #265787;
+}
+div.listado2 ul li a:hover{
+    color: black;
+}
+
+/* -- Seccion de Inventarios --*/
+.disponible{
+    color: #037D00;
+    text-shadow: 0px 0px 4px #D8FF00;
+}
+
+.no_disponible{
+    color: #D40202;
+    text-shadow: 0px 0px 4px #D8FF00;
+}
+
+.img-inv{
+    height: 300px;
+    width: 300px;
+}
+.contenedor-imagen a{
+    background: #265787;
+    display: inline-block;
+    height: 300px;
+    width: 300px;
+    border-radius: 150px;
+}
+.descrip{
+    font-size: 10px;
+}
+
+.inv-title{
+    color: #265787;
+    text-shadow: 0px 0px 25px #616669;
+}
+
+.contenedor-imagen a:hover img{
+    opacity: .3;
+    text-shadow: 0px 0px 4px #616669;
+}
+
+/* -- Login --*/
+.body_login{
+    background-image: linear-gradient(#265787, #616669`, #265787);
+}

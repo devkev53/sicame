@@ -70,6 +70,7 @@ class Asignacion(models.Model):
         help_text='Se tomara la fecha automatica de creacion')
     module = models.CharField('Modulo', max_length=50)
     estado = models.BooleanField('Estado', default=False)
+    is_dev = models.BooleanField('Estado', default=False)
 
     create_by = models.ForeignKey(
         Perfil, on_delete=models.CASCADE,
@@ -97,8 +98,11 @@ class Asignacion(models.Model):
         self.id_no = self.id_no
         return self.id_no
 
-    def monto_total(self):
+    def monto_total_format(self):
+        # Creamos la variable total
         total = 0
+        '''Recorremos los detalles Material_Asignado en donde el
+        id sea igual al id de nuestra asignacion'''
         for material in Material_Asignado.objects.filter(
                 id_asignacion=self.id_no):
             total = total+material.monto
@@ -121,8 +125,12 @@ class Asignacion(models.Model):
     def estado_color(self):
         dev_estado = ''
         rotate = 'none'
+        # Verificamos si estado es igual a Aceptado
         if self.estado is True:
+            # Si es igual a aceptado verificamos si la devolucion Ya se Realizo
             if Devolucion.objects.filter(asig_id=self.id_no).exists():
+                '''Si se realizo obtenemos la devolucion en donde tenga
+                el mismo numero de Asignacion'''
                 dev = Devolucion.objects.filter(asig_id=self.id_no).get()
                 if dev.estado is True:
                     color1 = '#265787'
@@ -180,6 +188,18 @@ class Asignacion(models.Model):
         super(Asignacion, self).save()
 
 
+class Mi_Asignacion(Asignacion):
+
+    class Meta:
+        proxy = True
+        verbose_name = "Mi Asignacion"
+        verbose_name_plural = "Mis Asignaciones"
+
+    def __str__(self):
+        return 'Creado por: %s, Asigando a: %s' % (
+            self.create_by, self.assigned_to)
+
+
 class Equipo_Asignado(models.Model):
     id_asignacion = models.ForeignKey(
         Asignacion, on_delete=models.CASCADE,
@@ -200,7 +220,7 @@ class Equipo_Asignado(models.Model):
 
     def dev(self):
         dev = False
-        if self.id_asignacion.devuelto() is True:
+        if self.id_asignacion.is_dev is True:
             dev = True
         return dev
 
@@ -271,8 +291,8 @@ class Equipo_Asignado(models.Model):
                 ' tiene un total de ' + str(count) + msg + '</span>'))
 
     class Meta:
-        verbose_name = "Equipo_Asignado"
-        verbose_name_plural = "Equipo_Asignados"
+        verbose_name = "Equipo Asignado"
+        verbose_name_plural = "Equipo Asignados"
 
     def __str__(self):
         return self.id_asig()
@@ -291,8 +311,7 @@ class Material_Asignado(models.Model):
     cantidad = models.PositiveIntegerField(
         'Cantidad', default=1)
     ubicacion = models.CharField(
-        'Ubicacion', max_length=75,
-        help_text='Debo de corregir y anclar bien la ubicacion')
+        'Ubicacion', max_length=75,)
     monto = models.DecimalField(
         'Monto', max_digits=12, decimal_places=2, null=True)
     id_material = models.ForeignKey(
@@ -320,14 +339,22 @@ class Material_Asignado(models.Model):
         return '%s' % (asignacion.module)
 
     def p_ubidad_ppp(self):
-        valor = self.monto_ppp() / self.cantidad
-        return valor
+        material = Material_Detalle.objects.filter(
+            id_material=self.id_material.id).last()
+        return material.valor_promedio_ponderado()
 
-    def monto_ppp(self):
+    def valor_ppp(self):
         total = 0
-        for material in Material_Asignado.objects.filter(
-                id_asignacion=self.id_asignacion):
-            total = total+material.monto
+        try:
+            material = Material_Detalle.objects.filter(
+                id_material=self.id_material.id).last()
+            total = material.valor_promedio_ponderado()
+            self.monto = total * self.cantidad
+        except ObjectDoesNotExist:
+            raise ValidationError(format_html(
+                '<span aling="center" class="icon-error"\
+                style="padding-right: 5px;"></span><span>\
+                Verfifique el material seleccionado</span>'))
         return total
 
     def id_asig(self):
@@ -347,7 +374,7 @@ class Material_Asignado(models.Model):
         return self.id_asig()
 
     def save(self):
-        self.monto_ppp()
+        self.valor_ppp()
         super(Material_Asignado, self).save()
 
     def verificar_cantidad(self):
@@ -374,6 +401,7 @@ class Material_Asignado(models.Model):
     dispobible y si es correcta la cantidad en la ubicacion a seleccionar--'''
     def clean(self, **kwargs):
         super(Material_Asignado, self).clean()
+        self.valor_ppp()
         self.verificar_cantidad()
 
 
@@ -389,7 +417,7 @@ class Devolucion(models.Model):
         'Hora', auto_now_add=True,
         help_text='Se tomara la fecha automatica de creacion')
     asig_id = models.ForeignKey(
-        Asignacion, on_delete=models.CASCADE,
+        Mi_Asignacion, on_delete=models.CASCADE,
         verbose_name='Ref. Asignacion',
         help_text='La devolucion debe conicidir con una Asignacion asi'
         'como los elementos deben cuadrar', blank=False, null=False, default=1)
@@ -429,15 +457,18 @@ class Devolucion(models.Model):
                 total = total + equipo.id_equipo.monto
         return total
 
-    def monto_total(self):
+    def monto_total_int(self):
         total = 0
         for material in Material_Devuelto.objects.filter(
                 id_devolucion=self.id_no):
-            total = total+material.monto()
+            total = total + material.monto()
         for equipo in Equipo_Devuelto.objects.filter(
                 id_devolucion=self.id_no):
-            total = total+equipo.monto()
+            total = total + equipo.monto()
         return total
+
+    def monto_total(self):
+        return self.asig_id.monto_total_format()
 
     def estado_color(self):
         if self.estado is True:
@@ -485,8 +516,15 @@ class Devolucion(models.Model):
                 valor = True
         return valor
 
+    def cambiar_asignacion(self):
+        if self.estado is True:
+            asig = Asignacion.objects.filter(
+                id_no=self.asig_id.id_no)
+            asig.update(is_dev=True)
+
     def save(self):
         self.set_referncia()
+        self.cambiar_asignacion()
         super(Devolucion, self).save()
 
     def clean(self, **kwargs):
@@ -650,7 +688,7 @@ class Equipo_Devuelto(models.Model):
         max_length=4,
         choices=ESTADOS_DEL_EQUIPO,
         default='Bueno',)
-    comentarios = models.TextField('Comentarios')
+    comentarios = models.TextField('Comentarios', blank=True)
 
     def img(self):
         equipo = Equipo.objects.filter(

@@ -1,5 +1,6 @@
 from django.db import models
 from core.models import *
+from django.contrib import messages
 
 
 ''' * Importacion que nos permite maquetar o formatear
@@ -43,6 +44,7 @@ class BaseObjeto(models.Model):
         Categoria, verbose_name='Categoria', on_delete=models.CASCADE)
     img = models.ImageField(
         upload_to='Catalogo/', null=True, blank=True, verbose_name='Imagen')
+    estado = models.BooleanField('Disponible', default=False)
 
     # campo que creara la imagen en thubnail
     img_thubmnail = ImageSpecField(
@@ -397,6 +399,9 @@ class Material(BaseObjeto):
                 str(total) + '</span>')
     monto_bodega_color.short_description = 'Monto Total'
 
+    def modal(self):
+        return messages.warning(request, 'Your account expires in three days.')
+
     # Metodo que devuelve la representacion de la instancia
     def __str__(self):
         '''Este metodo retorna el nombre y la marca se utilza un
@@ -404,6 +409,9 @@ class Material(BaseObjeto):
         sustituido por un campo o variable'''
         # retorna al terminar el metodo
         return '%s, Marca: %s' % (self.nombre, self.id_Marca)
+
+    def save(self):
+        super(Material, self).save()
 
 
 class Equipo(BaseObjeto):

@@ -131,8 +131,7 @@ class Base_Detalle(models.Model):
     cantidad = models.PositiveIntegerField(
         'Cantidad', default=1)
     ubicacion = models.CharField(
-        'Ubicacion', max_length=75,
-        help_text='Debo de corregir y anclar bien la ubicacion')
+        'Ubicacion', max_length=75,)
     ref_ingreso = models.CharField(
         'Ref.', max_length=75,
         help_text='Referencia segun el ingreso', editable=False)
@@ -279,6 +278,19 @@ class Material_Detalle(Base_Detalle):
         super(Material_Detalle, self).save()
 
 
+@receiver(post_save, sender=Ingreso)
+def validad_dispobible_Devolucion(sender, instance, **kwargs):
+    if instance.estado is True:
+        for material in Material_Detalle.objects.filter(
+                id_ingreso=instance):
+            if material.id_material.disponible_int != 0:
+                Material.objects.filter(
+                    id=material.id_material.id).update(estado=True)
+            else:
+                Material_Detalle.objects.filter(
+                    id=material.id).update(estado=False)
+
+
 # Creamos el modelo de ingreso de equipo este debe ser un,
 # Este sera distinto al material ya que cada equipo tiene un id
 class Equipo_Ingreso(models.Model):
@@ -301,8 +313,7 @@ class Equipo_Ingreso(models.Model):
     monto = models.DecimalField(
         'Precio Unidad', max_digits=12, decimal_places=1)
     ubicacion = models.CharField(
-        'Ubicacion', max_length=75,
-        help_text='Debo de corregir y anclar bien la ubicacion')
+        'Ubicacion', max_length=75,)
     ref_ingreso = models.CharField(
         'Ref.', max_length=75,
         help_text='Referencia segun el ingreso', editable=False)

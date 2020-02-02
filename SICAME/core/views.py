@@ -38,7 +38,7 @@ class Movimientos_PDF(PDFTemplateView):
                 datos['create'] = asignacion.create_by
                 datos['to'] = asignacion.assigned_to
                 datos['estado'] = asignacion.estado
-                datos['monto'] = asignacion.monto_total()
+                datos['monto'] = asignacion.monto_total_format()
                 # Adjunto el diccionario a la lista
                 lista.append(datos)
         for devo in Devolucion.objects.all():

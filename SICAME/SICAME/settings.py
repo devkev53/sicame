@@ -25,7 +25,9 @@ SECRET_KEY = 'ufo0vaqux!^ueesue32%f6d2f(mtu((5ki!yv9nn^)1^z%_x4o'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.2.137', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = [
+    '192.168.2.137', 'localhost', '127.0.0.1',
+    '192.168.53.15', '192.168.53.9', 'sicame.pytl.com']
 
 
 # Application definition
@@ -80,7 +82,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'SICAME.wsgi.application'
 
 
-# Database
+# databases
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
@@ -137,6 +139,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
 
 
 # CONFIGURACION DE ARCHIVOS MEDIA

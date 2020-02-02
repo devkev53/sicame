@@ -10,7 +10,7 @@ class AdminPerfil(admin.ModelAdmin):
             'fields': ((
                 'user'), (
                 'foto', 'direccion'), (
-                'telefono', 'puesto'))
+                'telefono', 'is_instructor'))
         }),)
     list_display = [
         'image_thub', 'full_name',
@@ -29,7 +29,7 @@ class AdminMi_Perfil(admin.ModelAdmin):
             'fields': ((
                 'user'), (
                 'foto', 'direccion'), (
-                'telefono', 'puesto'))
+                'telefono', 'is_instructor'))
         }),)
     list_display = [
         'image_thub', 'full_name',
