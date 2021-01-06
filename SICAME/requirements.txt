@@ -1,6 +1,6 @@
 astroid==2.2.5
 cairocffi==1.1.0
-CairoSVG==2.4.1
+CairoSVG==2.5.1
 cffi==1.12.3
 colorama==0.4.1
 cssselect2==0.2.2
