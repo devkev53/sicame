@@ -1,6 +1,6 @@
 astroid==2.2.5
 colorama==0.4.1
-Django==2.2.3
+Django==2.2.24
 django-appconf==1.0.3
 django-autocomplete-light==3.4.1
 django-betterforms==1.2
