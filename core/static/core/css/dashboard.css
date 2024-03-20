@@ -1,0 +1,254 @@
+html[data-theme="dark"] .logoIntecap,
+html[data-theme="auto"] .logoIntecap,
+html[data-theme="light"] .logoIntecap {
+  height: 100%;
+  object-fit: cover;
+  height: clamp(36px, 5vw, 76px);
+}
+html[data-theme="light"] .header,
+html[data-theme="auto"] .header,
+html[data-theme="dark"] .header {
+  background: transparent !important;
+  border-bottom: 4px solid rgba(51,51,51,.7);
+  /* max-height: 46px; */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  min-height: 76px;
+}
+html[data-theme="auto"] .header {
+  background-color: rgba(0,0,0,.3) !important;
+  backdrop-filter: blur(5px);
+}
+
+html[data-theme="light"] .header {
+  background-color: var(--body-bg) !important;
+}
+
+html[data-theme="dark"] .header {
+  background-color: var(--body-bg) !important;
+}
+
+html[data-theme="dark"] #branding,
+html[data-theme="light"] #branding {
+  height: 100%;
+}
+
+
+html[data-theme="dark"] .branding,
+html[data-theme="light"] .branding {
+  height: 100%;
+}
+html[data-theme="light"] .branding a,
+html[data-theme="dark"] .branding a {
+  display: flex;
+  height: 100%;
+}
+
+html[data-theme="light"] .header a,
+html[data-theme="light"] .header button,
+html[data-theme="light"] .header {
+  color: rgba(51,51,51) !important;
+}
+
+.breadcrumbs {
+  background: rgba(var(--gray)) !important;
+  border-bottom: 4px solid rgba(var(--blue)) !important;
+}
+table caption {
+  padding: unset !important;
+  background: transparent!important;
+  box-sizing: content-box;
+}
+
+/* table caption {
+  background: rgba(2,77,140) !important;
+  border: 1px solid rgba(0,0,0,.5);
+  border-radius: 20px;
+  box-shadow: 5px 5px 5px rgba(0,0,0,.9);
+  margin-bottom: 10px !important;
+} */
+
+table caption a {
+  display: flex;
+  padding: 0;
+  height: 100%;
+  /* width: 100%; */
+  background: rgba(var(--blue));
+  padding: 8px 20px;
+  font-weight: bold;
+  border-radius: 25px;
+  box-shadow: 5px 5px 5px rgba(0,0,0,.9);
+  margin-bottom: 12px;
+}
+table caption a:hover {
+  background: rgba(var(--gray));
+  text-decoration: none !important;
+}
+table tbody tr {
+  background: transparent !important;
+}
+
+tr[scope="row"] {
+  color: rgba(var(--blue));
+  font-weight: bold;
+  background: transparent;
+}
+
+#content-related {
+  border: .1px solid rgba(var(--blue));
+  border-radius: 25px;
+}
+#recent-actions-module h2 {
+  border: 3px solid rgba(var(--blue)) !important;
+  border-radius: 20px;
+  background: var(--body-bg) !important;
+  box-shadow: 5px 5px 5px rgba(0,0,0,.9);
+  color: rgba(var(--blue)) !important;
+  font-weight: bold;
+}
+
+#content {
+  margin-bottom: 26px;
+}
+
+#footer {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: rgba(var(--gray));
+  color: #FFF;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  z-index: 999999;
+}
+
+#footer .content {
+  max-width: 1051px;
+}
+
+.welcome {
+  margin-bottom: 24px;
+  font-size: 24px;
+}
+.welcome span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+#nav-sidebar {
+  padding: 0 12px;
+}
+#user-tools {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+.userIcon {
+  height: 32px;
+  width: 32px;
+}
+html[data-theme="light"] .logoutBtn,
+html[data-theme="dark"] .logoutBtn,
+html[data-theme="dark"] .changePassLink,
+html[data-theme="light"] .changePassLink {
+  display: flex;
+  align-items: center;
+  border-bottom: none !important;
+  transition: .3s all ease;
+  gap: 6px;
+  font-weight: bold !important;
+}
+html[data-theme="light"] .logoutBtn span,
+html[data-theme="dark"] .logoutBtn span,
+html[data-theme="dark"] .changePassLink span,
+html[data-theme="light"] .changePassLink span {
+  display: none;
+}
+html[data-theme="light"] .changePassLink:hover,
+html[data-theme="dark"] .changePassLink:hover {
+  color: green !important;
+}
+
+html[data-theme="light"] .logoutBtn:hover,
+html[data-theme="dark"] .logoutBtn:hover {
+  color: rgb(243, 62, 30) !important;
+}
+
+svg {
+  width: 24px;
+  height: 24px;
+}
+
+.themeBtn {
+  height: 32px;
+  width: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  transition: .3s all ease;
+}
+
+#logout-form button:active,
+#logout-form button:hover {
+  margin-bottom: 0 !important;
+}
+
+html[data-theme="dark"] .themeBtn {
+  background: rgb(35, 256, 235, .5);
+  color: rgb(255, 230, 0);
+}
+html[data-theme="dark"] .themeBtn:hover {
+  background: rgb(35, 256, 235, .3);
+  color: yellow;
+}
+
+
+html[data-theme="light"] .themeBtn {
+  background: rgb(51,51,51, .5);
+  color: rgb(255, 230, 250);
+}
+html[data-theme="light"] .themeBtn:hover {
+  background: rgb(51,51,51, .7);
+  color: rgb(247, 247, 145) !important;
+}
+
+.theme-toggle {
+  display: none;
+}
+
+tbody tr th,
+tbody tr td {
+  vertical-align: middle;
+}
+
+
+.success {
+
+
+/* -*-*-*-*-*-*-*-*- IMAGES IN ADMIN -*-*-*-*-*-*-*-*- */
+.imgAdmin {
+  max-height: 36px;
+  height: 36px;
+  width: 36px;
+}
+
+@media (max-width: 1024px) {
+  #user-tools a {
+    display: flex !important;
+  }
+}
+
+@media (min-width: 769px) {
+  html[data-theme="light"] .logoutBtn span,
+  html[data-theme="dark"] .logoutBtn span,
+  html[data-theme="dark"] .changePassLink span,
+  html[data-theme="light"] .changePassLink span {
+    display: flex;
+  }
+
+}

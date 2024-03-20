@@ -1,0 +1,207 @@
+{% load i18n static %}<!DOCTYPE html>
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,auto' }}">
+<head>
+<title>{% block title %}{% endblock %}</title>
+
+
+<link rel="stylesheet" href="{% block stylesheet %}{% static "admin/css/base.css" %}{% endblock %}">
+{% block dark-mode-vars %}
+  <link rel="stylesheet" href="{% static "admin/css/dark_mode.css" %}">
+  <script src="{% static "admin/js/theme.js" %}" defer></script>
+  <script src="{% static "core/js/theme.js" %}" defer></script>
+{% endblock %}
+{% if not is_popup and is_nav_sidebar_enabled %}
+  <link rel="stylesheet" href="{% static "admin/css/nav_sidebar.css" %}">
+  <script src="{% static 'admin/js/nav_sidebar.js' %}" defer></script>
+{% endif %}
+
+<!-- -*-*-*-*-*-*-*-*-*- EXTRA -*-*-*-*-*-*-*-*-*- STYLES -->
+{% block extrastyle %}
+  <!-- ADING MY PERSONAL STYLES -->
+  <link rel="stylesheet" href="{% static "core/css/vars.css" %}" />
+  <link rel="stylesheet" href="{% static "core/css/dashboard.css" %}" />
+{% endblock %}
+
+{% if LANGUAGE_BIDI %}<link rel="stylesheet" href="{% block stylesheet_rtl %}{% static "admin/css/rtl.css" %}{% endblock %}">{% endif %}
+{% block extrahead %}{% endblock %}
+{% block responsive %}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static "admin/css/responsive.css" %}">
+    {% if LANGUAGE_BIDI %}<link rel="stylesheet" href="{% static "admin/css/responsive_rtl.css" %}">{% endif %}
+{% endblock %}
+{% block blockbots %}<meta name="robots" content="NONE,NOARCHIVE">{% endblock %}
+</head>
+
+<body class="{% if is_popup %}popup {% endif %}{% block bodyclass %}{% endblock %}"
+  data-admin-utc-offset="{% now "Z" %}">
+<a href="#content-start" class="skip-to-content-link">{% translate 'Skip to main content' %}</a>
+<!-- Container -->
+<div id="container" class="divContainer">
+
+    {% if not is_popup %}
+
+    <!-- Header -->
+    {% block header %}
+      <header class="header" id="header">
+        <div id="branding">
+        {% block branding %}{% endblock %}
+        </div>
+        {% block usertools %}
+        {% if has_permission %}
+        <div id="user-tools">
+
+            {% comment %} {% block welcome-msg %}
+                {% translate 'Welcome,' %}
+                <strong>{% firstof user.get_short_name user.get_username %}</strong>.
+            {% endblock %} {% endcomment %}
+
+            {% block userlinks %}
+
+                <!-- -*-*-*-*-*- SITE URL -*-*-*-*-*- -->
+                <button class="themeBtn">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
+                    <path d="M21.0672 11.8568L20.4253 11.469L21.0672 11.8568ZM12.1432 2.93276L11.7553 2.29085V2.29085L12.1432 2.93276ZM7.37554 20.013C7.017 19.8056 6.5582 19.9281 6.3508 20.2866C6.14339 20.6452 6.26591 21.104 6.62446 21.3114L7.37554 20.013ZM2.68862 17.3755C2.89602 17.7341 3.35482 17.8566 3.71337 17.6492C4.07191 17.4418 4.19443 16.983 3.98703 16.6245L2.68862 17.3755ZM21.25 12C21.25 17.1086 17.1086 21.25 12 21.25V22.75C17.9371 22.75 22.75 17.9371 22.75 12H21.25ZM2.75 12C2.75 6.89137 6.89137 2.75 12 2.75V1.25C6.06294 1.25 1.25 6.06294 1.25 12H2.75ZM15.5 14.25C12.3244 14.25 9.75 11.6756 9.75 8.5H8.25C8.25 12.5041 11.4959 15.75 15.5 15.75V14.25ZM20.4253 11.469C19.4172 13.1373 17.5882 14.25 15.5 14.25V15.75C18.1349 15.75 20.4407 14.3439 21.7092 12.2447L20.4253 11.469ZM9.75 8.5C9.75 6.41182 10.8627 4.5828 12.531 3.57467L11.7553 2.29085C9.65609 3.5593 8.25 5.86509 8.25 8.5H9.75ZM12 2.75C11.9115 2.75 11.8077 2.71008 11.7324 2.63168C11.6686 2.56527 11.6538 2.50244 11.6503 2.47703C11.6461 2.44587 11.6482 2.35557 11.7553 2.29085L12.531 3.57467C13.0342 3.27065 13.196 2.71398 13.1368 2.27627C13.0754 1.82126 12.7166 1.25 12 1.25V2.75ZM21.7092 12.2447C21.6444 12.3518 21.5541 12.3539 21.523 12.3497C21.4976 12.3462 21.4347 12.3314 21.3683 12.2676C21.2899 12.1923 21.25 12.0885 21.25 12H22.75C22.75 11.2834 22.1787 10.9246 21.7237 10.8632C21.286 10.804 20.7293 10.9658 20.4253 11.469L21.7092 12.2447ZM12 21.25C10.3139 21.25 8.73533 20.7996 7.37554 20.013L6.62446 21.3114C8.2064 22.2265 10.0432 22.75 12 22.75V21.25ZM3.98703 16.6245C3.20043 15.2647 2.75 13.6861 2.75 12H1.25C1.25 13.9568 1.77351 15.7936 2.68862 17.3755L3.98703 16.6245Z" fill="currentColor"/>
+                  </svg>
+                </button>
+
+                <!-- -*-*-*-*-*- SITE URL -*-*-*-*-*- -->
+                {% comment %} {% if site_url %}
+                    <a href="{{ site_url }}">{% translate 'View site' %}</a> /
+                {% endif %} {% endcomment %}
+
+                {% if user.is_active and user.is_staff %}
+                    {% url 'django-admindocs-docroot' as docsroot %}
+                    {% if docsroot %}
+                        <a href="{{ docsroot }}">{% translate 'Documentation' %}</a> /
+                    {% endif %}
+                {% endif %}
+                {% if user.has_usable_password %}
+
+                <!-- CHANGE PASS SECTION -->
+                <a class="changePassLink" href="{% url 'admin:password_change' %}">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M21.067 5c.592.958.933 2.086.933 3.293 0 3.476-2.83 6.294-6.32 6.294-.636 0-2.086-.146-2.791-.732l-.882.878c-.735.732-.147.732.147 1.317 0 0 .735 1.025 0 2.05-.441.585-1.676 1.404-3.086 0l-.294.292s.881 1.025.147 2.05c-.441.585-1.617 1.17-2.646.146l-1.028 1.024c-.706.703-1.568.293-1.91 0l-.883-.878c-.823-.82-.343-1.708 0-2.05l7.642-7.61s-.735-1.17-.735-2.78c0-3.476 2.83-6.294 6.32-6.294.819 0 1.601.155 2.319.437" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M17.885 8.294a2.2 2.2 0 0 1-2.204 2.195 2.2 2.2 0 0 1-2.205-2.195 2.2 2.2 0 0 1 2.205-2.196 2.2 2.2 0 0 1 2.204 2.196Z" stroke="currentColor" stroke-width="1.5"/>
+                  </svg>
+                  <span>
+                    {% translate 'Change password' %}
+                  </span>
+                </a>
+                {% endif %}
+                <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+                    {% csrf_token %}
+                    <!-- LOGOUT SECTION -->
+                    <button class="logoutBtn" type="submit">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="800px" height="800px" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 2V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        <path d="M8.5 3.70605C5.26806 5.07157 3 8.27099 3 12.0001C3 14.3052 3.86656 16.4079 5.29169 18.0002M15.5 3.70605C18.7319 5.07157 21 8.27099 21 12.0001C21 16.9707 16.9706 21.0001 12 21.0001C10.9481 21.0001 9.93834 20.8197 9 20.488" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                      </svg>
+                      <span>
+                        {% translate 'Log out' %}
+                      </span>
+                    </button>
+                </form>
+                {% include "admin/color_theme_toggle.html" %}
+            {% endblock %}
+        </div>
+        {% endif %}
+        {% endblock %}
+        {% block nav-global %}{% endblock %}
+      </header>
+    {% endblock %}
+    <!-- END Header -->
+
+    {% block nav-breadcrumbs %}
+      <nav aria-label="{% translate 'Breadcrumbs' %}">
+        {% block breadcrumbs %}
+          <div class="breadcrumbs">
+            <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+            {% if title %} &rsaquo; {{ title }}{% endif %}
+          </div>
+        {% endblock %}
+      </nav>
+    {% endblock %}
+    {% endif %}
+
+    <div class="main" id="main">
+      {% if not is_popup and is_nav_sidebar_enabled %}
+        {% block nav-sidebar %}
+          {% include "admin/nav_sidebar.html" %}
+        {% endblock %}
+      {% endif %}
+      <main id="content-start" class="content" tabindex="-1">
+        {% block messages %}
+          {% if messages %}
+            <ul class="messagelist">{% for message in messages %}
+              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message|capfirst }}</li>
+            {% endfor %}</ul>
+          {% endif %}
+        {% endblock messages %}
+
+
+        <!-- Content -->
+        <div id="content" class="{% block coltype %}colM{% endblock %}">
+          {% block pretitle %}{% endblock %}
+
+          {% block content_title %}
+            {% if request.path == "/login/" %}
+            {% elif request.path == "/logout/" %}
+            {% else %}
+              {% block WelcomUser %}
+                <h3 class="welcome">
+                  <span>
+                    Bievenido:
+                    <svg viewBox="0 0 24 24" fill="none" class="userIcon">
+                      <circle cx="12" cy="9" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M17.97 20c-.16-2.892-1.045-5-5.97-5s-5.81 2.108-5.97 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                      <path d="M7 3.338A9.954 9.954 0 0 1 12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12c0-1.821.487-3.53 1.338-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    {% if request.user.firs_name  %}
+                      <b>{{request.user.first_name}} {{request.user.last_name}}</b>
+                    {% else %}
+                      <b>{{request.user.username}}</b>
+                    {% endif %}
+                  </span>
+                </h3>
+              {% endblock WelcomUser %}
+            {% endif %}
+
+            {% comment %} {% if title %}
+              <h1>{{ title }}</h1>
+            {% endif %} {% endcomment %}
+          {% endblock %}
+          {% block content_subtitle %}{% if subtitle %}<h2>{{ subtitle }}</h2>{% endif %}{% endblock %}
+
+          {% block content %}
+            {% block object-tools %}{% endblock %}
+            {{ content }}
+          {% endblock %}
+
+          {% block sidebar %}{% endblock %}
+          <br class="clear">
+        </div>
+
+        <!-- END Content -->
+        {% block footer %}<div id="footer">
+          <div class="content">
+            <div class="created">
+              <span>Created By:</span>
+            </div>
+            <div class="socials">
+            </div>
+          </div>
+        </div>{% endblock %}
+      </main>
+    </div>
+</div>
+<!-- END Container -->
+
+<!-- SVGs -->
+<svg xmlns="http://www.w3.org/2000/svg" class="base-svgs">
+  <symbol viewBox="0 0 24 24" width="1rem" height="1rem" id="icon-auto"><path d="M0 0h24v24H0z" fill="currentColor"/><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2V4a8 8 0 1 0 0 16z"/></symbol>
+  {% comment %} <symbol viewBox="0 0 24 24" width="1rem" height="1rem" id="icon-moon"><path d="M0 0h24v24H0z" fill="currentColor"/><path d="M10 7a7 7 0 0 0 12 4.9v.1c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2h.1A6.979 6.979 0 0 0 10 7zm-6 5a8 8 0 0 0 15.062 3.762A9 9 0 0 1 8.238 4.938 7.999 7.999 0 0 0 4 12z"/></symbol> {% endcomment %}
+  <symbol viewBox="0 0 24 24" width="1rem" height="1rem" id="icon-sun"><path d="M0 0h24v24H0z" fill="currentColor"/><path d="M12 18a6 6 0 1 1 0-12 6 6 0 0 1 0 12zm0-2a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM11 1h2v3h-2V1zm0 19h2v3h-2v-3zM3.515 4.929l1.414-1.414L7.05 5.636 5.636 7.05 3.515 4.93zM16.95 18.364l1.414-1.414 2.121 2.121-1.414 1.414-2.121-2.121zm2.121-14.85l1.414 1.415-2.121 2.121-1.414-1.414 2.121-2.121zM5.636 16.95l1.414 1.414-2.121 2.121-1.414-1.414 2.121-2.121zM23 11v2h-3v-2h3zM4 11v2H1v-2h3z"/></symbol>
+</svg>
+<!-- END SVGs -->
+</body>
+</html>

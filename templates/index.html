@@ -1,0 +1,10 @@
+MARCAS REGISTRADAS
+
+<ul>
+  {% for brand in brands %}
+  <li>
+    <img height="36" src={{brand.logo_img.url}} alt={{brand.name}}>
+    <span>{{brand.name}}</span>
+  </li>
+  {% endfor %}
+</ul>
