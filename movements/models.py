@@ -7,19 +7,19 @@ from django.utils.translation import gettext as _
 # Create your models here.
 
 
-class Entry(BaseModel):
+class EntryMaterial(BaseModel):
     reference = models.CharField(_('Reference'), help_text=_('''
-      Field for the Document No. that will
-      serve as a reference for the purchase
-      or donation
+        Field for the Document No. that will
+        serve as a reference for the purchase
+        or donation
     '''), max_length=250)
     state = models.BooleanField(_('Available'), default=False)
     description = models.TextField(_('Description'), default='S/D')
 
 
     class Meta:
-        verbose_name = _("Entry")
-        verbose_name_plural = _("Entries")
+        verbose_name = _("EntryMaterial")
+        verbose_name_plural = _("Entries Materials")
 
     def __str__(self):
         return "%s %s" % (self.self.reference)
@@ -33,7 +33,7 @@ class Entry(BaseModel):
 
 class DetailBase(BaseModel):
     quantity = models.PositiveSmallIntegerField(_('Quantity'), default=1)
-    id_entry = models.ForeignKey(Entry, on_delete=models.CASCADE)
+    id_entry = models.ForeignKey(EntryMaterial, on_delete=models.CASCADE)
     amount = models.DecimalField(_('Amount'), max_digits=12, decimal_places=2, default=0.00)
     location = models.CharField(_('Location'), max_length=250, null=True, blank=True)
 

@@ -20,11 +20,11 @@ from django.conf.urls.static import static
 
 from django.contrib import admin
 from django.urls import path
-from catalog.views import render_brand
+from core.views import home_redirect
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', render_brand, name='index')
+    path('', home_redirect, name='index')
 ]
 
 # Show staticfiles and mediafiles whith DEBUG=TRUE

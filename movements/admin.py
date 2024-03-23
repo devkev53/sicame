@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Entry, MaterialEntryDetail
+from .models import EntryMaterial, MaterialEntryDetail
 # Register your models here.
 
 
@@ -38,9 +38,9 @@ class MaterialEntryDetailAdmin(admin.ModelAdmin):
 #   date_hierarchy = ''
 #   ordering = ('',)
 
-@admin.register(Entry)
-class EntryAdmin(admin.ModelAdmin):
-  '''Admin View for Entry'''
+@admin.register(EntryMaterial)
+class EntryMaterialAdmin(admin.ModelAdmin):
+  '''Admin View for EntryMaterial'''
 
   list_display = ('created_by', 'created', 'reference',)
   # list_filter = ('',)
